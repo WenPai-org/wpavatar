@@ -7,7 +7,7 @@ oAvatar 是什么？
 🐧 林纳斯大神（Linus Torvalds）说：I'm OA,The OA means Open Avatar. Talk is cheap. Show me the code.<br/>
 🍎 乔布斯帮主（Steve Jobs）说：I'm OA,The OA means Original Apple. Stay hungry, stay foolish.<br/>
 🪣 饭桶中心（GitHub）说：I'm OA,The OA means Organization Account. Pick a plan for your team.<br/>
-🇨🇳 文派用户（WordPress User）说：I'm OA,The OA means Original Avatar. 429 Too Many Requests.<br/>
+🇨🇳 文派用户（WordPress User）说：I'm OA,The OA means Original Avatar. Haha you got 429 Too Many Requests.<br/>
 
 oAvatar 的正式名称是原始头像（Original Avatar）的缩写，存在的主要目的是为了解决中国特色问题，由于 WordPress 内置包含的 Gravatar 多年来一直持续无法访问和加载缓慢，严重拖慢了处在中国大陆地区的用户网站速度，非常影响用户体验。
 
