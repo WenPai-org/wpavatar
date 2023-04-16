@@ -1,0 +1,220 @@
+# Translation of Plugins - WPICP License - Development (trunk) in Chinese (Taiwan)
+# This file is distributed under the same license as the Plugins - WPICP License - Development (trunk) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2023-03-19 07:28:23+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/4.0.0-alpha.4\n"
+"Language: zh_TW\n"
+"Project-Id-Version: Plugins - WPICP License - Development (trunk)\n"
+
+#: wpicp-license.php:169
+msgid "Enter your Wangan license number and select the abbreviation of your province."
+msgstr "輸入這個網站的公安局備案許可證號，並選取所在省份。"
+
+#: wpicp-license.php:155
+msgid "Xinjiang"
+msgstr "新疆"
+
+#: wpicp-license.php:154
+msgid "Ningxia"
+msgstr "寧夏"
+
+#: wpicp-license.php:153
+msgid "Qinghai"
+msgstr "青海"
+
+#: wpicp-license.php:152
+msgid "Gansu"
+msgstr "甘肅"
+
+#: wpicp-license.php:151
+msgid "Shaanxi"
+msgstr "陝西"
+
+#: wpicp-license.php:150
+msgid "Tibet"
+msgstr "西藏"
+
+#: wpicp-license.php:149
+msgid "Yunnan"
+msgstr "雲南"
+
+#: wpicp-license.php:148
+msgid "Guizhou"
+msgstr "貴州"
+
+#: wpicp-license.php:147
+msgid "Sichuan"
+msgstr "四川"
+
+#: wpicp-license.php:146
+msgid "Chongqing"
+msgstr "重慶"
+
+#: wpicp-license.php:145
+msgid "Hainan"
+msgstr "海南"
+
+#: wpicp-license.php:144
+msgid "Guangxi"
+msgstr "廣西"
+
+#: wpicp-license.php:143
+msgid "Guangdong"
+msgstr "廣東"
+
+#: wpicp-license.php:142
+msgid "Hunan"
+msgstr "湖南"
+
+#: wpicp-license.php:141
+msgid "Hubei"
+msgstr "湖北"
+
+#: wpicp-license.php:140
+msgid "Henan"
+msgstr "河南"
+
+#: wpicp-license.php:139
+msgid "Shandong"
+msgstr "山東"
+
+#: wpicp-license.php:138
+msgid "Jiangxi"
+msgstr "江西"
+
+#: wpicp-license.php:137
+msgid "Fujian"
+msgstr "福建"
+
+#: wpicp-license.php:136
+msgid "Anhui"
+msgstr "安徽"
+
+#: wpicp-license.php:135
+msgid "Zhejiang"
+msgstr "浙江"
+
+#: wpicp-license.php:134
+msgid "Jiangsu"
+msgstr "江蘇"
+
+#: wpicp-license.php:133
+msgid "Shanghai"
+msgstr "上海"
+
+#: wpicp-license.php:132
+msgid "Heilongjiang"
+msgstr "黑龍江"
+
+#: wpicp-license.php:131
+msgid "Jilin"
+msgstr "吉林"
+
+#: wpicp-license.php:130
+msgid "Liaoning"
+msgstr "遼寧"
+
+#: wpicp-license.php:129
+msgid "Inner Mongolia"
+msgstr "內蒙古"
+
+#: wpicp-license.php:128
+msgid "Shanxi"
+msgstr "山西"
+
+#: wpicp-license.php:127
+msgid "Hebei"
+msgstr "河北"
+
+#: wpicp-license.php:126
+msgid "Tianjin"
+msgstr "天津"
+
+#: wpicp-license.php:125
+msgid "Beijing"
+msgstr "北京"
+
+#: wpicp-license.php:111
+msgid "Use the shortcode <code>[wpicp_wangan]</code>, You need to register with the Public Security Bureau (PSB) to have this license.  <a href=\"https://wpicp.com/document/what-is-psb-filing\" target=\"_blank\" rel=\"noopener\">(What is PSB filing?)</a>"
+msgstr "使用短代碼 <code>[wpicp_wangan]</code>。網站管理員必須向中國公安局 (Public Security Bureau，PSB) 註冊以取得證號。<a href=\"https://wpicp.com/document/what-is-psb-filing\" target=\"_blank\" rel=\"noopener\">(什麼是中國公安局備案)</a>"
+
+#: wpicp-license.php:79
+msgid "Province"
+msgstr "中國省份"
+
+#: wpicp-license.php:72
+msgid "Wangan License"
+msgstr "公安網備案證號"
+
+#: wpicp-license.php:58
+msgid "China Wangan License Number"
+msgstr "中國公安局備案證號"
+
+#: wpicp-license.php:179
+msgid "ICP License Settings"
+msgstr "ICP 備案許可證號設定"
+
+#: wpicp-license.php:107
+msgid "Enter your ICP license number information. <a href=\"https://wpicp.com/document/correct-format\" target=\"_blank\" rel=\"noopener\">(Correct format?)</a>"
+msgstr "輸入這個網站的 ICP 備案許可證號。<a href=\"https://wpicp.com/document/correct-format\" target=\"_blank\" rel=\"noopener\">進一步了解正確格式</a>"
+
+#: wpicp-license.php:99
+msgid "2. Use the shortcode <code>[wpicp_license]</code> to display the license information and link on your website. <a href=\"https://wpicp.com/document/integrate-into-theme\" target=\"_blank\" rel=\"noopener\">(Integrate into theme?)</a>"
+msgstr "2. 使用短代碼 <code>[wpicp_license]</code> 在這個網站上顯示 ICP 備案許可證號及連結。<a href=\"https://wpicp.com/document/integrate-into-theme\" target=\"_blank\" rel=\"noopener\">(與佈景主題整合的方式)</a>"
+
+#: wpicp-license.php:98
+msgid "1. Enter your ICP license information below. <a href=\"https://wpicp.com/document/find-my-license\" target=\"_blank\" rel=\"noopener\">(Find My License?)</a>"
+msgstr "1. 在下方輸入欄位輸入網站的 ICP 備案許可證號。<a href=\"https://wpicp.com/document/find-my-license\" target=\"_blank\" rel=\"noopener\">(如何找到 ICP 備案許可證號)</a>"
+
+#: wpicp-license.php:97
+msgid "How to use?"
+msgstr "使用方式"
+
+#: wpicp-license.php:96
+msgid "The ICP license is a state-issued registration, All public websites in mainland China must have an ICP number listed on the homepage of the website. <a href=\"https://wpicp.com/document/what-would-happen-if-not\" target=\"_blank\" rel=\"noopener\">(What would happen if not?)</a>"
+msgstr "ICP 備案許可證號是中國頒發的網站註冊證明，在中國提供網際網路資訊服務的全部公開網站，都必須在網站首頁顯示 ICP 備案許可證號。<a href=\"https://wpicp.com/document/what-would-happen-if-not\" target=\"_blank\" rel=\"noopener\">(如果沒有 ICP 備案許可證號會發生什麼)</a>"
+
+#: wpicp-license.php:95
+msgid "Why do you need?"
+msgstr "為什麼需要 ICP 備案許可證號"
+
+#: wpicp-license.php:94
+msgid "This plugin is free forever, and its purpose is to supplement the essential functions that the Chinese version of WordPress lacks. More information at <a href=\"https://wpicp.com\" target=\"_blank\" rel=\"noopener\">WPICP.com</a>"
+msgstr "這個外掛永久免費，目的是為 WordPress 網站新增能加入 ICP 備案許可證號的功能。如需進一步了解，請造訪 <a href=\"https://wpicp.com\" target=\"_blank\" rel=\"noopener\">WPICP.com</a>。"
+
+#: wpicp-license.php:52
+msgid "WordPress ICP License Namber"
+msgstr "WordPress 網站 ICP 備案許可證號"
+
+#: wpicp-license.php:32 wpicp-license.php:64
+msgid "ICP License"
+msgstr "ICP 備案許可證號"
+
+#: wpicp-license.php:31
+msgid "WP ICP License Settings"
+msgstr "WordPress 網站 ICP 備案許可證號設定"
+
+#. Author URI of the plugin
+msgid "https://wpicp.com/"
+msgstr "https://wpicp.com/"
+
+#. Author of the plugin
+msgid "WPICP.com"
+msgstr "文派 ICP"
+
+#. Description of the plugin
+msgid "Must-have for WordPress sites in China, showing your ICP license."
+msgstr "目標對象為中國使用者的 WordPress 網站必備外掛，用於顯示網站 ICP 備案許可證號。"
+
+#. Plugin URI of the plugin
+msgid "https://wpicp.com/download"
+msgstr "https://wpicp.com/download"
+
+#. Plugin Name of the plugin
+msgid "WPICP License"
+msgstr "WPICP License"
