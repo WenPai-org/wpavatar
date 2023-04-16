@@ -1,0 +1,273 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WPICP License\n"
+"POT-Creation-Date: 2023-03-30 22:41+0800\n"
+"PO-Revision-Date: 2023-03-30 22:42+0800\n"
+"Last-Translator: 薇晓朵 <support@weixiaoduo.com>\n"
+"Language-Team: 薇晓朵 <support@weixiaoduo.com>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.1.1\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: wpicp-license.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.min.js\n"
+
+#: includes/shortcode.php:52 wpicp-license.php:145
+msgid "Beijing"
+msgstr "北京"
+
+#: includes/shortcode.php:53 wpicp-license.php:146
+msgid "Tianjin"
+msgstr "天津"
+
+#: includes/shortcode.php:54 wpicp-license.php:147
+msgid "Hebei"
+msgstr "河北"
+
+#: includes/shortcode.php:55 wpicp-license.php:148
+msgid "Shanxi"
+msgstr "山西"
+
+#: includes/shortcode.php:56 wpicp-license.php:149
+msgid "Inner Mongolia"
+msgstr "内蒙古"
+
+#: includes/shortcode.php:57 wpicp-license.php:150
+msgid "Liaoning"
+msgstr "辽宁"
+
+#: includes/shortcode.php:58 wpicp-license.php:151
+msgid "Jilin"
+msgstr "吉林"
+
+#: includes/shortcode.php:59 wpicp-license.php:152
+msgid "Heilongjiang"
+msgstr "黑龙江"
+
+#: includes/shortcode.php:60 wpicp-license.php:153
+msgid "Shanghai"
+msgstr "上海"
+
+#: includes/shortcode.php:61 wpicp-license.php:154
+msgid "Jiangsu"
+msgstr "江苏"
+
+#: includes/shortcode.php:62 wpicp-license.php:155
+msgid "Zhejiang"
+msgstr "浙江"
+
+#: includes/shortcode.php:63 wpicp-license.php:156
+msgid "Anhui"
+msgstr "安徽"
+
+#: includes/shortcode.php:64 wpicp-license.php:157
+msgid "Fujian"
+msgstr "福建"
+
+#: includes/shortcode.php:65 wpicp-license.php:158
+msgid "Jiangxi"
+msgstr "江西"
+
+#: includes/shortcode.php:66 wpicp-license.php:159
+msgid "Shandong"
+msgstr "山东"
+
+#: includes/shortcode.php:67 wpicp-license.php:160
+msgid "Henan"
+msgstr "河南"
+
+#: includes/shortcode.php:68 wpicp-license.php:161
+msgid "Hubei"
+msgstr "湖北"
+
+#: includes/shortcode.php:69 wpicp-license.php:162
+msgid "Hunan"
+msgstr "湖南"
+
+#: includes/shortcode.php:70 wpicp-license.php:163
+msgid "Guangdong"
+msgstr "广东"
+
+#: includes/shortcode.php:71 wpicp-license.php:164
+msgid "Guangxi"
+msgstr "广西"
+
+#: includes/shortcode.php:72 wpicp-license.php:165
+msgid "Hainan"
+msgstr "海南"
+
+#: includes/shortcode.php:73 wpicp-license.php:166
+msgid "Chongqing"
+msgstr "重庆"
+
+#: includes/shortcode.php:74 wpicp-license.php:167
+msgid "Sichuan"
+msgstr "四川"
+
+#: includes/shortcode.php:75 wpicp-license.php:168
+msgid "Guizhou"
+msgstr "贵州"
+
+#: includes/shortcode.php:76 wpicp-license.php:169
+msgid "Yunnan"
+msgstr "云南"
+
+#: includes/shortcode.php:77 wpicp-license.php:170
+msgid "Tibet"
+msgstr "西藏"
+
+#: includes/shortcode.php:78 wpicp-license.php:171
+msgid "Shaanxi"
+msgstr "陕西"
+
+#: includes/shortcode.php:79 wpicp-license.php:172
+msgid "Gansu"
+msgstr "甘肃"
+
+#: includes/shortcode.php:80 wpicp-license.php:173
+msgid "Qinghai"
+msgstr "青海"
+
+#: includes/shortcode.php:81 wpicp-license.php:174
+msgid "Ningxia"
+msgstr "宁夏"
+
+#: includes/shortcode.php:82 wpicp-license.php:175
+msgid "Xinjiang"
+msgstr "新疆"
+
+#: wpicp-license.php:36
+msgid "WP ICP License Settings"
+msgstr "文派 ICP 许可证设置"
+
+#: wpicp-license.php:37 wpicp-license.php:69 wpicp-license.php:105
+msgid "ICP License"
+msgstr "ICP 备案号"
+
+#: wpicp-license.php:57
+msgid "WordPress ICP License Namber"
+msgstr "文派(WordPress) ICP 备案许可证"
+
+#: wpicp-license.php:63
+msgid "China Wangan License Number"
+msgstr "中国公安网许可证"
+
+#: wpicp-license.php:77
+msgid "Wangan License"
+msgstr "网安备案号"
+
+#: wpicp-license.php:84
+msgid "Province"
+msgstr "省份"
+
+#: wpicp-license.php:99
+msgid "Enter your ICP license number information."
+msgstr "输入您的备案号。"
+
+#: wpicp-license.php:115
+msgid ""
+"This plugin is free forever, and its purpose is to supplement the essential "
+"functions that the Chinese version of WordPress lacks. More information at "
+"<a href=\"https://wpicp.com\" target=\"_blank\" rel=\"noopener\">WPICP.com</"
+"a>"
+msgstr ""
+"此插件永久免费，目的是补充 WordPress 中文版本所缺少的功能。更多信息请访问 <a "
+"href=\"https://wpicp.com\" target=\"_blank\" rel=\"noopener\">WPICP.com</a>"
+
+#: wpicp-license.php:116
+msgid "Why do you need?"
+msgstr "为什么需要？"
+
+#: wpicp-license.php:117
+msgid ""
+"The ICP license is a state-issued registration, All public websites in "
+"mainland China must have an ICP number listed on the homepage of the "
+"website. <a href=\"https://wpicp.com/document/what-would-happen-if-not\" "
+"target=\"_blank\" rel=\"noopener\">(What would happen if not?)</a>"
+msgstr ""
+"ICP备案许可证是国家颁发的注册证，中国大陆所有公开网站都必须在网站首页显示有"
+"ICP备案号。<a href=\"https://wpicp.com/document/what-would-happen-if-not\" "
+"target=\"_blank\" rel=\"noopener\">（如果没有会怎样？）</a>"
+
+#: wpicp-license.php:118
+msgid "How to use?"
+msgstr "如何使用？"
+
+#: wpicp-license.php:119
+msgid ""
+"1. Enter your ICP license information below. <a href=\"https://wpicp.com/"
+"document/find-my-license\" target=\"_blank\" rel=\"noopener\">(Find My "
+"License?)</a>"
+msgstr ""
+"1. 在下方输入您的 ICP 许可证信息。 <a href=\"https://wpicp.com/document/find-"
+"my-license\" target=\"_blank\" rel=\"noopener\">（找到我的许可证？）</a>"
+
+#: wpicp-license.php:120
+msgid ""
+"2. Use the shortcode <code>[wpicp_license]</code> to display the license "
+"information and link on your website. <a href=\"https://wpicp.com/document/"
+"integrate-into-theme\" target=\"_blank\" rel=\"noopener\">(Integrate into "
+"theme?)</a>"
+msgstr ""
+"2. 使用简码<code>[wpicp_license]</code>在您的网站上显示许可证信息和链接。<a "
+"href=\"https://wpicp.com/document/integrate-into-theme\" target=\"_blank\" "
+"rel=\"noopener\">(集成到主题？）</a>"
+
+#: wpicp-license.php:127
+msgid ""
+"Enter your ICP license number information. <a href=\"https://wpicp.com/"
+"document/correct-format\" target=\"_blank\" rel=\"noopener\">(Correct "
+"format?)</a>"
+msgstr ""
+"输入您的备案号。<a href=\"https://wpicp.com/document/correct-format\" target="
+"\"_blank\" rel=\"noopener\">（正确格式？）</a>"
+
+#: wpicp-license.php:131
+msgid ""
+"Use the shortcode <code>[wpicp_wangan]</code>, You need to register with the "
+"Public Security Bureau (PSB) to have this license.  <a href=\"https://wpicp."
+"com/document/what-is-psb-filing\" target=\"_blank\" rel=\"noopener\">(What "
+"is PSB filing?)</a>"
+msgstr ""
+"使用简码<code>[wpicp_wangan]</code>，您需要在公安局（PSB）注册才能获得此备案"
+"许可证。 <a href=\"https://wpicp.com/document/what-is-psb-filing\" target="
+"\"_blank\" rel=\"noopener\">（什么是公共安全备案？）</a>"
+
+#: wpicp-license.php:189
+msgid ""
+"Enter your Wangan license number and select the abbreviation of your "
+"province."
+msgstr "输入您的网安备案号并选择您所在省份的简称。"
+
+#: wpicp-license.php:199
+msgid "ICP License Settings"
+msgstr "ICP 许可证设置"
+
+#. Plugin Name of the plugin/theme
+msgid "WPICP License"
+msgstr "文派 ICP 许可证"
+
+#. Plugin URI of the plugin/theme
+msgid "https://wpicp.com/download"
+msgstr "https://wpicp.com/download"
+
+#. Description of the plugin/theme
+msgid "Must-have for WordPress sites in China, showing your ICP license."
+msgstr "中国WordPress网站必备，显示您的 ICP 备案许可证。"
+
+#. Author of the plugin/theme
+msgid "WPICP.com"
+msgstr "文派 ICP"
+
+#. Author URI of the plugin/theme
+msgid "https://wpicp.com/"
+msgstr "https://wpicp.com/"
