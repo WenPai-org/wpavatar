@@ -15,6 +15,8 @@ Use WPAvatar to speed up your website, switch gravatar to Chinese source, and su
 
 More information at [https://wpavatar.com](https://wpavatar.com)
 
+Privacy Terms [https://wpavatar.com/privacy](https://wpavatar.com/privacy)
+
 How to use the WP Avatar:
 
 For the first time use, you only need to activate this plugin without any action.
