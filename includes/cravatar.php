@@ -83,8 +83,8 @@ function wpavatar_render_settings_page()
     ?>
     <div class="wrap">
         <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-        <h2><?php _e( 'WordPress Avatar Settings', 'wpavatar' ); ?></h2>
-        <p><?php _e( 'Cravatar is the perfect alternative to Gravatar in China, you can update your avatar at', 'wpavatar' ); ?> <a href="https://cravatar.cn" target="_blank" rel="noopener">Cravatar.cn</a>.</p>
+        <h2><?php esc_html_e('WordPress Avatar Settings', 'wpavatar'); ?></h2>
+        <p><?php printf(esc_html__('Cravatar is the perfect alternative to Gravatar in China, you can update your avatar at %1$sCravatar.cn%2$s.', 'wpavatar'), '<a href="https://cravatar.cn" target="_blank" rel="noopener">', '</a>'); ?></p>
         <form method="post" action="options.php">
             <?php settings_fields('wpavatar_settings'); ?>
             <?php do_settings_sections('wpavatar-settings'); ?>
@@ -92,16 +92,16 @@ function wpavatar_render_settings_page()
             <table class="form-table">
                 <tbody>
                 <tr>
-                    <th scope="row"><?php _e('Enable Cravatar', 'wpavatar'); ?></th>
+                    <th scope="row"><?php esc_html_e('Enable Cravatar', 'wpavatar'); ?></th>
                     <td>
                         <?php $enable_cravatar = get_option('wpavatar_enable_cravatar', '1'); ?>
-                        <label><input type="radio" name="wpavatar_enable_cravatar" value="1" <?php checked($enable_cravatar, '1'); ?>> <?php _e('Yes', 'wpavatar'); ?></label>
-                        <label><input type="radio" name="wpavatar_enable_cravatar" value="0" <?php checked($enable_cravatar, '0'); ?>> <?php _e('No', 'wpavatar'); ?></label>
+                        <label><input type="radio" name="wpavatar_enable_cravatar" value="1" <?php checked($enable_cravatar, '1'); ?>> <?php esc_html_e('Yes', 'wpavatar'); ?></label>
+                        <label><input type="radio" name="wpavatar_enable_cravatar" value="0" <?php checked($enable_cravatar, '0'); ?>> <?php esc_html_e('No', 'wpavatar'); ?></label>
                     </td>
                 </tr>
                 </tbody>
             </table>
-            <?php submit_button(__('Save Changes', 'wpavatar')); ?>
+            <?php submit_button(esc_html__('Save Changes', 'wpavatar')); ?>
         </form>
     </div>
     <?php
