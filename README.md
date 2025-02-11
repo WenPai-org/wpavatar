@@ -1,4 +1,7 @@
 # 文派头像（WenPai Avatar）—— WPAvatar
+
+## 2025年02月 目前此插件正在进行新版本开发，将提供更多自定义选项和功能。
+
 面向中国互联网用户的开放式网络头像服务，WPAvatar 可以将您的头像（个人资料图片）传递到其他网站和 CMS。并解决 Gravatar 在中国无法访问和正常使用的问题。
 
 ![avatar](https://ps.w.org/wpavatar/assets/banner-1544x500.png)
