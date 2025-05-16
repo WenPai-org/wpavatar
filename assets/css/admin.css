@@ -1,0 +1,341 @@
+
+.wpavatar-settings .form-table th {
+    width: 220px;
+}
+
+.wpavatar-settings .description {
+    font-size: 13px;
+    margin: 2px 0 5px;
+    color: #666;
+}
+
+.wpavatar-tabs-wrapper {
+    margin-bottom: 20px;
+}
+
+.wpavatar-sync-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    border-bottom: 1px solid #c3c4c7;
+    margin-bottom: 20px;
+}
+
+.wpavatar-tab {
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 14px;
+    border-bottom: 2px solid transparent;
+}
+
+.wpavatar-tab.active {
+    border-bottom: 2px solid #007cba;
+    font-weight: 600;
+    background: #f0f0f1;
+}
+
+.wpavatar-tab:hover:not(.active) {
+    background: #f0f0f1;
+    border-bottom-color: #dcdcde;
+}
+
+.wpavatar-card {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.wpavatar-card h2 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f1;
+}
+
+.wpavatar-section-desc {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.wpavatar-stats-card {
+    background: #f9f9f9;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.wpavatar-stats-card h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.cache-stats-wrapper {
+    margin-top: 15px;
+    border-left: 4px solid #2271b1;
+    background: #f0f6fc;
+    padding: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.cache-stats p {
+    margin: 0.5em 0;
+}
+
+.cache-stats .error {
+    background: #ffebee;
+    padding: 10px;
+    border-left: 4px solid #d32f2f;
+}
+
+.wpavatar-action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.wpavatar-submit-wrapper {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f1;
+}
+
+.wpavatar-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.wpavatar-switch input {
+    opacity: 0;
+    width: 0px;
+    height: 0;
+    min-width: 0;
+    margin: -.25rem -0.15rem 0 0;
+}
+
+.wpavatar-slider {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 34px;
+    transition: .4s;
+}
+
+.wpavatar-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: .4s;
+}
+
+.wpavatar-switch input:checked + .wpavatar-slider {
+    background-color: #2196F3;
+}
+
+.wpavatar-switch input:focus + .wpavatar-slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+.wpavatar-switch input:checked + .wpavatar-slider:before {
+    transform: translateX(20px);
+}
+
+.wpavatar-switch-label {
+    margin-left: 10px;
+}
+
+.wpavatar-radio {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.wpavatar-radio-label {
+    margin-left: 8px;
+}
+
+.wpavatar-input {
+    border: 1px solid #ddd;
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+
+.wpavatar-input:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+.wpavatar-select {
+    border: 1px solid #ddd;
+    padding: 6px 10px;
+    border-radius: 4px;
+    height: 36px;
+    min-width: 240px;
+}
+
+.wpavatar-select:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+.shortcode-docs {
+    margin-top: 20px;
+    background: #f9f9f9;
+    border: none;
+    border-radius: 4px;
+}
+
+.wpavatar-table-wrapper {
+    overflow-x: auto;
+}
+
+.wpavatar-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+    border: 1px solid #e2e4e7!important;
+}
+
+.wpavatar-table th {
+    background-color: #f6f7f7;
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #e2e4e7;
+}
+
+.wpavatar-table td {
+    padding: 10px;
+    vertical-align: top;
+    border-bottom: 1px solid #f0f0f1;
+}
+
+.wpavatar-table code {
+    background: #f0f0f1;
+    padding: 3px 5px;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+.wpavatar-table ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.notice {
+    padding: 8px 12px;
+    border-radius: 3px;
+}
+
+.notice-success {
+    background-color: #dff0d8;
+    border-left: 4px solid #46b450;
+    padding: 1px 12px;
+}
+
+.notice-error {
+    background-color: #f2dede;
+    border-left: 4px solid #dc3232;
+}
+
+.wpavatar-preview-container {
+    background: #f9f9f9;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.wpavatar-preview-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin: 15px 0;
+}
+
+.wpavatar-preview-item {
+    text-align: center;
+}
+
+.wpavatar-preview-item h4 {
+    margin-bottom: 10px;
+    font-weight: normal;
+}
+
+.avatar-circle {
+    border-radius: 50% !important;
+    overflow: hidden;
+}
+
+.avatar-rounded {
+    border-radius: 8px !important;
+    overflow: hidden;
+}
+
+.default-avatar-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.default-avatar-options label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    padding: 8px;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    width: 80px;
+    text-align: center;
+}
+
+.default-avatar-options label:hover {
+    background-color: #f0f0f1;
+}
+
+.default-avatar-options input[type="radio"] {
+    margin-bottom: 8px;
+}
+
+.default-avatar-options input[type="radio"]:checked + img {
+    border: 2px solid #2271b1;
+    border-radius: 50%;
+}
+
+.avatar-option-name {
+    margin-top: 5px;
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+@media (max-width: 782px) {
+    .wpavatar-settings .form-table th {
+        width: 100%;
+    }
+
+    .wpavatar-action-buttons {
+        flex-direction: column;
+    }
+
+    .default-avatar-options {
+        gap: 10px;
+    }
+
+    .wpavatar-preview-wrapper {
+        justify-content: center;
+    }
+}
