@@ -1,7 +1,7 @@
 <?php
 /*
 Name: Cravatar
-URI: https://cravatar.cn
+URI: https://cravatar.com
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 */
@@ -12,7 +12,7 @@ if (!function_exists('get_cravatar_url')) {
     /**
      * Replace Gravatar with Cravatar
      *
-     * Cravatar is the perfect alternative to Gravatar in China, you can update your avatar at https://cravatar.cn.
+     * Cravatar is the perfect alternative to Gravatar in China, you can update your avatar at https://cn.cravatar.com.
      */
     function get_cravatar_url($url)
     {
@@ -25,7 +25,7 @@ if (!function_exists('get_cravatar_url')) {
             'cn.gravatar.com',
             'gravatar.com',
         );
-        return str_replace($sources, 'cravatar.cn', $url);
+        return str_replace($sources, 'cn.cravatar.com', $url);
     }
 
     if (get_option('wpavatar_enable_cravatar', '0') == '1') {
@@ -56,7 +56,7 @@ if (!function_exists('set_user_profile_picture_for_cravatar')) {
      */
     function set_user_profile_picture_for_cravatar()
     {
-        return '<a href="https://cravatar.cn" target="_blank" rel="noopener">'.__('You can update your profile picture at Cravatar.cn', 'wpavatar').'</a>';
+        return '<a href="https://cravatar.com" target="_blank" rel="noopener">'.__('You can update your profile picture at cn.cravatar.com', 'wpavatar').'</a>';
     }
 
     if (get_option('wpavatar_enable_cravatar', '0') == '1') {
@@ -84,7 +84,7 @@ function wpavatar_render_settings_page()
     <div class="wrap">
         <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
         <h2><?php _e( 'WordPress Avatar Settings', 'wpavatar' ); ?></h2>
-        <p><?php _e( 'Cravatar is the perfect alternative to Gravatar in China, you can update your avatar at', 'wpavatar' ); ?> <a href="https://cravatar.cn" target="_blank" rel="noopener">Cravatar.cn</a>.</p>
+        <p><?php _e( 'Cravatar is the perfect alternative to Gravatar in China, you can update your avatar at', 'wpavatar' ); ?> <a href="https://cravatar.com" target="_blank" rel="noopener">Cravatar.com</a>.</p>
         <form method="post" action="options.php">
             <?php settings_fields('wpavatar_settings'); ?>
             <?php do_settings_sections('wpavatar-settings'); ?>
