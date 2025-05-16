@@ -1,44 +1,258 @@
 <?php
 /**
  * Plugin Name: WPAvatar
+ * Version: 1.6.3
  * Plugin URI: https://wpavatar.com/download
  * Description: Replace Gravatar with Cravatar, a perfect replacement of Gravatar in China.
  * Author: WPfanyi
  * Author URI: https://wpfanyi.com/
  * Text Domain: wpavatar
  * Domain Path: /languages
- * Version: 1.0
- * License: GPLv2 or later
- * License URI: http://www.gnu.org/licenses/gpl-2.0.html
- *
- * WP Avatar is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * any later version.
- *
- * WP Avatar is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
  */
 
-if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
+defined('ABSPATH') || exit;
+
+define('WPAVATAR_VERSION', '1.6.3');
+define('WPAVATAR_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('WPAVATAR_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('WPAVATAR_CACHE_DIR', WP_CONTENT_DIR . '/uploads/cravatar');
+
+if (!file_exists(WPAVATAR_PLUGIN_DIR . 'assets')) {
+    wp_mkdir_p(WPAVATAR_PLUGIN_DIR . 'assets');
 }
 
+if (!file_exists(WPAVATAR_PLUGIN_DIR . 'assets/css')) {
+    wp_mkdir_p(WPAVATAR_PLUGIN_DIR . 'assets/css');
 
-require_once( plugin_dir_path( __FILE__ ) . 'includes/cravatar.php' );
-
-
-register_activation_hook( __FILE__, 'wpavatar_activate' );
-
-function wpavatar_activate() {
-  update_option( 'wpavatar_enable_cravatar', '1' );
+    $css_file = WPAVATAR_PLUGIN_DIR . 'admin.css';
+    if (file_exists($css_file)) {
+        copy($css_file, WPAVATAR_PLUGIN_DIR . 'assets/css/admin.css');
+    }
 }
 
+if (!file_exists(WPAVATAR_PLUGIN_DIR . 'assets/js')) {
+    wp_mkdir_p(WPAVATAR_PLUGIN_DIR . 'assets/js');
 
-// Load translation
-add_action( 'init', 'wpavatar_load_textdomain' );
-function wpavatar_load_textdomain() {
-	load_plugin_textdomain( 'wpavatar', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+    $js_file = WPAVATAR_PLUGIN_DIR . 'admin.js';
+    if (file_exists($js_file)) {
+        copy($js_file, WPAVATAR_PLUGIN_DIR . 'assets/js/admin.js');
+    }
 }
+
+if (!file_exists(WPAVATAR_PLUGIN_DIR . 'assets/images')) {
+    wp_mkdir_p(WPAVATAR_PLUGIN_DIR . 'assets/images');
+}
+
+if (!file_exists(WPAVATAR_PLUGIN_DIR . 'includes')) {
+    wp_mkdir_p(WPAVATAR_PLUGIN_DIR . 'includes');
+
+    if (file_exists(WPAVATAR_PLUGIN_DIR . 'core.php')) {
+        copy(WPAVATAR_PLUGIN_DIR . 'core.php', WPAVATAR_PLUGIN_DIR . 'includes/core.php');
+    }
+
+    if (file_exists(WPAVATAR_PLUGIN_DIR . 'admin.php')) {
+        copy(WPAVATAR_PLUGIN_DIR . 'admin.php', WPAVATAR_PLUGIN_DIR . 'includes/admin.php');
+    }
+}
+
+require_once WPAVATAR_PLUGIN_DIR . 'includes/core.php';
+require_once WPAVATAR_PLUGIN_DIR . 'includes/admin.php';
+
+add_action('wp_ajax_wpavatar_purge_cache', 'wpavatar_purge_cache_ajax');
+function wpavatar_purge_cache_ajax() {
+    check_ajax_referer('wpavatar_admin_nonce', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(__('权限不足', 'wpavatar'));
+        return;
+    }
+
+    $dir = get_option('wpavatar_cache_path', WPAVATAR_CACHE_DIR);
+    $dir = rtrim($dir, '/\\') . '/';
+
+    if (!file_exists($dir) || !is_dir($dir)) {
+        wp_send_json_error(__('缓存目录不存在', 'wpavatar'));
+        return;
+    }
+
+    $files = glob($dir . '*.jpg');
+    $count = 0;
+
+    if ($files) {
+        foreach ($files as $file) {
+            if (strpos($file, $dir) === 0 && file_exists($file)) {
+                if (@unlink($file)) {
+                    $count++;
+                }
+            }
+        }
+    }
+
+    wp_send_json_success(sprintf(__('已清空 %d 个缓存文件', 'wpavatar'), $count));
+}
+
+add_action('wp_ajax_wpavatar_check_cache', 'wpavatar_check_cache_ajax');
+function wpavatar_check_cache_ajax() {
+    check_ajax_referer('wpavatar_admin_nonce', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(__('权限不足', 'wpavatar'));
+        return;
+    }
+
+    $result = \WPAvatar\Cache::check_cache_status();
+    wp_send_json_success($result);
+}
+
+add_action('plugins_loaded', function () {
+    load_plugin_textdomain('wpavatar', false, dirname(plugin_basename(__FILE__)) . '/languages');
+
+    $default_avatar = WPAVATAR_PLUGIN_DIR . 'assets/images/default-avatar.png';
+    if (!file_exists($default_avatar)) {
+        $placeholder = WPAVATAR_PLUGIN_DIR . 'assets/images/placeholder-avatar.png';
+
+        if (file_exists($placeholder)) {
+            copy($placeholder, $default_avatar);
+        } else {
+            $avatar_image = imagecreatetruecolor(96, 96);
+            $bg_color = imagecolorallocate($avatar_image, 238, 238, 238);
+            $text_color = imagecolorallocate($avatar_image, 68, 68, 68);
+
+            imagefill($avatar_image, 0, 0, $bg_color);
+            imagestring($avatar_image, 5, 30, 40, 'Avatar', $text_color);
+
+            wp_mkdir_p(dirname($default_avatar));
+            imagepng($avatar_image, $default_avatar);
+            imagedestroy($avatar_image);
+        }
+    }
+
+    $cravatar_logo = WPAVATAR_PLUGIN_DIR . 'assets/images/cravatar-logo.png';
+    if (!file_exists($cravatar_logo) && function_exists('file_get_contents')) {
+        $logo_url = 'https://cn.cravatar.com/avatar/00000000000000000000000000000000?d=cravatar_logo';
+        $logo_data = @file_get_contents($logo_url);
+        if ($logo_data) {
+            wp_mkdir_p(dirname($cravatar_logo));
+            @file_put_contents($cravatar_logo, $logo_data);
+        }
+    }
+
+    if (is_multisite()) {
+        \WPAvatar\Network::init();
+    }
+
+    \WPAvatar\Core::init();
+    \WPAvatar\Cravatar::init();
+    \WPAvatar\Cache::init();
+    \WPAvatar\Shortcode::init();
+
+    if (is_admin()) {
+        \WPAvatar\Settings::init();
+    }
+
+    add_filter('gettext', 'wpavatar_replace_gravatar_text', 20, 3);
+    add_filter('ngettext', 'wpavatar_replace_gravatar_text_plural', 20, 4);
+});
+
+function wpavatar_replace_gravatar_text($translated_text, $text, $domain) {
+    if (!get_option('wpavatar_enable_cravatar', 1)) {
+        return $translated_text;
+    }
+
+    $current_screen = function_exists('get_current_screen') ? get_current_screen() : null;
+    $screen_id = $current_screen ? $current_screen->id : '';
+
+    $is_discussion_page = ($screen_id === 'options-discussion' ||
+                          (isset($_GET['page']) && $_GET['page'] === 'discussion'));
+
+    $is_comments_page = ($screen_id === 'edit-comments' ||
+                         $screen_id === 'comment');
+
+    $is_profile_page = ($screen_id === 'profile' ||
+                       $screen_id === 'user-edit');
+
+    if ($is_discussion_page || $is_comments_page || $is_profile_page) {
+        $translated_text = str_replace('Gravatar', 'Cravatar', $translated_text);
+        $translated_text = str_replace('gravatar', 'cravatar', $translated_text);
+    }
+
+    return $translated_text;
+}
+
+function wpavatar_replace_gravatar_text_plural($translated_text, $single, $plural, $number) {
+    if (!get_option('wpavatar_enable_cravatar', 1)) {
+        return $translated_text;
+    }
+
+    $current_screen = function_exists('get_current_screen') ? get_current_screen() : null;
+    $screen_id = $current_screen ? $current_screen->id : '';
+
+    $is_relevant_page = ($screen_id === 'options-discussion' ||
+                         $screen_id === 'edit-comments' ||
+                         $screen_id === 'comment' ||
+                         $screen_id === 'profile' ||
+                         $screen_id === 'user-edit' ||
+                         (isset($_GET['page']) && $_GET['page'] === 'discussion'));
+
+    if ($is_relevant_page) {
+        $translated_text = str_replace('Gravatar', 'Cravatar', $translated_text);
+        $translated_text = str_replace('gravatar', 'cravatar', $translated_text);
+    }
+
+    return $translated_text;
+}
+
+register_activation_hook(__FILE__, function() {
+    add_option('wpavatar_enable_cravatar', 1);
+    add_option('wpavatar_cdn_type', 'cravatar_route');
+    add_option('wpavatar_cravatar_route', 'cravatar.com');
+    add_option('wpavatar_third_party_mirror', 'weavatar.com');
+    add_option('wpavatar_custom_cdn', '');
+    add_option('wpavatar_hash_method', 'md5');
+    add_option('wpavatar_timeout', 5);
+
+    add_option('wpavatar_enable_cache', 1);
+    add_option('wpavatar_cache_path', WPAVATAR_CACHE_DIR);
+    add_option('wpavatar_cache_expire', 15);
+
+    add_option('wpavatar_seo_alt', '%s的头像');
+    add_option('wpavatar_fallback_mode', 1);
+    add_option('wpavatar_fallback_avatar', 'default');
+
+    add_option('wpavatar_shortcode_size', 96);
+    add_option('wpavatar_shortcode_class', 'wpavatar');
+    add_option('wpavatar_shortcode_shape', 'square');
+
+    wp_mkdir_p(WPAVATAR_CACHE_DIR);
+
+    $index_file = rtrim(WPAVATAR_CACHE_DIR, '/\\') . '/index.php';
+    if (!file_exists($index_file)) {
+        @file_put_contents($index_file, '<?php // Silence is golden.');
+    }
+
+    $htaccess_file = rtrim(WPAVATAR_CACHE_DIR, '/\\') . '/.htaccess';
+    if (!file_exists($htaccess_file)) {
+        $htaccess_content = "# Prevent directory listing\n";
+        $htaccess_content .= "Options -Indexes\n";
+        $htaccess_content .= "# Cache images for one week\n";
+        $htaccess_content .= "<IfModule mod_expires.c>\n";
+        $htaccess_content .= "ExpiresActive On\n";
+        $htaccess_content .= "ExpiresByType image/jpeg \"access plus 1 week\"\n";
+        $htaccess_content .= "</IfModule>\n";
+        @file_put_contents($htaccess_file, $htaccess_content);
+    }
+
+    if (is_multisite()) {
+        add_site_option('wpavatar_network_enabled', 1);
+        add_site_option('wpavatar_network_cdn_type', 'cravatar_route');
+        add_site_option('wpavatar_network_cravatar_route', 'cravatar.com');
+    }
+
+    if (!wp_next_scheduled('wpavatar_purge_cache')) {
+        wp_schedule_event(time(), 'daily', 'wpavatar_purge_cache');
+    }
+});
+
+register_deactivation_hook(__FILE__, function() {
+    wp_clear_scheduled_hook('wpavatar_purge_cache');
+});
