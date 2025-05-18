@@ -81,9 +81,32 @@ class Settings {
             return get_option('wpavatar_cache_path', WPAVATAR_CACHE_DIR);
         }
 
-        $index_file = $value . 'index.php';
-        if (!file_exists($index_file)) {
-            @file_put_contents($index_file, '<?php // Silence is golden.');
+        // If multisite, ensure the site-specific cache directory exists
+        if (is_multisite()) {
+            $blog_id = get_current_blog_id();
+            $site_cache_dir = trailingslashit($value) . 'site-' . $blog_id;
+
+            if (!file_exists($site_cache_dir)) {
+                if (!wp_mkdir_p($site_cache_dir)) {
+                    add_settings_error(
+                        'wpavatar_cache',
+                        'cache_path_invalid',
+                        __('无法创建站点缓存目录，请检查权限', 'wpavatar'),
+                        'error'
+                    );
+                    return get_option('wpavatar_cache_path', WPAVATAR_CACHE_DIR);
+                }
+            }
+
+            $index_file = $site_cache_dir . '/index.php';
+            if (!file_exists($index_file)) {
+                @file_put_contents($index_file, '<?php // Silence is golden.');
+            }
+        } else {
+            $index_file = $value . 'index.php';
+            if (!file_exists($index_file)) {
+                @file_put_contents($index_file, '<?php // Silence is golden.');
+            }
         }
 
         return $value;
@@ -112,9 +135,11 @@ class Settings {
         wp_localize_script('wpavatar-admin', 'wpavatar', [
             'nonce' => wp_create_nonce('wpavatar_admin_nonce'),
             'ajaxurl' => admin_url('admin-ajax.php'),
-            'cache_path' => get_option('wpavatar_cache_path', WPAVATAR_CACHE_DIR),
+            'cache_path' => wpavatar_get_option('wpavatar_cache_path', WPAVATAR_CACHE_DIR),
             'plugin_url' => WPAVATAR_PLUGIN_URL,
             'assets_url' => WPAVATAR_PLUGIN_URL . 'assets/',
+            'is_network_admin' => '0',
+            'is_multisite' => is_multisite() ? '1' : '0',
         ]);
 
         wp_localize_script('wpavatar-admin', 'wpavatar_l10n', [
@@ -142,6 +167,17 @@ class Settings {
     }
 
     public static function render_settings_page() {
+        // Check for network control in multisite
+        if (is_multisite()) {
+            $network_enabled = get_site_option('wpavatar_network_enabled', 1);
+            $network_enforce = get_site_option('wpavatar_network_enforce', 0);
+            $network_controlled_options = get_site_option('wpavatar_network_controlled_options', array());
+
+            if (!is_array($network_controlled_options)) {
+                $network_controlled_options = explode(',', $network_controlled_options);
+            }
+        }
+
         $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'basic';
         ?>
         <div class="wrap wpavatar-settings">
@@ -174,24 +210,66 @@ class Settings {
                 <h2><?php _e('基础设置', 'wpavatar'); ?></h2>
                 <p class="wpavatar-section-desc"><?php _e('配置头像服务和CDN设置。', 'wpavatar'); ?></p>
 
+                <?php if (is_multisite() && $network_enabled): ?>
+                <div class="wpavatar-network-notice">
+                    <p>
+                        <?php if (in_array('wpavatar_enable_cravatar', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('启用初认头像', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+                        <?php if (in_array('wpavatar_cdn_type', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('线路选择', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+                        <?php if (in_array('wpavatar_cravatar_route', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('Cravatar官方源', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+                        <?php if (in_array('wpavatar_third_party_mirror', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('第三方镜像', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+                        <?php if (in_array('wpavatar_custom_cdn', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('自定义CDN', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+                        <?php if (in_array('wpavatar_hash_method', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('头像哈希方法', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+                        <?php if (in_array('wpavatar_timeout', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('超时设置', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+
+                        <?php if (array_intersect(['wpavatar_enable_cravatar', 'wpavatar_cdn_type', 'wpavatar_cravatar_route', 'wpavatar_third_party_mirror', 'wpavatar_custom_cdn', 'wpavatar_hash_method', 'wpavatar_timeout'], $network_controlled_options)): ?>
+                            <em><?php _e('以上选项由网络管理员控制，您的更改将不会生效。', 'wpavatar'); ?></em>
+                        <?php endif; ?>
+                    </p>
+                </div>
+                <?php endif; ?>
+
                 <form method="post" action="options.php" id="wpavatar-basic-form">
                     <?php
                     settings_fields('wpavatar_basic');
 
-                    $enable_cravatar = get_option('wpavatar_enable_cravatar', 1);
-                    $cdn_type = get_option('wpavatar_cdn_type', 'cravatar_route');
-                    $cravatar_route = get_option('wpavatar_cravatar_route', 'cravatar.com');
-                    $third_party_mirror = get_option('wpavatar_third_party_mirror', 'weavatar.com');
-                    $custom_cdn = get_option('wpavatar_custom_cdn', '');
-                    $hash_method = get_option('wpavatar_hash_method', 'md5');
-                    $timeout = get_option('wpavatar_timeout', 5);
+                    // Get option values using wpavatar_get_option instead of get_option
+                    $enable_cravatar = wpavatar_get_option('wpavatar_enable_cravatar', 1);
+                    $cdn_type = wpavatar_get_option('wpavatar_cdn_type', 'cravatar_route');
+                    $cravatar_route = wpavatar_get_option('wpavatar_cravatar_route', 'cravatar.com');
+                    $third_party_mirror = wpavatar_get_option('wpavatar_third_party_mirror', 'weavatar.com');
+                    $custom_cdn = wpavatar_get_option('wpavatar_custom_cdn', '');
+                    $hash_method = wpavatar_get_option('wpavatar_hash_method', 'md5');
+                    $timeout = wpavatar_get_option('wpavatar_timeout', 5);
+
+                    // Determine if fields should be disabled in multisite
+                    $disabled_enable_cravatar = (is_multisite() && $network_enabled && in_array('wpavatar_enable_cravatar', $network_controlled_options)) ? 'disabled' : '';
+                    $disabled_cdn_type = (is_multisite() && $network_enabled && in_array('wpavatar_cdn_type', $network_controlled_options)) ? 'disabled' : '';
+                    $disabled_cravatar_route = (is_multisite() && $network_enabled && in_array('wpavatar_cravatar_route', $network_controlled_options)) ? 'disabled' : '';
+                    $disabled_third_party_mirror = (is_multisite() && $network_enabled && in_array('wpavatar_third_party_mirror', $network_controlled_options)) ? 'disabled' : '';
+                    $disabled_custom_cdn = (is_multisite() && $network_enabled && in_array('wpavatar_custom_cdn', $network_controlled_options)) ? 'disabled' : '';
+                    $disabled_hash_method = (is_multisite() && $network_enabled && in_array('wpavatar_hash_method', $network_controlled_options)) ? 'disabled' : '';
+                    $disabled_timeout = (is_multisite() && $network_enabled && in_array('wpavatar_timeout', $network_controlled_options)) ? 'disabled' : '';
                     ?>
                     <table class="form-table">
                         <tr>
                             <th><?php _e('启用初认头像', 'wpavatar'); ?></th>
                             <td>
                                 <label class="wpavatar-switch">
-                                    <input type="checkbox" name="wpavatar_enable_cravatar" value="1" <?php checked($enable_cravatar); ?>>
+                                    <input type="checkbox" name="wpavatar_enable_cravatar" value="1" <?php checked($enable_cravatar); ?> <?php echo $disabled_enable_cravatar; ?>>
                                     <span class="wpavatar-slider"></span>
                                     <span class="wpavatar-switch-label"><?php _e('替换WordPress默认头像为Cravatar', 'wpavatar'); ?></span>
                                 </label>
@@ -202,15 +280,15 @@ class Settings {
                             <th><?php _e('线路选择', 'wpavatar'); ?></th>
                             <td>
                                 <label class="wpavatar-radio">
-                                    <input type="radio" name="wpavatar_cdn_type" value="cravatar_route" <?php checked($cdn_type, 'cravatar_route'); ?>>
+                                    <input type="radio" name="wpavatar_cdn_type" value="cravatar_route" <?php checked($cdn_type, 'cravatar_route'); ?> <?php echo $disabled_cdn_type; ?>>
                                     <span class="wpavatar-radio-label"><?php _e('Cravatar自选线路', 'wpavatar'); ?></span>
                                 </label><br>
                                 <label class="wpavatar-radio">
-                                    <input type="radio" name="wpavatar_cdn_type" value="third_party" <?php checked($cdn_type, 'third_party'); ?>>
+                                    <input type="radio" name="wpavatar_cdn_type" value="third_party" <?php checked($cdn_type, 'third_party'); ?> <?php echo $disabled_cdn_type; ?>>
                                     <span class="wpavatar-radio-label"><?php _e('第三方镜像', 'wpavatar'); ?></span>
                                 </label><br>
                                 <label class="wpavatar-radio">
-                                    <input type="radio" name="wpavatar_cdn_type" value="custom" <?php checked($cdn_type, 'custom'); ?>>
+                                    <input type="radio" name="wpavatar_cdn_type" value="custom" <?php checked($cdn_type, 'custom'); ?> <?php echo $disabled_cdn_type; ?>>
                                     <span class="wpavatar-radio-label"><?php _e('自定义CDN', 'wpavatar'); ?></span>
                                 </label>
                             </td>
@@ -218,7 +296,7 @@ class Settings {
                         <tr class="cdn-option cravatar-route-option" <?php echo $cdn_type !== 'cravatar_route' ? 'style="display:none;"' : ''; ?>>
                             <th><?php _e('Cravatar官方源', 'wpavatar'); ?></th>
                             <td>
-                                <select name="wpavatar_cravatar_route" class="wpavatar-select">
+                                <select name="wpavatar_cravatar_route" class="wpavatar-select" <?php echo $disabled_cravatar_route; ?>>
                                     <option value="cravatar.cn" <?php selected($cravatar_route, 'cravatar.cn'); ?>><?php _e('默认线路 (cravatar.com)', 'wpavatar'); ?></option>
                                     <option value="cn.cravatar.com" <?php selected($cravatar_route, 'cn.cravatar.com'); ?>><?php _e('中国 (cn.cravatar.com)', 'wpavatar'); ?></option>
                                     <option value="hk.cravatar.com" <?php selected($cravatar_route, 'hk.cravatar.com'); ?>><?php _e('香港 (hk.cravatar.com)', 'wpavatar'); ?></option>
@@ -230,7 +308,7 @@ class Settings {
                         <tr class="cdn-option third-party-option" <?php echo $cdn_type !== 'third_party' ? 'style="display:none;"' : ''; ?>>
                             <th><?php _e('第三方镜像', 'wpavatar'); ?></th>
                             <td>
-                                <select name="wpavatar_third_party_mirror" class="wpavatar-select">
+                                <select name="wpavatar_third_party_mirror" class="wpavatar-select" <?php echo $disabled_third_party_mirror; ?>>
                                     <option value="weavatar.com" <?php selected($third_party_mirror, 'weavatar.com'); ?>><?php _e('WeAvatar (weavatar.com)', 'wpavatar'); ?></option>
                                     <option value="libravatar.org" <?php selected($third_party_mirror, 'libravatar.org'); ?>><?php _e('Libravatar (libravatar.org)', 'wpavatar'); ?></option>
                                     <option value="gravatar.loli.net" <?php selected($third_party_mirror, 'gravatar.loli.net'); ?>><?php _e('Loli镜像 (gravatar.loli.net)', 'wpavatar'); ?></option>
@@ -244,7 +322,7 @@ class Settings {
                         <tr class="cdn-option custom-cdn-option" <?php echo $cdn_type !== 'custom' ? 'style="display:none;"' : ''; ?>>
                             <th><?php _e('自定义CDN', 'wpavatar'); ?></th>
                             <td>
-                                <input type="text" name="wpavatar_custom_cdn" value="<?php echo esc_attr($custom_cdn); ?>" class="regular-text wpavatar-input">
+                                <input type="text" name="wpavatar_custom_cdn" value="<?php echo esc_attr($custom_cdn); ?>" class="regular-text wpavatar-input" <?php echo $disabled_custom_cdn; ?>>
                                 <p class="description"><?php _e('输入自定义CDN域名，例如：cdn.example.com', 'wpavatar'); ?></p>
                             </td>
                         </tr>
@@ -252,21 +330,21 @@ class Settings {
                             <th><?php _e('头像哈希方法', 'wpavatar'); ?></th>
                             <td>
                                 <label class="wpavatar-radio">
-                                    <input type="radio" name="wpavatar_hash_method" value="md5" <?php checked($hash_method, 'md5'); ?>>
+                                    <input type="radio" name="wpavatar_hash_method" value="md5" <?php checked($hash_method, 'md5'); ?> <?php echo $disabled_hash_method; ?>>
                                     <span class="wpavatar-radio-label"><?php _e('MD5 (Cravatar默认)', 'wpavatar'); ?></span>
                                 </label><br>
                                 <label class="wpavatar-radio">
-                                    <input type="radio" name="wpavatar_hash_method" value="sha256" <?php checked($hash_method, 'sha256'); ?>>
+                                    <input type="radio" name="wpavatar_hash_method" value="sha256" <?php checked($hash_method, 'sha256'); ?> <?php echo $disabled_hash_method; ?>>
                                     <span class="wpavatar-radio-label"><?php _e('SHA256 (Gravatar默认)', 'wpavatar'); ?></span>
                                 </label>
                                 <p class="description"><?php _e('选择头像邮箱的哈希方法，Cravatar目前使用MD5，一般Gravatar镜像均为SHA256', 'wpavatar'); ?></p>
-                                <p class="description hash-method-notice" style="color: #d63638; <?php echo $cdn_type !== 'cravatar_route' ? 'display:none;' : ''; ?>"><?php _e('注意：使用Cravatar服务时，哈希方法将仅使用MD5', 'wpavatar'); ?></p>
+                                <p class="description hash-method-notice" style="color: #d63638; <?php echo $cdn_type !== 'cravatar_route' ? 'display:none;' : ''; ?>"><?php _e('注意：使用Cravatar服务时，哈希方法将仅使用MD5。', 'wpavatar'); ?> <a href="https://cravatar.com/docs" target="_blank" rel="noopener noreferrer"><?php _e('进一步了解↗', 'wpavatar'); ?></a></p>
                             </td>
                         </tr>
                         <tr>
                             <th><?php _e('超时设置', 'wpavatar'); ?></th>
                             <td>
-                                <input type="number" name="wpavatar_timeout" value="<?php echo esc_attr($timeout); ?>" min="1" max="30" class="small-text wpavatar-input">
+                                <input type="number" name="wpavatar_timeout" value="<?php echo esc_attr($timeout); ?>" min="1" max="30" class="small-text wpavatar-input" <?php echo $disabled_timeout; ?>>
                                 <?php _e('秒', 'wpavatar'); ?>
                                 <p class="description"><?php _e('头像请求的最大等待时间，超过后将使用备用头像', 'wpavatar'); ?></p>
                             </td>
@@ -283,6 +361,26 @@ class Settings {
                 <h2><?php _e('缓存控制', 'wpavatar'); ?></h2>
                 <p class="wpavatar-section-desc"><?php _e('管理头像缓存设置和操作。', 'wpavatar'); ?></p>
 
+                <?php if (is_multisite() && $network_enabled): ?>
+                <div class="wpavatar-network-notice">
+                    <p>
+                        <?php if (in_array('wpavatar_enable_cache', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('启用本地缓存', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+                        <?php if (in_array('wpavatar_cache_path', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('缓存目录', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+                        <?php if (in_array('wpavatar_cache_expire', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('缓存过期时间', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+
+                        <?php if (array_intersect(['wpavatar_enable_cache', 'wpavatar_cache_path', 'wpavatar_cache_expire'], $network_controlled_options)): ?>
+                            <em><?php _e('以上选项由网络管理员控制，您的更改将不会生效。', 'wpavatar'); ?></em>
+                        <?php endif; ?>
+                    </p>
+                </div>
+                <?php endif; ?>
+
                 <div class="wpavatar-stats-card">
                     <h3><?php _e('缓存统计', 'wpavatar'); ?></h3>
                     <div id="cache-stats" class="cache-stats-wrapper"></div>
@@ -296,16 +394,22 @@ class Settings {
                     <?php
                     settings_fields('wpavatar_cache');
 
-                    $enable_cache = get_option('wpavatar_enable_cache', 1);
-                    $cache_path = get_option('wpavatar_cache_path', WPAVATAR_CACHE_DIR);
-                    $cache_expire = get_option('wpavatar_cache_expire', 7);
+                    // Get option values using wpavatar_get_option instead of get_option
+                    $enable_cache = wpavatar_get_option('wpavatar_enable_cache', 1);
+                    $cache_path = wpavatar_get_option('wpavatar_cache_path', WPAVATAR_CACHE_DIR);
+                    $cache_expire = wpavatar_get_option('wpavatar_cache_expire', 7);
+
+                    // Determine if fields should be disabled in multisite
+                    $disabled_enable_cache = (is_multisite() && $network_enabled && in_array('wpavatar_enable_cache', $network_controlled_options)) ? 'disabled' : '';
+                    $disabled_cache_path = (is_multisite() && $network_enabled && in_array('wpavatar_cache_path', $network_controlled_options)) ? 'disabled' : '';
+                    $disabled_cache_expire = (is_multisite() && $network_enabled && in_array('wpavatar_cache_expire', $network_controlled_options)) ? 'disabled' : '';
                     ?>
                     <table class="form-table">
                         <tr>
                             <th><?php _e('启用本地缓存', 'wpavatar'); ?></th>
                             <td>
                                 <label class="wpavatar-switch">
-                                    <input type="checkbox" name="wpavatar_enable_cache" value="1" <?php checked($enable_cache); ?>>
+                                    <input type="checkbox" name="wpavatar_enable_cache" value="1" <?php checked($enable_cache); ?> <?php echo $disabled_enable_cache; ?>>
                                     <span class="wpavatar-slider"></span>
                                     <span class="wpavatar-switch-label"><?php _e('缓存头像到本地服务器', 'wpavatar'); ?></span>
                                 </label>
@@ -315,14 +419,18 @@ class Settings {
                         <tr>
                             <th><?php _e('缓存目录', 'wpavatar'); ?></th>
                             <td>
-                                <input type="text" name="wpavatar_cache_path" value="<?php echo esc_attr($cache_path); ?>" class="regular-text wpavatar-input">
+                                <input type="text" name="wpavatar_cache_path" value="<?php echo esc_attr($cache_path); ?>" class="regular-text wpavatar-input" <?php echo $disabled_cache_path; ?>>
+                                <?php if (is_multisite()): ?>
+                                <p class="description"><?php printf(__('确保目录可写，当前站点将创建子目录：%s', 'wpavatar'), trailingslashit($cache_path) . 'site-' . get_current_blog_id()); ?></p>
+                                <?php else: ?>
                                 <p class="description"><?php _e('确保目录可写，建议路径：/wp-content/uploads/cravatar', 'wpavatar'); ?></p>
+                                <?php endif; ?>
                             </td>
                         </tr>
                         <tr>
                             <th><?php _e('缓存过期时间', 'wpavatar'); ?></th>
                             <td>
-                                <input type="number" name="wpavatar_cache_expire" value="<?php echo esc_attr($cache_expire); ?>" min="1" max="30" class="small-text wpavatar-input">
+                                <input type="number" name="wpavatar_cache_expire" value="<?php echo esc_attr($cache_expire); ?>" min="1" max="30" class="small-text wpavatar-input" <?php echo $disabled_cache_expire; ?>>
                                 <?php _e('天', 'wpavatar'); ?>
                                 <p class="description"><?php _e('头像缓存的有效期，过期后将重新获取', 'wpavatar'); ?></p>
                             </td>
@@ -339,21 +447,47 @@ class Settings {
                 <h2><?php _e('高级设置', 'wpavatar'); ?></h2>
                 <p class="wpavatar-section-desc"><?php _e('配置头像的SEO和备用方案。', 'wpavatar'); ?></p>
 
+                <?php if (is_multisite() && $network_enabled): ?>
+                <div class="wpavatar-network-notice">
+                    <p>
+                        <?php if (in_array('wpavatar_seo_alt', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('SEO替代文本', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+                        <?php if (in_array('wpavatar_fallback_mode', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('头像加载失败处理', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+                        <?php if (in_array('wpavatar_fallback_avatar', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('备用头像选择', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+
+                        <?php if (array_intersect(['wpavatar_seo_alt', 'wpavatar_fallback_mode', 'wpavatar_fallback_avatar'], $network_controlled_options)): ?>
+                            <em><?php _e('以上选项由网络管理员控制，您的更改将不会生效。', 'wpavatar'); ?></em>
+                        <?php endif; ?>
+                    </p>
+                </div>
+                <?php endif; ?>
+
                 <form method="post" action="options.php" id="wpavatar-advanced-form">
                     <?php
                     settings_fields('wpavatar_advanced');
 
-                    $seo_alt = get_option('wpavatar_seo_alt', '%s的头像');
-                    $fallback_mode = get_option('wpavatar_fallback_mode', 1);
-                    $fallback_avatar = get_option('wpavatar_fallback_avatar', 'default');
+                    // Get option values using wpavatar_get_option instead of get_option
+                    $seo_alt = wpavatar_get_option('wpavatar_seo_alt', '%s的头像');
+                    $fallback_mode = wpavatar_get_option('wpavatar_fallback_mode', 1);
+                    $fallback_avatar = wpavatar_get_option('wpavatar_fallback_avatar', 'default');
 
                     $local_avatars = \WPAvatar\Cravatar::get_local_avatars();
+
+                    // Determine if fields should be disabled in multisite
+                    $disabled_seo_alt = (is_multisite() && $network_enabled && in_array('wpavatar_seo_alt', $network_controlled_options)) ? 'disabled' : '';
+                    $disabled_fallback_mode = (is_multisite() && $network_enabled && in_array('wpavatar_fallback_mode', $network_controlled_options)) ? 'disabled' : '';
+                    $disabled_fallback_avatar = (is_multisite() && $network_enabled && in_array('wpavatar_fallback_avatar', $network_controlled_options)) ? 'disabled' : '';
                     ?>
                     <table class="form-table">
                         <tr>
                             <th><?php _e('SEO替代文本', 'wpavatar'); ?></th>
                             <td>
-                                <input type="text" name="wpavatar_seo_alt" value="<?php echo esc_attr($seo_alt); ?>" class="regular-text wpavatar-input">
+                                <input type="text" name="wpavatar_seo_alt" value="<?php echo esc_attr($seo_alt); ?>" class="regular-text wpavatar-input" <?php echo $disabled_seo_alt; ?>>
                                 <p class="description"><?php _e('头像的ALT文本，%s将被替换为用户名', 'wpavatar'); ?></p>
                             </td>
                         </tr>
@@ -361,7 +495,7 @@ class Settings {
                             <th><?php _e('头像加载失败处理', 'wpavatar'); ?></th>
                             <td>
                                 <label class="wpavatar-switch">
-                                    <input type="checkbox" name="wpavatar_fallback_mode" value="1" <?php checked($fallback_mode); ?>>
+                                    <input type="checkbox" name="wpavatar_fallback_mode" value="1" <?php checked($fallback_mode); ?> <?php echo $disabled_fallback_mode; ?>>
                                     <span class="wpavatar-slider"></span>
                                     <span class="wpavatar-switch-label"><?php _e('启用备用头像', 'wpavatar'); ?></span>
                                 </label>
@@ -374,7 +508,7 @@ class Settings {
                                 <div class="default-avatar-options">
                                     <?php foreach ($local_avatars as $key => $avatar) : ?>
                                     <label>
-                                        <input type="radio" name="wpavatar_fallback_avatar" value="<?php echo esc_attr($key); ?>" <?php checked($fallback_avatar, $key); ?>>
+                                        <input type="radio" name="wpavatar_fallback_avatar" value="<?php echo esc_attr($key); ?>" <?php checked($fallback_avatar, $key); ?> <?php echo $disabled_fallback_avatar; ?>>
                                         <img src="<?php echo esc_url($avatar['url']); ?>" alt="<?php echo esc_attr($avatar['name']); ?>" width="48" height="48">
                                         <span class="avatar-option-name"><?php echo esc_html($avatar['name']); ?></span>
                                     </label>
@@ -388,7 +522,7 @@ class Settings {
                                         : 'https://wpcy.com';
 
                                     printf(
-                                        __('选择您喜欢的故障备用头像，如需智能线路切换，请使用%s。', 'wpavatar'),
+                                        __('选择您的故障备用头像，如需智能线路切换，请使用%s。', 'wpavatar'),
                                         sprintf(
                                             '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
                                             esc_url($wpcy_link),
@@ -397,7 +531,7 @@ class Settings {
                                     );
                                     ?>
                                 </p>
-                                                          </td>
+                            </td>
                         </tr>
                     </table>
                     <div class="wpavatar-submit-wrapper">
@@ -407,10 +541,29 @@ class Settings {
                 </form>
             </div>
 
-
             <div class="wpavatar-section" id="wpavatar-section-shortcodes" style="<?php echo $active_tab !== 'shortcodes' ? 'display: none;' : ''; ?>">
                 <h2><?php _e('简码设置', 'wpavatar'); ?></h2>
                 <p class="wpavatar-section-desc"><?php _e('配置头像简码的默认参数和预览效果。', 'wpavatar'); ?></p>
+
+                <?php if (is_multisite() && $network_enabled): ?>
+                <div class="wpavatar-network-notice">
+                    <p>
+                        <?php if (in_array('wpavatar_shortcode_size', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('默认头像大小', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+                        <?php if (in_array('wpavatar_shortcode_class', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('默认CSS类名', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+                        <?php if (in_array('wpavatar_shortcode_shape', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('默认头像形状', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+
+                        <?php if (array_intersect(['wpavatar_shortcode_size', 'wpavatar_shortcode_class', 'wpavatar_shortcode_shape'], $network_controlled_options)): ?>
+                            <em><?php _e('以上选项由网络管理员控制，您的更改将不会生效。', 'wpavatar'); ?></em>
+                        <?php endif; ?>
+                    </p>
+                </div>
+                <?php endif; ?>
 
                 <div class="wpavatar-preview-container">
                     <h3><?php _e('头像预览', 'wpavatar'); ?></h3>
@@ -447,29 +600,35 @@ class Settings {
                     <?php
                     settings_fields('wpavatar_shortcodes');
 
-                    $shortcode_size = get_option('wpavatar_shortcode_size', 96);
-                    $shortcode_class = get_option('wpavatar_shortcode_class', 'wpavatar');
-                    $shortcode_shape = get_option('wpavatar_shortcode_shape', 'square');
+                    // Get option values using wpavatar_get_option instead of get_option
+                    $shortcode_size = wpavatar_get_option('wpavatar_shortcode_size', 96);
+                    $shortcode_class = wpavatar_get_option('wpavatar_shortcode_class', 'wpavatar');
+                    $shortcode_shape = wpavatar_get_option('wpavatar_shortcode_shape', 'square');
+
+                    // Determine if fields should be disabled in multisite
+                    $disabled_shortcode_size = (is_multisite() && $network_enabled && in_array('wpavatar_shortcode_size', $network_controlled_options)) ? 'disabled' : '';
+                    $disabled_shortcode_class = (is_multisite() && $network_enabled && in_array('wpavatar_shortcode_class', $network_controlled_options)) ? 'disabled' : '';
+                    $disabled_shortcode_shape = (is_multisite() && $network_enabled && in_array('wpavatar_shortcode_shape', $network_controlled_options)) ? 'disabled' : '';
                     ?>
                     <table class="form-table">
                         <tr>
                             <th><?php _e('默认头像大小', 'wpavatar'); ?></th>
                             <td>
-                                <input type="number" name="wpavatar_shortcode_size" value="<?php echo esc_attr($shortcode_size); ?>" min="16" max="512" class="small-text wpavatar-input">
+                                <input type="number" name="wpavatar_shortcode_size" value="<?php echo esc_attr($shortcode_size); ?>" min="16" max="512" class="small-text wpavatar-input" <?php echo $disabled_shortcode_size; ?>>
                                 <p class="description"><?php _e('简码默认头像大小（像素）', 'wpavatar'); ?></p>
                             </td>
                         </tr>
                         <tr>
                             <th><?php _e('默认CSS类名', 'wpavatar'); ?></th>
                             <td>
-                                <input type="text" name="wpavatar_shortcode_class" value="<?php echo esc_attr($shortcode_class); ?>" class="regular-text wpavatar-input">
+                                <input type="text" name="wpavatar_shortcode_class" value="<?php echo esc_attr($shortcode_class); ?>" class="regular-text wpavatar-input" <?php echo $disabled_shortcode_class; ?>>
                                 <p class="description"><?php _e('简码生成的头像默认CSS类', 'wpavatar'); ?></p>
                             </td>
                         </tr>
                         <tr>
                             <th><?php _e('默认头像形状', 'wpavatar'); ?></th>
                             <td>
-                                <select name="wpavatar_shortcode_shape" class="wpavatar-select">
+                                <select name="wpavatar_shortcode_shape" class="wpavatar-select" <?php echo $disabled_shortcode_shape; ?>>
                                     <option value="square" <?php selected($shortcode_shape, 'square'); ?>><?php _e('方形', 'wpavatar'); ?></option>
                                     <option value="rounded" <?php selected($shortcode_shape, 'rounded'); ?>><?php _e('圆角方形', 'wpavatar'); ?></option>
                                     <option value="circle" <?php selected($shortcode_shape, 'circle'); ?>><?php _e('圆形', 'wpavatar'); ?></option>
@@ -603,106 +762,23 @@ class Settings {
             font-size: 12px;
             line-height: 1.3;
         }
+
+        .wpavatar-network-notice {
+            margin: 0 0 20px;
+            padding: 10px 12px;
+            background: #f0f6fc;
+            border-left: 4px solid #72aee6;
+        }
+        .wpavatar-network-notice .dashicons-lock {
+            color: #72aee6;
+            margin-right: 5px;
+        }
+        .wpavatar-network-notice em {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+        }
         </style>
         <?php
-    }
-}
-
-class Network {
-    public static function init() {
-        if (is_network_admin()) {
-            add_action('network_admin_menu', [__CLASS__, 'add_network_menu']);
-            add_action('network_admin_edit_wpavatar_network', [__CLASS__, 'save_network_settings']);
-        }
-    }
-
-    public static function add_network_menu() {
-        add_submenu_page(
-            'settings.php',
-            __('WPAvatar网络设置', 'wpavatar'),
-            __('WPAvatar', 'wpavatar'),
-            'manage_network_options',
-            'wpavatar-network',
-            [__CLASS__, 'render_network_page']
-        );
-    }
-
-    public static function render_network_page() {
-        ?>
-        <div class="wrap wpavatar-settings">
-            <h1><?php esc_html_e('WPAvatar网络设置', 'wpavatar'); ?></h1>
-
-            <div id="wpavatar-network-status" class="notice" style="display:none; margin-top: 10px;"></div>
-
-            <div class="wpavatar-card">
-                <h2><?php _e('网络范围设置', 'wpavatar'); ?></h2>
-                <p class="wpavatar-section-desc"><?php _e('配置多站点网络的WPAvatar设置。', 'wpavatar'); ?></p>
-
-                <form method="post" action="edit.php?action=wpavatar_network" id="wpavatar-network-form">
-                    <?php wp_nonce_field('wpavatar_network_settings'); ?>
-                    <table class="form-table">
-                        <tr>
-                            <th><?php _e('启用网络范围设置', 'wpavatar'); ?></th>
-                            <td>
-                                <label class="wpavatar-switch">
-                                    <input type="checkbox" name="wpavatar_network_enabled" value="1" <?php checked(get_site_option('wpavatar_network_enabled', 1)); ?>>
-                                    <span class="wpavatar-slider"></span>
-                                    <span class="wpavatar-switch-label"><?php _e('在所有站点启用WPAvatar', 'wpavatar'); ?></span>
-                                </label>
-                                <p class="description"><?php _e('启用后，WPAvatar将在网络中的所有站点上生效', 'wpavatar'); ?></p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><?php _e('默认CDN类型', 'wpavatar'); ?></th>
-                            <td>
-                                <select name="wpavatar_network_cdn_type" class="wpavatar-select">
-                                    <option value="cravatar_route" <?php selected(get_site_option('wpavatar_network_cdn_type', 'cravatar_route'), 'cravatar_route'); ?>><?php _e('Cravatar线路', 'wpavatar'); ?></option>
-                                    <option value="third_party" <?php selected(get_site_option('wpavatar_network_cdn_type', 'cravatar_route'), 'third_party'); ?>><?php _e('第三方镜像', 'wpavatar'); ?></option>
-                                    <option value="custom" <?php selected(get_site_option('wpavatar_network_cdn_type', 'cravatar_route'), 'custom'); ?>><?php _e('自定义CDN', 'wpavatar'); ?></option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><?php _e('默认Cravatar线路', 'wpavatar'); ?></th>
-                            <td>
-                                <select name="wpavatar_network_cravatar_route" class="wpavatar-select">
-                                    <option value="cravatar.com" <?php selected(get_site_option('wpavatar_network_cravatar_route', 'cravatar.com'), 'cravatar.com'); ?>><?php _e('默认线路 (cravatar.com)', 'wpavatar'); ?></option>
-                                    <option value="cn.cravatar.com" <?php selected(get_site_option('wpavatar_network_cravatar_route', 'cravatar.com'), 'cn.cravatar.com'); ?>><?php _e('中国大陆 (cn.cravatar.com)', 'wpavatar'); ?></option>
-                                    <option value="hk.cravatar.com" <?php selected(get_site_option('wpavatar_network_cravatar_route', 'cravatar.com'), 'hk.cravatar.com'); ?>><?php _e('香港 (hk.cravatar.com)', 'wpavatar'); ?></option>
-                                    <option value="en.cravatar.com" <?php selected(get_site_option('wpavatar_network_cravatar_route', 'cravatar.com'), 'en.cravatar.com'); ?>><?php _e('国际 (en.cravatar.com)', 'wpavatar'); ?></option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><?php _e('哈希方法', 'wpavatar'); ?></th>
-                            <td>
-                                <p class="description" style="color: #d63638;"><?php _e('注意：使用Cravatar服务时，哈希方法将强制使用MD5', 'wpavatar'); ?></p>
-                            </td>
-                        </tr>
-                    </table>
-                    <div class="wpavatar-submit-wrapper">
-                        <button type="submit" class="button button-primary"><?php _e('保存设置', 'wpavatar'); ?></button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <?php
-    }
-
-    public static function save_network_settings() {
-        check_admin_referer('wpavatar_network_settings');
-
-        update_site_option('wpavatar_network_enabled', isset($_POST['wpavatar_network_enabled']) ? 1 : 0);
-
-        if (isset($_POST['wpavatar_network_cdn_type'])) {
-            update_site_option('wpavatar_network_cdn_type', sanitize_text_field($_POST['wpavatar_network_cdn_type']));
-        }
-
-        if (isset($_POST['wpavatar_network_cravatar_route'])) {
-            update_site_option('wpavatar_network_cravatar_route', sanitize_text_field($_POST['wpavatar_network_cravatar_route']));
-        }
-
-        wp_redirect(add_query_arg(['page' => 'wpavatar-network', 'updated' => 'true'], network_admin_url('settings.php')));
-        exit;
     }
 }

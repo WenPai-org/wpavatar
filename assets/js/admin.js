@@ -9,6 +9,7 @@ jQuery(document).ready(function($) {
         return;
     }
 
+    // Tab navigation
     $('.wpavatar-tab').on('click', function() {
         var tab = $(this).data('tab');
         if (!tab) return;
@@ -21,7 +22,11 @@ jQuery(document).ready(function($) {
 
         if (tab === 'cache' && $('#cache-stats').is(':empty')) {
             setTimeout(function() {
-                $('#check-cache').trigger('click');
+                if (wpavatar.is_network_admin === '1') {
+                    $('#check-all-cache').trigger('click');
+                } else {
+                    $('#check-cache').trigger('click');
+                }
             }, 300);
         }
 
@@ -32,6 +37,7 @@ jQuery(document).ready(function($) {
         }
     });
 
+    // CDN options management
     function updateCdnOptions() {
         var selectedType = $('input[name="wpavatar_cdn_type"]:checked').val();
 
@@ -53,23 +59,32 @@ jQuery(document).ready(function($) {
         if (value && value.toLowerCase().indexOf('cravatar') !== -1) {
             forceMd5HashMethod(true);
         } else {
-            // 非Cravatar服务默认选择SHA256，但不强制
-            var currentHashMethod = $('input[name="wpavatar_hash_method"]:checked').val();
-            if (!currentHashMethod) {
-                $('input[name="wpavatar_hash_method"][value="sha256"]').prop('checked', true);
-            }
             forceMd5HashMethod(false);
         }
     }
 
     function forceMd5HashMethod(force) {
         if (force) {
+            // Save the current user-selected hash method to restore later if needed
+            var currentMethod = $('input[name="wpavatar_hash_method"]:checked').val();
+            if (currentMethod) {
+                $(this).data('previous-hash-method', currentMethod);
+            }
+
+            // Force MD5 and disable SHA256 option
             $('input[name="wpavatar_hash_method"][value="md5"]').prop('checked', true);
             $('input[name="wpavatar_hash_method"][value="sha256"]').prop('disabled', true);
             $('.hash-method-notice').show();
         } else {
+            // Restore disabled state, but don't change selection
             $('input[name="wpavatar_hash_method"][value="sha256"]').prop('disabled', false);
             $('.hash-method-notice').hide();
+
+            // Restore previous selection (if any)
+            var previousMethod = $(this).data('previous-hash-method');
+            if (previousMethod && previousMethod === 'sha256') {
+                $('input[name="wpavatar_hash_method"][value="sha256"]').prop('checked', true);
+            }
         }
     }
 
@@ -85,6 +100,7 @@ jQuery(document).ready(function($) {
         checkIfCravatarRelated($(this).val());
     });
 
+    // Cache management for single site
     $('#check-cache').on('click', function() {
         var $button = $(this);
         var $stats = $('#cache-stats');
@@ -165,6 +181,111 @@ jQuery(document).ready(function($) {
         });
     });
 
+    // Cache management for network admin
+    if (wpavatar.is_network_admin === '1') {
+        $('#check-all-cache').on('click', function() {
+            var $button = $(this);
+            var $stats = $('#cache-stats');
+
+            $button.prop('disabled', true).text(wpavatar_l10n.checking);
+            $stats.html('<p>' + wpavatar_l10n.checking_status + '</p>');
+
+            $.ajax({
+                type: 'POST',
+                url: wpavatar.ajaxurl,
+                data: {
+                    action: 'wpavatar_check_all_cache',
+                    nonce: wpavatar.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $stats.html(response.data);
+                    } else {
+                        $stats.html('<div class="error"><p>' + (response.data || wpavatar_l10n.check_failed) + '</p></div>');
+                    }
+                },
+                error: function() {
+                    $stats.html('<div class="error"><p>' + wpavatar_l10n.request_failed + '</p></div>');
+                },
+                complete: function() {
+                    $button.prop('disabled', false).text('查看所有站点缓存');
+                }
+            });
+        });
+
+        $('#purge-all-cache').on('click', function() {
+            var $button = $(this);
+            var $stats = $('#cache-stats');
+            var $status = $('#wpavatar-status');
+
+            if (!confirm(wpavatar_l10n.confirm_purge)) {
+                return;
+            }
+
+            $button.prop('disabled', true).text(wpavatar_l10n.purging);
+            $stats.html('<p>' + wpavatar_l10n.purging_cache + '</p>');
+
+            $.ajax({
+                type: 'POST',
+                url: wpavatar.ajaxurl,
+                data: {
+                    action: 'wpavatar_purge_all_cache',
+                    nonce: wpavatar.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $status.removeClass('notice-error')
+                               .addClass('notice-success')
+                               .text(response.data)
+                               .show()
+                               .delay(3000)
+                               .fadeOut();
+
+                        setTimeout(function() {
+                            $('#check-all-cache').trigger('click');
+                        }, 1000);
+                    } else {
+                        $status.removeClass('notice-success')
+                               .addClass('notice-error')
+                               .text(response.data || wpavatar_l10n.purge_failed)
+                               .show();
+                    }
+                },
+                error: function() {
+                    $status.removeClass('notice-success')
+                           .addClass('notice-error')
+                           .text(wpavatar_l10n.request_failed)
+                           .show();
+                },
+                complete: function() {
+                    $button.prop('disabled', false).text('清空所有站点缓存');
+                }
+            });
+        });
+
+        // Network management controls
+        if ($('#select-all-options').length) {
+            $('#select-all-options').on('click', function() {
+                $('input[name="wpavatar_network_controlled_options[]"]').prop('checked', true);
+            });
+
+            $('#deselect-all-options').on('click', function() {
+                $('input[name="wpavatar_network_controlled_options[]"]').prop('checked', false);
+            });
+
+            $('#reset-default-options').on('click', function() {
+                if (confirm(wpavatar_l10n.confirm_reset)) {
+                    var defaultOptions = ['wpavatar_enable_cravatar', 'wpavatar_cdn_type', 'wpavatar_cravatar_route', 'wpavatar_third_party_mirror', 'wpavatar_custom_cdn'];
+
+                    $('input[name="wpavatar_network_controlled_options[]"]').each(function() {
+                        $(this).prop('checked', defaultOptions.indexOf($(this).val()) !== -1);
+                    });
+                }
+            });
+        }
+    }
+
+    // Form validation
     $('#wpavatar-basic-form, #wpavatar-cache-form, #wpavatar-advanced-form, #wpavatar-shortcodes-form').on('submit', function(e) {
         var formId = $(this).attr('id');
         var $status = $('#wpavatar-status');
@@ -202,6 +323,28 @@ jQuery(document).ready(function($) {
         return true;
     });
 
+    // For network import and bulk operations
+    if ($('#import-site-settings').length) {
+        $('#import-site-settings').on('click', function(e) {
+            if (!confirm(wpavatar_l10n.confirm_import)) {
+                e.preventDefault();
+                return false;
+            }
+            return true;
+        });
+    }
+
+    if ($('#apply-to-all-sites').length) {
+        $('#apply-to-all-sites').on('click', function(e) {
+            if (!confirm('确定要将网络设置应用到所有站点吗？此操作将覆盖每个站点的现有设置。')) {
+                e.preventDefault();
+                return false;
+            }
+            return true;
+        });
+    }
+
+    // Settings saved notification
     if (window.location.search.indexOf('settings-updated=true') > -1) {
         $('#wpavatar-status')
             .removeClass('notice-error')
@@ -212,6 +355,29 @@ jQuery(document).ready(function($) {
             .fadeOut();
     }
 
+    // Import settings notification
+    if (window.location.search.indexOf('imported=true') > -1) {
+        $('#wpavatar-status')
+            .removeClass('notice-error')
+            .addClass('notice-success')
+            .text('站点设置已成功导入到网络设置。')
+            .show()
+            .delay(3000)
+            .fadeOut();
+    }
+
+    // Applied to all sites notification
+    if (window.location.search.indexOf('applied=true') > -1) {
+        $('#wpavatar-status')
+            .removeClass('notice-error')
+            .addClass('notice-success')
+            .text('网络设置已成功应用到所有站点。')
+            .show()
+            .delay(3000)
+            .fadeOut();
+    }
+
+    // Set active tab
     var currentTab = '';
 
     if (window.location.search.indexOf('tab=') > -1) {
