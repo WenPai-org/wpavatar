@@ -43,6 +43,12 @@ class Settings {
         register_setting('wpavatar_shortcodes', 'wpavatar_shortcode_size', ['type' => 'integer']);
         register_setting('wpavatar_shortcodes', 'wpavatar_shortcode_class', ['type' => 'string']);
         register_setting('wpavatar_shortcodes', 'wpavatar_shortcode_shape', ['type' => 'string']);
+
+        // 注册营销组件设置
+        register_setting('wpavatar_marketing', 'wpavatar_commenters_count', ['type' => 'integer']);
+        register_setting('wpavatar_marketing', 'wpavatar_commenters_size', ['type' => 'integer']);
+        register_setting('wpavatar_marketing', 'wpavatar_users_count', ['type' => 'integer']);
+        register_setting('wpavatar_marketing', 'wpavatar_users_size', ['type' => 'integer']);
     }
 
     public static function sanitize_cache_path($value) {
@@ -164,10 +170,11 @@ class Settings {
         settings_errors('wpavatar_cache');
         settings_errors('wpavatar_advanced');
         settings_errors('wpavatar_shortcodes');
+        settings_errors('wpavatar_marketing');
     }
 
     public static function render_settings_page() {
-        // Check for network control in multisite
+        // 检查多站点网络控制
         if (is_multisite()) {
             $network_enabled = get_site_option('wpavatar_network_enabled', 1);
             $network_enforce = get_site_option('wpavatar_network_enforce', 0);
@@ -182,9 +189,9 @@ class Settings {
         ?>
         <div class="wrap wpavatar-settings">
           <h1><?php esc_html_e('文派头像设置', 'wpavatar'); ?>
-              <span style="font-size: 13px; padding-left: 10px;"><?php printf(esc_html__('Version: %s', 'wpavatar'), esc_html(WPAVATAR_VERSION)); ?></span>
-              <a href="https://wpavatar.com/document/" target="_blank" class="button button-secondary" style="margin-left: 10px;"><?php esc_html_e('Document', 'wpavatar'); ?></a>
-              <a href="https://sharecms.com/forums/" target="_blank" class="button button-secondary"><?php esc_html_e('Support', 'wpavatar'); ?></a>
+              <span style="font-size: 13px; padding-left: 10px;"><?php printf(esc_html__('版本: %s', 'wpavatar'), esc_html(WPAVATAR_VERSION)); ?></span>
+              <a href="https://wpavatar.com/document/" target="_blank" class="button button-secondary" style="margin-left: 10px;"><?php esc_html_e('文档', 'wpavatar'); ?></a>
+              <a href="https://cravatar.com/forums/" target="_blank" class="button button-secondary"><?php esc_html_e('支持', 'wpavatar'); ?></a>
           </h1>
 
             <div id="wpavatar-status" class="notice" style="display:none; margin-top: 10px;"></div>
@@ -202,6 +209,9 @@ class Settings {
                     </button>
                     <button type="button" class="wpavatar-tab <?php echo $active_tab === 'shortcodes' ? 'active' : ''; ?>" data-tab="shortcodes">
                         <?php _e('头像简码', 'wpavatar'); ?>
+                    </button>
+                    <button type="button" class="wpavatar-tab <?php echo $active_tab === 'marketing' ? 'active' : ''; ?>" data-tab="marketing">
+                        <?php _e('营销组件', 'wpavatar'); ?>
                     </button>
                 </div>
             </div>
@@ -338,7 +348,7 @@ class Settings {
                                     <span class="wpavatar-radio-label"><?php _e('SHA256 (Gravatar默认)', 'wpavatar'); ?></span>
                                 </label>
                                 <p class="description"><?php _e('选择头像邮箱的哈希方法，Cravatar目前使用MD5，一般Gravatar镜像均为SHA256', 'wpavatar'); ?></p>
-                                <p class="description hash-method-notice" style="color: #d63638; <?php echo $cdn_type !== 'cravatar_route' ? 'display:none;' : ''; ?>"><?php _e('注意：使用Cravatar服务时，哈希方法将仅使用MD5。', 'wpavatar'); ?> <a href="https://cravatar.com/docs" target="_blank" rel="noopener noreferrer"><?php _e('进一步了解↗', 'wpavatar'); ?></a></p>
+                                <p class="description hash-method-notice" style="color: #d63638; <?php echo $cdn_type !== 'cravatar_route' ? 'display:none;' : ''; ?>"><?php _e('注意：使用Cravatar服务时，哈希方法将仅使用MD5。', 'wpavatar'); ?> <a href="https://cravatar.com/document/?p=46" target="_blank" rel="noopener noreferrer"><?php _e('进一步了解↗', 'wpavatar'); ?></a></p>
                             </td>
                         </tr>
                         <tr>
@@ -694,91 +704,122 @@ class Settings {
                     </div>
                 </form>
             </div>
+
+            <!-- 营销组件标签页 -->
+            <div class="wpavatar-section" id="wpavatar-section-marketing" style="<?php echo $active_tab !== 'marketing' ? 'display: none;' : ''; ?>">
+                <h2><?php _e('营销组件设置', 'wpavatar'); ?></h2>
+                <p class="wpavatar-section-desc"><?php _e('配置营销组件简码和显示效果。', 'wpavatar'); ?></p>
+
+                <?php if (is_multisite() && $network_enabled): ?>
+                <div class="wpavatar-network-notice">
+                    <p>
+                        <?php if (in_array('wpavatar_commenters_count', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('评论者数量', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+                        <?php if (in_array('wpavatar_commenters_size', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('评论者头像大小', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+                        <?php if (in_array('wpavatar_users_count', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('用户数量', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+                        <?php if (in_array('wpavatar_users_size', $network_controlled_options)): ?>
+                            <span class="dashicons dashicons-lock"></span> <?php _e('用户头像大小', 'wpavatar'); ?><br>
+                        <?php endif; ?>
+
+                        <?php if (array_intersect(['wpavatar_commenters_count', 'wpavatar_commenters_size', 'wpavatar_users_count', 'wpavatar_users_size'], $network_controlled_options)): ?>
+                            <em><?php _e('以上选项由网络管理员控制，您的更改将不会生效。', 'wpavatar'); ?></em>
+                        <?php endif; ?>
+                    </p>
+                </div>
+                <?php endif; ?>
+
+                <?php \WPAvatar\Marketing::render_admin_page(); ?>
+            </div>
         </div>
                 </div>
-        <style>
-        .wpavatar-preview-container {
-            background: #f9f9f9;
-            border-radius: 4px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
+                <style>
+                .wpavatar-preview-container {
+                    background: #f9f9f9;
+                    border-radius: 4px;
+                    padding: 15px;
+                    margin-bottom: 20px;
+                }
 
-        .wpavatar-preview-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            margin: 15px 0;
-        }
+                .wpavatar-preview-wrapper {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 30px;
+                    margin: 15px 0;
+                }
 
-        .wpavatar-preview-item {
-            text-align: center;
-        }
+                .wpavatar-preview-item {
+                    text-align: center;
+                }
 
-        .wpavatar-preview-item h4 {
-            margin-bottom: 10px;
-            font-weight: normal;
-        }
+                .wpavatar-preview-item h4 {
+                    margin-bottom: 10px;
+                    font-weight: normal;
+                }
 
-        .avatar-circle {
-            border-radius: 50% !important;
-            overflow: hidden;
-        }
+                .avatar-circle {
+                    border-radius: 50% !important;
+                    overflow: hidden;
+                }
 
-        .avatar-rounded {
-            border-radius: 8px !important;
-            overflow: hidden;
-        }
+                .avatar-rounded {
+                    border-radius: 8px !important;
+                    overflow: hidden;
+                }
 
-        .default-avatar-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        .default-avatar-options label {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            padding: 8px;
-            border: 2px solid transparent;
-            border-radius: 5px;
-            width: 80px;
-            text-align: center;
-        }
-        .default-avatar-options label:hover {
-            background-color: #f0f0f1;
-        }
-        .default-avatar-options input[type="radio"] {
-            margin-bottom: 8px;
-        }
-        .default-avatar-options input[type="radio"]:checked + img {
-            border: 2px solid #2271b1;
-            border-radius: 50%;
-        }
-        .avatar-option-name {
-            margin-top: 5px;
-            font-size: 12px;
-            line-height: 1.3;
-        }
+                .default-avatar-options {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 15px;
+                    margin-bottom: 15px;
+                }
+                .default-avatar-options label {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    cursor: pointer;
+                    padding: 8px;
+                    border: 2px solid transparent;
+                    border-radius: 5px;
+                    width: 80px;
+                    text-align: center;
+                }
+                .default-avatar-options label:hover {
+                    background-color: #f0f0f1;
+                }
+                .default-avatar-options input[type="radio"] {
+                    margin-bottom: 8px;
+                }
+                .default-avatar-options input[type="radio"]:checked + img {
+                    border: 2px solid #2271b1;
+                    border-radius: 50%;
+                }
+                .avatar-option-name {
+                    margin-top: 5px;
+                    font-size: 12px;
+                    line-height: 1.3;
+                }
 
-        .wpavatar-network-notice {
-            margin: 0 0 20px;
-            padding: 10px 12px;
-            background: #f0f6fc;
-            border-left: 4px solid #72aee6;
-        }
-        .wpavatar-network-notice .dashicons-lock {
-            color: #72aee6;
-            margin-right: 5px;
-        }
-        .wpavatar-network-notice em {
-            display: block;
-            margin-top: 5px;
-            color: #666;
-        }
-        </style>
-        <?php
-    }
+                .wpavatar-network-notice {
+                    margin: 0 0 20px;
+                    padding: 10px 12px;
+                    background: #f0f6fc;
+                    border-left: 4px solid #72aee6;
+                }
+                .wpavatar-network-notice .dashicons-lock {
+                    color: #72aee6;
+                    margin-right: 5px;
+                }
+                .wpavatar-network-notice em {
+                    display: block;
+                    margin-top: 5px;
+                    color: #666;
+                }
+                </style>
+    <?php
+}
 }

@@ -957,8 +957,12 @@ class Cache {
                             $user = wp_get_current_user();
                         }
 
-                        $username = $user && $user->display_name ? $user->display_name : __('匿名用户', 'wpavatar');
-                        return $atts['before'] . $username . $atts['after'];
+                        // 检查用户是否已登录且有显示名称，如果没有则返回空字符串
+                        if (!$user || !$user->ID || empty($user->display_name)) {
+                            return '';
+                        }
+
+                        return $atts['before'] . $user->display_name . $atts['after'];
                     }
 
                     public static function menu_item_replace($item_output, $item, $depth, $args) {

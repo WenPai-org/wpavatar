@@ -20,6 +20,7 @@ jQuery(document).ready(function($) {
         $('.wpavatar-section').hide();
         $('#wpavatar-section-' + tab).show();
 
+        // 当切换到缓存标签页时自动检查缓存状态
         if (tab === 'cache' && $('#cache-stats').is(':empty')) {
             setTimeout(function() {
                 if (wpavatar.is_network_admin === '1') {
@@ -28,6 +29,11 @@ jQuery(document).ready(function($) {
                     $('#check-cache').trigger('click');
                 }
             }, 300);
+        }
+
+        // 当切换到营销组件标签页时的特殊处理
+        if (tab === 'marketing') {
+            // 可以在这里添加特殊初始化代码，如果需要的话
         }
 
         if (window.history && window.history.pushState) {
@@ -323,6 +329,47 @@ jQuery(document).ready(function($) {
         return true;
     });
 
+    // 添加营销组件表单的验证
+    $('#wpavatar-marketing-form').on('submit', function(e) {
+        var isValid = true;
+        var $status = $('#wpavatar-status');
+
+        // 验证最近评论者设置
+        var commentersCount = parseInt($('input[name="wpavatar_commenters_count"]').val());
+        var commentersSize = parseInt($('input[name="wpavatar_commenters_size"]').val());
+
+        if (isNaN(commentersCount) || commentersCount < 1 || commentersCount > 50) {
+            $status.removeClass('notice-success').addClass('notice-error').text('请设置有效的评论者显示数量（1-50）').show();
+            $('input[name="wpavatar_commenters_count"]').focus();
+            isValid = false;
+        } else if (isNaN(commentersSize) || commentersSize < 20 || commentersSize > 150) {
+            $status.removeClass('notice-success').addClass('notice-error').text('请设置有效的评论者头像大小（20-150像素）').show();
+            $('input[name="wpavatar_commenters_size"]').focus();
+            isValid = false;
+        }
+
+        // 验证用户设置
+        var usersCount = parseInt($('input[name="wpavatar_users_count"]').val());
+        var usersSize = parseInt($('input[name="wpavatar_users_size"]').val());
+
+        if (isNaN(usersCount) || usersCount < 1 || usersCount > 50) {
+            $status.removeClass('notice-success').addClass('notice-error').text('请设置有效的用户显示数量（1-50）').show();
+            $('input[name="wpavatar_users_count"]').focus();
+            isValid = false;
+        } else if (isNaN(usersSize) || usersSize < 20 || usersSize > 150) {
+            $status.removeClass('notice-success').addClass('notice-error').text('请设置有效的用户头像大小（20-150像素）').show();
+            $('input[name="wpavatar_users_size"]').focus();
+            isValid = false;
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            return false;
+        }
+
+        return true;
+    });
+
     // For network import and bulk operations
     if ($('#import-site-settings').length) {
         $('#import-site-settings').on('click', function(e) {
@@ -369,8 +416,8 @@ jQuery(document).ready(function($) {
     // Applied to all sites notification
     if (window.location.search.indexOf('applied=true') > -1) {
         $('#wpavatar-status')
-            .removeClass('notice-error')
-            .addClass('notice-success')
+            .removeClass('notice-success')
+            .addClass('notice-error')
             .text('网络设置已成功应用到所有站点。')
             .show()
             .delay(3000)
