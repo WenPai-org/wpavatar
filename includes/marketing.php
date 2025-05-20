@@ -77,6 +77,15 @@ class Marketing {
             border: 3px solid #000;
             z-index: 10;
         }
+        .wpavatar-latest-commenters .comment-author-name {
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+            max-width: 90px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
         /* 用户头像列表样式 */
         .wpavatar-latest-users,
@@ -124,6 +133,7 @@ class Marketing {
         $atts = shortcode_atts([
             'size' => $default_size,
             'number' => $default_count,
+            'show_names' => 'false' // 新增参数，默认不显示评论者名称
         ], $atts, 'wpavatar_latest_commenters');
 
         // 获取全部文章的最新评论，限制为指定的评论者数量
@@ -158,7 +168,15 @@ class Marketing {
             $avatar_with_link .= '</a>';
 
             // 添加头像到输出
-            $output .= '<div class="comment-avatar">' . $avatar_with_link . '</div>';
+            $output .= '<div class="comment-avatar">';
+            $output .= $avatar_with_link;
+
+            // 根据参数决定是否显示评论者名称
+            if ($atts['show_names'] === 'true') {
+                $output .= '<span class="comment-author-name">' . esc_html($comment->comment_author) . '</span>';
+            }
+
+            $output .= '</div>';
 
             // 记录该评论者，防止重复显示
             $seen_emails[] = $comment_email;
@@ -183,7 +201,8 @@ class Marketing {
 
         $atts = shortcode_atts([
             'number' => $default_count,
-            'size' => $default_size
+            'size' => $default_size,
+            'show_names' => 'true' // 新增参数，控制是否显示用户名
         ], $atts);
 
         $users = get_users([
@@ -200,7 +219,12 @@ class Marketing {
         foreach ($users as $user) {
             $output .= '<div class="wpavatar-latest-user">';
             $output .= get_avatar($user->ID, $atts['size'], '', $user->display_name);
-            $output .= '<div class="wpavatar-latest-user-name">' . esc_html($user->display_name) . '</div>';
+
+            // 根据参数决定是否显示用户名
+            if ($atts['show_names'] === 'true') {
+                $output .= '<div class="wpavatar-latest-user-name">' . esc_html($user->display_name) . '</div>';
+            }
+
             $output .= '</div>';
         }
         $output .= '</div>';
@@ -217,7 +241,8 @@ class Marketing {
 
         $atts = shortcode_atts([
             'number' => $default_count,
-            'size' => $default_size
+            'size' => $default_size,
+            'show_names' => 'true' // 新增参数，控制是否显示用户名
         ], $atts);
 
         $args = [
@@ -241,7 +266,12 @@ class Marketing {
         foreach ($users as $user) {
             $output .= '<div class="wpavatar-random-user">';
             $output .= get_avatar($user->ID, $atts['size'], '', $user->display_name);
-            $output .= '<div class="wpavatar-random-user-name">' . esc_html($user->display_name) . '</div>';
+
+            // 根据参数决定是否显示用户名
+            if ($atts['show_names'] === 'true') {
+                $output .= '<div class="wpavatar-random-user-name">' . esc_html($user->display_name) . '</div>';
+            }
+
             $output .= '</div>';
         }
         $output .= '</div>';
@@ -467,9 +497,10 @@ class Marketing {
                                     <ul>
                                         <li><code>number</code> - <?php _e('显示的评论者数量', 'wpavatar'); ?></li>
                                         <li><code>size</code> - <?php _e('头像大小（像素）', 'wpavatar'); ?></li>
+                                        <li><code>show_names</code> - <?php _e('是否显示用户名（true/false）', 'wpavatar'); ?></li>
                                     </ul>
                                 </td>
-                                <td><code>[wpavatar_latest_commenters number="10" size="50"]</code></td>
+                                <td><code>[wpavatar_latest_commenters number="10" size="50" show_names="true"]</code></td>
                             </tr>
                             <tr>
                                 <td><code>[wpavatar_latest_users]</code></td>
@@ -478,9 +509,10 @@ class Marketing {
                                     <ul>
                                         <li><code>number</code> - <?php _e('显示的用户数量', 'wpavatar'); ?></li>
                                         <li><code>size</code> - <?php _e('头像大小（像素）', 'wpavatar'); ?></li>
+                                        <li><code>show_names</code> - <?php _e('是否显示用户名（true/false）', 'wpavatar'); ?></li>
                                     </ul>
                                 </td>
-                                <td><code>[wpavatar_latest_users number="12" size="40"]</code></td>
+                                <td><code>[wpavatar_latest_users number="12" size="40" show_names="true"]</code></td>
                             </tr>
                             <tr>
                                 <td><code>[wpavatar_random_users]</code></td>
@@ -489,9 +521,10 @@ class Marketing {
                                     <ul>
                                         <li><code>number</code> - <?php _e('显示的用户数量', 'wpavatar'); ?></li>
                                         <li><code>size</code> - <?php _e('头像大小（像素）', 'wpavatar'); ?></li>
+                                        <li><code>show_names</code> - <?php _e('是否显示用户名（true/false）', 'wpavatar'); ?></li>
                                     </ul>
                                 </td>
-                                <td><code>[wpavatar_random_users number="12" size="40"]</code></td>
+                                <td><code>[wpavatar_random_users number="12" size="40" show_names="false"]</code></td>
                             </tr>
                             <tr>
                                 <td><code>[wpavatar_author]</code></td>
