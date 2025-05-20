@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WPAvatar
- * Version: 1.8.1
+ * Version: 1.9.2
  * Plugin URI: https://wpavatar.com/download
  * Description: Replace Gravatar with Cravatar, a perfect replacement of Gravatar in China.
  * Author: WPfanyi
@@ -13,7 +13,7 @@
 
 defined('ABSPATH') || exit;
 
-define('WPAVATAR_VERSION', '1.8.0');
+define('WPAVATAR_VERSION', '1.9.2');
 define('WPAVATAR_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WPAVATAR_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WPAVATAR_CACHE_DIR', WP_CONTENT_DIR . '/uploads/cravatar');
@@ -45,6 +45,7 @@ if (!file_exists(WPAVATAR_PLUGIN_DIR . 'assets/images')) {
     wp_mkdir_p(WPAVATAR_PLUGIN_DIR . 'assets/images');
 }
 
+// 检查必要的插件目录是否存在
 if (!file_exists(WPAVATAR_PLUGIN_DIR . 'includes')) {
     wp_mkdir_p(WPAVATAR_PLUGIN_DIR . 'includes');
 
@@ -55,12 +56,20 @@ if (!file_exists(WPAVATAR_PLUGIN_DIR . 'includes')) {
     if (file_exists(WPAVATAR_PLUGIN_DIR . 'admin.php')) {
         copy(WPAVATAR_PLUGIN_DIR . 'admin.php', WPAVATAR_PLUGIN_DIR . 'includes/admin.php');
     }
+
+    // 创建营销组件文件
+    if (file_exists(WPAVATAR_PLUGIN_DIR . 'marketing.php')) {
+        $marketing_content = file_get_contents(WPAVATAR_PLUGIN_DIR . 'marketing.php');
+        file_put_contents(WPAVATAR_PLUGIN_DIR . 'includes/marketing.php', $marketing_content);
+    }
 }
 
-// Include core files
+// 包含核心文件
 require_once WPAVATAR_PLUGIN_DIR . 'includes/core.php';
 require_once WPAVATAR_PLUGIN_DIR . 'includes/admin.php';
 require_once WPAVATAR_PLUGIN_DIR . 'includes/multisite.php';
+require_once WPAVATAR_PLUGIN_DIR . 'includes/marketing.php';
+require_once WPAVATAR_PLUGIN_DIR . 'includes/wpcy-compatibility.php';
 
 // Register AJAX actions
 add_action('wp_ajax_wpavatar_purge_cache', 'wpavatar_purge_cache_ajax');
@@ -226,11 +235,17 @@ add_action('plugins_loaded', function () {
         \WPAvatar\Network::init();
     }
 
+    // Initialize compatibility layer
+    \WPAvatar\Compatibility::init();
+
     // Initialize core components
     \WPAvatar\Core::init();
     \WPAvatar\Cravatar::init();
     \WPAvatar\Cache::init();
     \WPAvatar\Shortcode::init();
+
+    // Initialize Marketing component
+    \WPAvatar\Marketing::init();
 
     // Initialize admin settings (will be conditionally disabled in multisite if network managed)
     if (is_admin()) {
@@ -375,6 +390,12 @@ register_activation_hook(__FILE__, function() {
     add_option('wpavatar_shortcode_class', 'wpavatar');
     add_option('wpavatar_shortcode_shape', 'square');
 
+    // 添加营销组件默认设置
+    add_option('wpavatar_commenters_count', 15);
+    add_option('wpavatar_commenters_size', 45);
+    add_option('wpavatar_users_count', 15);
+    add_option('wpavatar_users_size', 40);
+
     // Create cache directory
     wp_mkdir_p(WPAVATAR_CACHE_DIR);
 
@@ -430,7 +451,12 @@ register_activation_hook(__FILE__, function() {
             'wpavatar_fallback_avatar',
             'wpavatar_shortcode_size',
             'wpavatar_shortcode_class',
-            'wpavatar_shortcode_shape'
+            'wpavatar_shortcode_shape',
+            // 营销组件设置
+            'wpavatar_commenters_count',
+            'wpavatar_commenters_size',
+            'wpavatar_users_count',
+            'wpavatar_users_size'
         ] as $option_name) {
             add_site_option($option_name, get_option($option_name));
         }
@@ -458,66 +484,4 @@ register_activation_hook(__FILE__, function() {
 register_deactivation_hook(__FILE__, function() {
     // Clear scheduled events
     wp_clear_scheduled_hook('wpavatar_purge_cache');
-});
-
-// 确保 WPAvatar 插件已激活
-add_action('plugins_loaded', function() {
-    if (class_exists('WPAvatar\\Cravatar')) {
-        // 添加兼容性过滤器，确保 WPAvatar 的优先级高于 WP-China-Yes
-        add_action('after_setup_theme', function() {
-            // 检查 WP-China-Yes 插件是否激活
-            if (class_exists('WenPai\\ChinaYes\\Service\\Super') || defined('CHINA_YES_VERSION')) {
-                // 移除 WP-China-Yes 的头像相关过滤器
-                global $wp_filter;
-
-                $filters_to_check = [
-                    'get_avatar_url',
-                    'um_user_avatar_url_filter',
-                    'bp_gravatar_url',
-                    'user_profile_picture_description',
-                    'avatar_defaults'
-                ];
-
-                foreach ($filters_to_check as $filter_name) {
-                    if (isset($wp_filter[$filter_name])) {
-                        foreach ($wp_filter[$filter_name]->callbacks as $priority => $callbacks) {
-                            foreach ($callbacks as $callback_key => $callback_data) {
-                                if (is_array($callback_data['function']) &&
-                                    is_object($callback_data['function'][0]) &&
-                                    get_class($callback_data['function'][0]) === 'WenPai\\ChinaYes\\Service\\Super') {
-
-                                    $method_name = $callback_data['function'][1];
-                                    remove_filter($filter_name, [$callback_data['function'][0], $method_name], $priority);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // 重新添加 WPAvatar 的过滤器，使用更高的优先级
-                if (wpavatar_get_option('wpavatar_enable_cravatar', true)) {
-                    // 移除原有优先级的过滤器
-                    remove_filter('get_avatar_url', ['WPAvatar\\Cravatar', 'get_avatar_url'], 999);
-                    remove_filter('um_user_avatar_url_filter', ['WPAvatar\\Cravatar', 'replace_avatar_url'], 1);
-                    remove_filter('bp_gravatar_url', ['WPAvatar\\Cravatar', 'replace_avatar_url'], 1);
-
-                    // 使用更高优先级重新添加
-                    add_filter('get_avatar_url', ['WPAvatar\\Cravatar', 'get_avatar_url'], 9999, 2);
-                    add_filter('um_user_avatar_url_filter', ['WPAvatar\\Cravatar', 'replace_avatar_url'], 9999);
-                    add_filter('bp_gravatar_url', ['WPAvatar\\Cravatar', 'replace_avatar_url'], 9999);
-                    add_filter('user_profile_picture_description', ['WPAvatar\\Cravatar', 'modify_profile_picture_description'], 9999);
-                }
-
-                // 添加管理界面通知
-                add_action('admin_notices', function() {
-                    $screen = get_current_screen();
-                    if ($screen && $screen->id === 'settings_page_wpavatar-settings') {
-                        echo '<div class="notice notice-info is-dismissible">';
-                        echo '<p>检测到文派叶子（WPCY.COM）插件，WPAvatar 生态组件兼容性补丁已生效，确保文派头像设置优先。</p>';
-                        echo '</div>';
-                    }
-                });
-            }
-        }, 5);
-    }
 });

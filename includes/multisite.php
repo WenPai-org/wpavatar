@@ -87,7 +87,12 @@ class Network {
                     'wpavatar_fallback_avatar',
                     'wpavatar_shortcode_size',
                     'wpavatar_shortcode_class',
-                    'wpavatar_shortcode_shape'
+                    'wpavatar_shortcode_shape',
+                    // 添加营销组件选项
+                    'wpavatar_commenters_count',
+                    'wpavatar_commenters_size',
+                    'wpavatar_users_count',
+                    'wpavatar_users_size'
                 ];
 
                 foreach ($options_to_copy as $option) {
@@ -234,10 +239,10 @@ class Network {
 
         ?>
         <div class="wrap wpavatar-settings">
-            <h1><?php esc_html_e('WPAvatar网络设置', 'wpavatar'); ?>
-                <span style="font-size: 13px; padding-left: 10px;"><?php printf(esc_html__('Version: %s', 'wpavatar'), esc_html(WPAVATAR_VERSION)); ?></span>
-                <a href="https://wpavatar.com/document/" target="_blank" class="button button-secondary" style="margin-left: 10px;"><?php esc_html_e('文档', 'wpavatar'); ?></a>
-                <a href="https://sharecms.com/forums/" target="_blank" class="button button-secondary"><?php esc_html_e('支持', 'wpavatar'); ?></a>
+            <h1><?php esc_html_e('文派头像设置', 'wpavatar'); ?>
+              <span style="font-size: 13px; padding-left: 10px;"><?php printf(esc_html__('版本: %s', 'wpavatar'), esc_html(WPAVATAR_VERSION)); ?></span>
+              <a href="https://wpavatar.com/document/" target="_blank" class="button button-secondary" style="margin-left: 10px;"><?php esc_html_e('文档', 'wpavatar'); ?></a>
+              <a href="https://cravatar.com/forums/" target="_blank" class="button button-secondary"><?php esc_html_e('支持', 'wpavatar'); ?></a>
             </h1>
 
             <div id="wpavatar-status" class="notice" style="display:none; margin-top: 10px; padding: 8px 12px;"></div>
@@ -261,8 +266,11 @@ class Network {
                         <button type="button" class="wpavatar-tab <?php echo $active_tab === 'shortcodes' ? 'active' : ''; ?>" data-tab="shortcodes">
                             <?php _e('头像简码', 'wpavatar'); ?>
                         </button>
+                        <button type="button" class="wpavatar-tab <?php echo $active_tab === 'marketing' ? 'active' : ''; ?>" data-tab="marketing">
+                            <?php _e('营销组件', 'wpavatar'); ?>
+                        </button>
                         <button type="button" class="wpavatar-tab <?php echo $active_tab === 'tools' ? 'active' : ''; ?>" data-tab="tools">
-                            <?php _e('工具', 'wpavatar'); ?>
+                            <?php _e('实用工具', 'wpavatar'); ?>
                         </button>
                     </div>
                 </div>
@@ -327,6 +335,10 @@ class Network {
                                         'wpavatar_shortcode_size' => __('默认头像大小', 'wpavatar'),
                                         'wpavatar_shortcode_class' => __('默认CSS类名', 'wpavatar'),
                                         'wpavatar_shortcode_shape' => __('默认头像形状', 'wpavatar'),
+                                        'wpavatar_commenters_count' => __('评论者数量', 'wpavatar'),
+                                        'wpavatar_commenters_size' => __('评论者头像大小', 'wpavatar'),
+                                        'wpavatar_users_count' => __('用户数量', 'wpavatar'),
+                                        'wpavatar_users_size' => __('用户头像大小', 'wpavatar'),
                                     ];
 
                                     // Group options by category
@@ -366,6 +378,15 @@ class Network {
                                                 'wpavatar_shortcode_class',
                                                 'wpavatar_shortcode_shape'
                                             ]
+                                        ],
+                                        'marketing' => [
+                                            'title' => __('营销组件', 'wpavatar'),
+                                            'options' => [
+                                                'wpavatar_commenters_count',
+                                                'wpavatar_commenters_size',
+                                                'wpavatar_users_count',
+                                                'wpavatar_users_size'
+                                            ]
                                         ]
                                     ];
 
@@ -398,7 +419,7 @@ class Network {
                         </table>
 
                         <div class="wpavatar-submit-wrapper">
-                            <button type="submit" class="button button-primary"><?php _e('保存网络管理设置', 'wpavatar'); ?></button>
+                            <button type="submit" class="button button-primary"><?php _e('保存设置', 'wpavatar'); ?></button>
                         </div>
                     </form>
                 </div>
@@ -500,7 +521,7 @@ class Network {
                         </table>
 
                         <div class="wpavatar-submit-wrapper">
-                            <button type="submit" class="button button-primary"><?php _e('保存基础设置', 'wpavatar'); ?></button>
+                            <button type="submit" class="button button-primary"><?php _e('保存设置', 'wpavatar'); ?></button>
                         </div>
                     </form>
                 </div>
@@ -553,7 +574,7 @@ class Network {
                         </table>
 
                         <div class="wpavatar-submit-wrapper">
-                            <button type="submit" class="button button-primary"><?php _e('保存缓存设置', 'wpavatar'); ?></button>
+                            <button type="submit" class="button button-primary"><?php _e('保存设置', 'wpavatar'); ?></button>
                         </div>
                     </form>
                 </div>
@@ -609,7 +630,7 @@ class Network {
                         </table>
 
                         <div class="wpavatar-submit-wrapper">
-                            <button type="submit" class="button button-primary"><?php _e('保存高级设置', 'wpavatar'); ?></button>
+                            <button type="submit" class="button button-primary"><?php _e('保存设置', 'wpavatar'); ?></button>
                         </div>
                     </form>
                 </div>
@@ -671,7 +692,121 @@ class Network {
                         </table>
 
                         <div class="wpavatar-submit-wrapper">
-                            <button type="submit" class="button button-primary"><?php _e('保存简码设置', 'wpavatar'); ?></button>
+                            <button type="submit" class="button button-primary"><?php _e('保存设置', 'wpavatar'); ?></button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Marketing Settings Section -->
+                <div class="wpavatar-section" id="wpavatar-section-marketing" style="<?php echo $active_tab !== 'marketing' ? 'display: none;' : ''; ?>">
+                    <h2><?php _e('营销组件设置', 'wpavatar'); ?></h2>
+                    <p class="wpavatar-section-desc"><?php _e('配置营销组件简码和显示效果，应用于所有网络站点。', 'wpavatar'); ?></p>
+
+                    <form method="post" action="edit.php?action=wpavatar_network_settings" id="wpavatar-marketing-form">
+                        <?php wp_nonce_field('wpavatar_network_settings'); ?>
+                        <input type="hidden" name="tab" value="marketing">
+
+                        <table class="form-table">
+                            <tr>
+                                <th colspan="2"><h3><?php _e('最近评论者设置', 'wpavatar'); ?></h3></th>
+                            </tr>
+                            <tr>
+                                <th><?php _e('显示数量', 'wpavatar'); ?></th>
+                                <td>
+                                    <input type="number" name="wpavatar_commenters_count" value="<?php echo esc_attr(get_site_option('wpavatar_commenters_count', 15)); ?>" min="1" max="50" class="small-text wpavatar-input">
+                                    <p class="description"><?php _e('显示的最近评论者数量', 'wpavatar'); ?></p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><?php _e('头像大小', 'wpavatar'); ?></th>
+                                <td>
+                                    <input type="number" name="wpavatar_commenters_size" value="<?php echo esc_attr(get_site_option('wpavatar_commenters_size', 45)); ?>" min="20" max="150" class="small-text wpavatar-input">
+                                    <p class="description"><?php _e('评论者头像大小（像素）', 'wpavatar'); ?></p>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th colspan="2"><h3><?php _e('用户头像设置', 'wpavatar'); ?></h3></th>
+                            </tr>
+                            <tr>
+                                <th><?php _e('显示数量', 'wpavatar'); ?></th>
+                                <td>
+                                    <input type="number" name="wpavatar_users_count" value="<?php echo esc_attr(get_site_option('wpavatar_users_count', 15)); ?>" min="1" max="50" class="small-text wpavatar-input">
+                                    <p class="description"><?php _e('显示的用户数量', 'wpavatar'); ?></p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><?php _e('头像大小', 'wpavatar'); ?></th>
+                                <td>
+                                    <input type="number" name="wpavatar_users_size" value="<?php echo esc_attr(get_site_option('wpavatar_users_size', 40)); ?>" min="20" max="150" class="small-text wpavatar-input">
+                                    <p class="description"><?php _e('用户头像大小（像素）', 'wpavatar'); ?></p>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="wpavatar-submit-wrapper">
+                            <button type="submit" class="button button-primary"><?php _e('保存设置', 'wpavatar'); ?></button>
+                        </div>
+
+                        <div class="wpavatar-card shortcode-docs">
+                            <h3><?php _e('可用简码', 'wpavatar'); ?></h3>
+                            <div class="wpavatar-table-wrapper">
+                                <table class="widefat wpavatar-table">
+                                    <thead>
+                                        <tr>
+                                            <th><?php _e('简码', 'wpavatar'); ?></th>
+                                            <th><?php _e('描述', 'wpavatar'); ?></th>
+                                            <th><?php _e('参数', 'wpavatar'); ?></th>
+                                            <th><?php _e('示例', 'wpavatar'); ?></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>[wpavatar_latest_commenters]</code></td>
+                                            <td><?php _e('显示最近评论者头像', 'wpavatar'); ?></td>
+                                            <td>
+                                                <ul>
+                                                    <li><code>number</code> - <?php _e('显示的评论者数量', 'wpavatar'); ?></li>
+                                                    <li><code>size</code> - <?php _e('头像大小（像素）', 'wpavatar'); ?></li>
+                                                </ul>
+                                            </td>
+                                            <td><code>[wpavatar_latest_commenters number="10" size="50"]</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>[wpavatar_latest_users]</code></td>
+                                            <td><?php _e('显示最新注册的用户头像', 'wpavatar'); ?></td>
+                                            <td>
+                                                <ul>
+                                                    <li><code>number</code> - <?php _e('显示的用户数量', 'wpavatar'); ?></li>
+                                                    <li><code>size</code> - <?php _e('头像大小（像素）', 'wpavatar'); ?></li>
+                                                </ul>
+                                            </td>
+                                            <td><code>[wpavatar_latest_users number="12" size="40"]</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>[wpavatar_random_users]</code></td>
+                                            <td><?php _e('显示随机用户头像', 'wpavatar'); ?></td>
+                                            <td>
+                                                <ul>
+                                                    <li><code>number</code> - <?php _e('显示的用户数量', 'wpavatar'); ?></li>
+                                                    <li><code>size</code> - <?php _e('头像大小（像素）', 'wpavatar'); ?></li>
+                                                </ul>
+                                            </td>
+                                            <td><code>[wpavatar_random_users number="12" size="40"]</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>[wpavatar_author]</code></td>
+                                            <td><?php _e('显示当前文章作者头像', 'wpavatar'); ?></td>
+                                            <td>
+                                                <ul>
+                                                    <li><code>size</code> - <?php _e('头像大小（像素）', 'wpavatar'); ?></li>
+                                                </ul>
+                                            </td>
+                                            <td><code>[wpavatar_author size="96"]</code></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -994,6 +1129,14 @@ class Network {
             update_site_option('wpavatar_shortcode_shape', sanitize_text_field($_POST['wpavatar_shortcode_shape'] ?? 'square'));
         }
 
+        // Process marketing settings
+        if ($current_tab === 'marketing') {
+            update_site_option('wpavatar_commenters_count', intval($_POST['wpavatar_commenters_count'] ?? 15));
+            update_site_option('wpavatar_commenters_size', intval($_POST['wpavatar_commenters_size'] ?? 45));
+            update_site_option('wpavatar_users_count', intval($_POST['wpavatar_users_count'] ?? 15));
+            update_site_option('wpavatar_users_size', intval($_POST['wpavatar_users_size'] ?? 40));
+        }
+
         // Redirect back to the appropriate page with update message
         $redirect_url = add_query_arg([
             'page' => 'wpavatar-network',
@@ -1046,7 +1189,12 @@ class Network {
             'wpavatar_fallback_avatar',
             'wpavatar_shortcode_size',
             'wpavatar_shortcode_class',
-            'wpavatar_shortcode_shape'
+            'wpavatar_shortcode_shape',
+            // 添加营销组件选项
+            'wpavatar_commenters_count',
+            'wpavatar_commenters_size',
+            'wpavatar_users_count',
+            'wpavatar_users_size'
         ];
 
         // Copy options from site to network
@@ -1098,6 +1246,23 @@ class Network {
                 $network_value = get_site_option($option);
                 if ($network_value !== false) {
                     update_option($option, $network_value);
+                }
+            }
+
+            // 确保也应用营销组件设置
+            $marketing_options = [
+                'wpavatar_commenters_count',
+                'wpavatar_commenters_size',
+                'wpavatar_users_count',
+                'wpavatar_users_size'
+            ];
+
+            foreach ($marketing_options as $option) {
+                if (in_array($option, $controlled_options)) {
+                    $network_value = get_site_option($option);
+                    if ($network_value !== false) {
+                        update_option($option, $network_value);
+                    }
                 }
             }
 
