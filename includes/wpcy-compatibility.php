@@ -124,7 +124,7 @@ class Compatibility {
         $screen = get_current_screen();
         if ($screen && $screen->id === 'settings_page_wpavatar-settings') {
             echo '<div class="notice notice-info is-dismissible">';
-            echo '<p>检测到文派叶子（WPCY.COM）插件，WPAvatar 生态组件兼容补丁已生效，确保文派头像设置优先。</p>';
+            echo '<p>检测到文派叶子 🍃（WPCY.COM）插件，WPAvatar 生态组件兼容补丁已生效，确保文派头像设置优先。</p>';
             echo '</div>';
         }
     }

@@ -873,7 +873,7 @@ class Network {
             flex: 1;
             min-width: 200px;
             background: #f9f9f9;
-            padding: 10px 15px;
+            padding: 30px;
             border-radius: 5px;
         }
         .option-group h4 {
