@@ -17,4 +17,4 @@ WPAvatar 正式名称是文派头像（WenPai Avatar）的缩写，存在的主�
 
 WPAvatar 是文派开放式头像服务，也是免费的全网个人资料图片存储服务和 Gravatar 替代工具。同时也是文派开源建站系统的内建服务，通过简单粗暴的替换、更新、缓存、禁用头像来源，可更方便的让您对网站用户头像进行控制。
 
-**Copyright © 2025 · WPAvatar.COM , All Rights Reserved. 文派 （广州） 科技有限公司；**
+**Copyright © 2025 · WPAvatar.com , All Rights Reserved. 文派 （广州） 科技有限公司；**
