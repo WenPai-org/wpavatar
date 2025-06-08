@@ -1,12 +1,13 @@
 # 文派头像（WenPai Avatar）—— WPAvatar
 
-## 2025年02月 目前此插件正在进行新版本开发，将提供更多自定义选项和功能。
-
 面向中国互联网用户的开放式网络头像服务，WPAvatar 可以将您的头像（个人资料图片）传递到其他网站和 CMS。并解决 Gravatar 在中国无法访问和正常使用的问题。
 
 ![avatar](https://ps.w.org/wpavatar/assets/banner-1544x500.png)
 
 文派头像也是 Cravatar 初认头像的官方 WordPress 插件。
+
+![image](https://github.com/user-attachments/assets/3ccc6b8d-7fa4-461c-ae6d-dfa877dfce67)
+
 
 WPAvatar 正式名称是文派头像（WenPai Avatar）的缩写，存在的主要目的是为了解决中国特色问题，由于 WordPress 内置包含的 Gravatar 多年来一直持续无法访问和加载缓慢，严重拖慢了处在中国大陆地区的用户网站速度，非常影响用户体验。
 
