@@ -382,7 +382,7 @@ register_activation_hook(__FILE__, function() {
     add_option('wpavatar_cache_path', WPAVATAR_CACHE_DIR);
     add_option('wpavatar_cache_expire', 15);
 
-    add_option('wpavatar_seo_alt', '%s的头像');
+    add_option('wpavatar_seo_alt', __('%s的头像', 'wpavatar'));
     add_option('wpavatar_fallback_mode', 1);
     add_option('wpavatar_fallback_avatar', 'default');
 
