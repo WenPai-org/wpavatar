@@ -762,11 +762,11 @@ class Cache {
                         ob_start();
                         ?>
                         <div class="cache-stats">
-                            <p><?php printf(__('缓存目录: %s', 'wpavatar'), esc_html($stats['path'])); ?></p>
-                            <p><?php printf(__('目录存在: %s', 'wpavatar'), $stats['exists'] ? __('是', 'wpavatar') : __('否', 'wpavatar')); ?></p>
-                            <p><?php printf(__('目录可写: %s', 'wpavatar'), $stats['writable'] ? __('是', 'wpavatar') : __('否', 'wpavatar')); ?></p>
-                            <p><?php printf(__('缓存文件数: %d', 'wpavatar'), $stats['file_count']); ?></p>
-                            <p><?php printf(__('缓存总大小: %s', 'wpavatar'), $stats['size']); ?></p>
+                            <p><?php printf(esc_html__('缓存目录: %s', 'wpavatar'), esc_html($stats['path'])); ?></p>
+                            <p><?php printf(esc_html__('目录存在: %s', 'wpavatar'), $stats['exists'] ? __('是', 'wpavatar') : __('否', 'wpavatar')); ?></p>
+                            <p><?php printf(esc_html__('目录可写: %s', 'wpavatar'), $stats['writable'] ? __('是', 'wpavatar') : __('否', 'wpavatar')); ?></p>
+                            <p><?php printf(esc_html__('缓存文件数: %d', 'wpavatar'), $stats['file_count']); ?></p>
+                            <p><?php printf(esc_html__('缓存总大小: %s', 'wpavatar'), $stats['size']); ?></p>
                         </div>
                         <?php
                         return ob_get_clean();
@@ -816,7 +816,7 @@ class Cache {
 
                                     $site_stats[] = [
                                         'id' => $blog_id,
-                                        'name' => $blog_name ?: sprintf(__('站点 #%d', 'wpavatar'), $blog_id),
+                                        'name' => $blog_name ?: sprintf(esc_html__('站点 #%d', 'wpavatar'), $blog_id),
                                         'files' => $file_count,
                                         'size' => size_format($size)
                                     ];
@@ -852,22 +852,22 @@ class Cache {
                         ob_start();
                         ?>
                         <div class="network-cache-stats">
-                            <h4><?php _e('全局缓存统计', 'wpavatar'); ?></h4>
-                            <p><?php printf(__('缓存根目录: %s', 'wpavatar'), esc_html($global_stats['path'])); ?></p>
-                            <p><?php printf(__('目录存在: %s', 'wpavatar'), $global_stats['exists'] ? __('是', 'wpavatar') : __('否', 'wpavatar')); ?></p>
-                            <p><?php printf(__('目录可写: %s', 'wpavatar'), $global_stats['writable'] ? __('是', 'wpavatar') : __('否', 'wpavatar')); ?></p>
-                            <p><?php printf(__('站点缓存目录数: %d', 'wpavatar'), $global_stats['site_count']); ?></p>
-                            <p><?php printf(__('总缓存文件数: %d', 'wpavatar'), $global_stats['total_files']); ?></p>
-                            <p><?php printf(__('总缓存大小: %s', 'wpavatar'), size_format($global_stats['total_size'])); ?></p>
+                            <h4><?php esc_html_e('全局缓存统计', 'wpavatar'); ?></h4>
+                            <p><?php printf(esc_html__('缓存根目录: %s', 'wpavatar'), esc_html($global_stats['path'])); ?></p>
+                            <p><?php printf(esc_html__('目录存在: %s', 'wpavatar'), $global_stats['exists'] ? __('是', 'wpavatar') : __('否', 'wpavatar')); ?></p>
+                            <p><?php printf(esc_html__('目录可写: %s', 'wpavatar'), $global_stats['writable'] ? __('是', 'wpavatar') : __('否', 'wpavatar')); ?></p>
+                            <p><?php printf(esc_html__('站点缓存目录数: %d', 'wpavatar'), $global_stats['site_count']); ?></p>
+                            <p><?php printf(esc_html__('总缓存文件数: %d', 'wpavatar'), $global_stats['total_files']); ?></p>
+                            <p><?php printf(esc_html__('总缓存大小: %s', 'wpavatar'), size_format($global_stats['total_size'])); ?></p>
 
                             <?php if (!empty($site_stats)): ?>
-                                <h4><?php _e('站点缓存详情', 'wpavatar'); ?></h4>
+                                <h4><?php esc_html_e('站点缓存详情', 'wpavatar'); ?></h4>
                                 <table class="widefat striped" style="margin-top: 10px;">
                                     <thead>
                                         <tr>
-                                            <th><?php _e('站点', 'wpavatar'); ?></th>
-                                            <th><?php _e('文件数', 'wpavatar'); ?></th>
-                                            <th><?php _e('大小', 'wpavatar'); ?></th>
+                                            <th><?php esc_html_e('站点', 'wpavatar'); ?></th>
+                                            <th><?php esc_html_e('文件数', 'wpavatar'); ?></th>
+                                            <th><?php esc_html_e('大小', 'wpavatar'); ?></th>
                                         </tr>
                                     </thead>
                                     <tbody>

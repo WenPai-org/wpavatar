@@ -322,7 +322,7 @@ class Marketing {
 
         if (!empty($commenters)) {
             $output .= '<div class="preview-section">';
-            $output .= '<h4>最近评论者预览</h4>';
+            $output .= '<h4>' . esc_html__('最近评论者预览', 'wpavatar') . '</h4>';
             $output .= '<div class="wpavatar-preview-commenters">';
 
             foreach ($commenters as $commenter) {
@@ -357,7 +357,7 @@ class Marketing {
 
         if (!empty($recent_users)) {
             $output .= '<div class="preview-section">';
-            $output .= '<h4>最新用户预览</h4>';
+            $output .= '<h4>' . esc_html__('最新用户预览', 'wpavatar') . '</h4>';
             $output .= '<div class="wpavatar-preview-users">';
 
             foreach ($recent_users as $user) {
@@ -431,107 +431,107 @@ class Marketing {
 
             <table class="form-table">
                 <tr>
-                    <th colspan="2"><h3><?php _e('最近评论者设置', 'wpavatar'); ?></h3></th>
+                    <th colspan="2"><h3><?php esc_html_e('最近评论者设置', 'wpavatar'); ?></h3></th>
                 </tr>
                 <tr>
-                    <th><?php _e('显示数量', 'wpavatar'); ?></th>
+                    <th><?php esc_html_e('显示数量', 'wpavatar'); ?></th>
                     <td>
                         <input type="number" name="wpavatar_commenters_count" value="<?php echo esc_attr($commenters_count); ?>" min="1" max="50" class="small-text wpavatar-input" <?php echo $is_commenters_count_disabled; ?>>
-                        <p class="description"><?php _e('显示的最近评论者数量', 'wpavatar'); ?></p>
+                        <p class="description"><?php esc_html_e('显示的最近评论者数量', 'wpavatar'); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th><?php _e('头像大小', 'wpavatar'); ?></th>
+                    <th><?php esc_html_e('头像大小', 'wpavatar'); ?></th>
                     <td>
                         <input type="number" name="wpavatar_commenters_size" value="<?php echo esc_attr($commenters_size); ?>" min="20" max="150" class="small-text wpavatar-input" <?php echo $is_commenters_size_disabled; ?>>
-                        <p class="description"><?php _e('评论者头像大小（像素）', 'wpavatar'); ?></p>
+                        <p class="description"><?php esc_html_e('评论者头像大小（像素）', 'wpavatar'); ?></p>
                     </td>
                 </tr>
 
                 <tr>
-                    <th colspan="2"><h3><?php _e('用户头像设置', 'wpavatar'); ?></h3></th>
+                    <th colspan="2"><h3><?php esc_html_e('用户头像设置', 'wpavatar'); ?></h3></th>
                 </tr>
                 <tr>
-                    <th><?php _e('显示数量', 'wpavatar'); ?></th>
+                    <th><?php esc_html_e('显示数量', 'wpavatar'); ?></th>
                     <td>
                         <input type="number" name="wpavatar_users_count" value="<?php echo esc_attr($users_count); ?>" min="1" max="50" class="small-text wpavatar-input" <?php echo $is_users_count_disabled; ?>>
-                        <p class="description"><?php _e('显示的用户数量', 'wpavatar'); ?></p>
+                        <p class="description"><?php esc_html_e('显示的用户数量', 'wpavatar'); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th><?php _e('头像大小', 'wpavatar'); ?></th>
+                    <th><?php esc_html_e('头像大小', 'wpavatar'); ?></th>
                     <td>
                         <input type="number" name="wpavatar_users_size" value="<?php echo esc_attr($users_size); ?>" min="20" max="150" class="small-text wpavatar-input" <?php echo $is_users_size_disabled; ?>>
-                        <p class="description"><?php _e('用户头像大小（像素）', 'wpavatar'); ?></p>
+                        <p class="description"><?php esc_html_e('用户头像大小（像素）', 'wpavatar'); ?></p>
                     </td>
                 </tr>
             </table>
 
             <div class="wpavatar-preview-container">
-                <h3><?php _e('预览效果', 'wpavatar'); ?></h3>
+                <h3><?php esc_html_e('预览效果', 'wpavatar'); ?></h3>
                 <?php echo self::generate_preview('circle', 45, 5); ?>
-                <p class="description"><?php _e('预览显示使用圆形头像样式', 'wpavatar'); ?></p>
+                <p class="description"><?php esc_html_e('预览显示使用圆形头像样式', 'wpavatar'); ?></p>
             </div>
 
             <div class="wpavatar-submit-wrapper">
-                <button type="submit" class="button button-primary"><?php _e('保存设置', 'wpavatar'); ?></button>
+                <button type="submit" class="button button-primary"><?php esc_html_e('保存设置', 'wpavatar'); ?></button>
             </div>
 
             <div class="wpavatar-card shortcode-docs">
-                <h3><?php _e('可用简码', 'wpavatar'); ?></h3>
+                <h3><?php esc_html_e('可用简码', 'wpavatar'); ?></h3>
                 <div class="wpavatar-table-wrapper">
                     <table class="widefat wpavatar-table">
                         <thead>
                             <tr>
-                                <th><?php _e('简码', 'wpavatar'); ?></th>
-                                <th><?php _e('描述', 'wpavatar'); ?></th>
-                                <th><?php _e('参数', 'wpavatar'); ?></th>
-                                <th><?php _e('示例', 'wpavatar'); ?></th>
+                                <th><?php esc_html_e('简码', 'wpavatar'); ?></th>
+                                <th><?php esc_html_e('描述', 'wpavatar'); ?></th>
+                                <th><?php esc_html_e('参数', 'wpavatar'); ?></th>
+                                <th><?php esc_html_e('示例', 'wpavatar'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td><code>[wpavatar_latest_commenters]</code></td>
-                                <td><?php _e('显示最近评论者头像', 'wpavatar'); ?></td>
+                                <td><?php esc_html_e('显示最近评论者头像', 'wpavatar'); ?></td>
                                 <td>
                                     <ul>
-                                        <li><code>number</code> - <?php _e('显示的评论者数量', 'wpavatar'); ?></li>
-                                        <li><code>size</code> - <?php _e('头像大小（像素）', 'wpavatar'); ?></li>
-                                        <li><code>show_names</code> - <?php _e('是否显示用户名（true/false）', 'wpavatar'); ?></li>
+                                        <li><code>number</code> - <?php esc_html_e('显示的评论者数量', 'wpavatar'); ?></li>
+                                        <li><code>size</code> - <?php esc_html_e('头像大小（像素）', 'wpavatar'); ?></li>
+                                        <li><code>show_names</code> - <?php esc_html_e('是否显示用户名（true/false）', 'wpavatar'); ?></li>
                                     </ul>
                                 </td>
                                 <td><code>[wpavatar_latest_commenters number="10" size="50" show_names="true"]</code></td>
                             </tr>
                             <tr>
                                 <td><code>[wpavatar_latest_users]</code></td>
-                                <td><?php _e('显示最新注册的用户头像', 'wpavatar'); ?></td>
+                                <td><?php esc_html_e('显示最新注册的用户头像', 'wpavatar'); ?></td>
                                 <td>
                                     <ul>
-                                        <li><code>number</code> - <?php _e('显示的用户数量', 'wpavatar'); ?></li>
-                                        <li><code>size</code> - <?php _e('头像大小（像素）', 'wpavatar'); ?></li>
-                                        <li><code>show_names</code> - <?php _e('是否显示用户名（true/false）', 'wpavatar'); ?></li>
+                                        <li><code>number</code> - <?php esc_html_e('显示的用户数量', 'wpavatar'); ?></li>
+                                        <li><code>size</code> - <?php esc_html_e('头像大小（像素）', 'wpavatar'); ?></li>
+                                        <li><code>show_names</code> - <?php esc_html_e('是否显示用户名（true/false）', 'wpavatar'); ?></li>
                                     </ul>
                                 </td>
                                 <td><code>[wpavatar_latest_users number="12" size="40" show_names="true"]</code></td>
                             </tr>
                             <tr>
                                 <td><code>[wpavatar_random_users]</code></td>
-                                <td><?php _e('显示随机用户头像', 'wpavatar'); ?></td>
+                                <td><?php esc_html_e('显示随机用户头像', 'wpavatar'); ?></td>
                                 <td>
                                     <ul>
-                                        <li><code>number</code> - <?php _e('显示的用户数量', 'wpavatar'); ?></li>
-                                        <li><code>size</code> - <?php _e('头像大小（像素）', 'wpavatar'); ?></li>
-                                        <li><code>show_names</code> - <?php _e('是否显示用户名（true/false）', 'wpavatar'); ?></li>
+                                        <li><code>number</code> - <?php esc_html_e('显示的用户数量', 'wpavatar'); ?></li>
+                                        <li><code>size</code> - <?php esc_html_e('头像大小（像素）', 'wpavatar'); ?></li>
+                                        <li><code>show_names</code> - <?php esc_html_e('是否显示用户名（true/false）', 'wpavatar'); ?></li>
                                     </ul>
                                 </td>
                                 <td><code>[wpavatar_random_users number="12" size="40" show_names="false"]</code></td>
                             </tr>
                             <tr>
                                 <td><code>[wpavatar_author]</code></td>
-                                <td><?php _e('显示当前文章作者头像', 'wpavatar'); ?></td>
+                                <td><?php esc_html_e('显示当前文章作者头像', 'wpavatar'); ?></td>
                                 <td>
                                     <ul>
-                                        <li><code>size</code> - <?php _e('头像大小（像素）', 'wpavatar'); ?></li>
+                                        <li><code>size</code> - <?php esc_html_e('头像大小（像素）', 'wpavatar'); ?></li>
                                     </ul>
                                 </td>
                                 <td><code>[wpavatar_author size="96"]</code></td>
@@ -539,15 +539,15 @@ class Marketing {
                         </tbody>
                     </table>
                 </div>
-                <h4><?php _e('使用场景', 'wpavatar'); ?></h4>
-                <p><?php _e('这些简码非常适合用于：', 'wpavatar'); ?></p>
+                <h4><?php esc_html_e('使用场景', 'wpavatar'); ?></h4>
+                <p><?php esc_html_e('这些简码非常适合用于：', 'wpavatar'); ?></p>
                 <ul style="list-style-type: disc; margin-left: 20px;">
-                    <li><?php _e('侧边栏挂件：展示活跃评论者和用户', 'wpavatar'); ?></li>
-                    <li><?php _e('文章底部：增强社区感并鼓励互动', 'wpavatar'); ?></li>
-                    <li><?php _e('关于页面：展示您的社区成员', 'wpavatar'); ?></li>
-                    <li><?php _e('会员页面：显示最新加入的会员', 'wpavatar'); ?></li>
+                    <li><?php esc_html_e('侧边栏挂件：展示活跃评论者和用户', 'wpavatar'); ?></li>
+                    <li><?php esc_html_e('文章底部：增强社区感并鼓励互动', 'wpavatar'); ?></li>
+                    <li><?php esc_html_e('关于页面：展示您的社区成员', 'wpavatar'); ?></li>
+                    <li><?php esc_html_e('会员页面：显示最新加入的会员', 'wpavatar'); ?></li>
                 </ul>
-                <p><strong><?php _e('提示：', 'wpavatar'); ?></strong> <?php _e('您可以将这些简码与其他WordPress挂件组合使用，创建更丰富的社区展示。', 'wpavatar'); ?></p>
+                <p><strong><?php esc_html_e('提示：', 'wpavatar'); ?></strong> <?php esc_html_e('您可以将这些简码与其他WordPress挂件组合使用，创建更丰富的社区展示。', 'wpavatar'); ?></p>
             </div>
         </form>
 
