@@ -592,15 +592,15 @@ class Settings {
                         </div>
                         <div class="wpavatar-preview-item">
                             <h4><?php _e('方形', 'wpavatar'); ?></h4>
-                            <img src="<?= WPAVATAR_PLUGIN_URL ?>assets/images/wapuu-china.png" width="80" height="80" class="avatar-square">
+                            <img src="<?= esc_url(WPAVATAR_PLUGIN_URL) ?>assets/images/wapuu-china.png" width="80" height="80" class="avatar-square">
                         </div>
                         <div class="wpavatar-preview-item">
                             <h4><?php _e('圆角', 'wpavatar'); ?></h4>
-                            <img src="<?= WPAVATAR_PLUGIN_URL ?>assets/images/wapuu-china.png" width="80" height="80" class="avatar-rounded" style="border-radius:8px">
+                            <img src="<?= esc_url(WPAVATAR_PLUGIN_URL) ?>assets/images/wapuu-china.png" width="80" height="80" class="avatar-rounded" style="border-radius:8px">
                         </div>
                         <div class="wpavatar-preview-item">
                             <h4><?php _e('圆形', 'wpavatar'); ?></h4>
-                            <img src="<?= WPAVATAR_PLUGIN_URL ?>assets/images/wapuu-china.png" width="80" height="80" class="avatar-circle" style="border-radius:50%">
+                            <img src="<?= esc_url(WPAVATAR_PLUGIN_URL) ?>assets/images/wapuu-china.png" width="80" height="80" class="avatar-circle" style="border-radius:50%">
                         </div>
                     </div>
                     <p class="description"><?php _e('预览使用当前登录账户的头像和示例图片', 'wpavatar'); ?></p>
