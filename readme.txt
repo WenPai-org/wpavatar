@@ -4,7 +4,7 @@ Tags: wpavatar, avatar, wp avatar, 头像, gravatar, cravatar
 Requires at least: 5.4
 Tested up to: 6.8.1
 Requires PHP: 5.6
-Stable tag: 1.9.3
+Stable tag: 1.9.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,6 +66,12 @@ Starting with WPAvatar consists of just two steps: installing and setting up the
 3. WPAvatar Shortcodes
 
 == Changelog ==
+
+### 1.9.4 ###
+
+* Security Update: Fixed an XSS vulnerability in the admin interface
+* Improvement: Added proper escaping to all URL output
+* Optimization: Improved overall plugin security
 
 ### 1.9.3 ###
 
