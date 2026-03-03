@@ -26,7 +26,6 @@ class Settings {
         register_setting('wpavatar_basic', 'wpavatar_cravatar_route', ['type' => 'string']);
         register_setting('wpavatar_basic', 'wpavatar_third_party_mirror', ['type' => 'string']);
         register_setting('wpavatar_basic', 'wpavatar_custom_cdn', ['type' => 'string']);
-        register_setting('wpavatar_basic', 'wpavatar_hash_method', ['type' => 'string']);
         register_setting('wpavatar_basic', 'wpavatar_timeout', ['type' => 'integer']);
 
         register_setting('wpavatar_cache', 'wpavatar_enable_cache', ['type' => 'boolean']);
@@ -238,14 +237,11 @@ class Settings {
                         <?php if (in_array('wpavatar_custom_cdn', $network_controlled_options)): ?>
                             <span class="dashicons dashicons-lock"></span> <?php _e('自定义CDN', 'wpavatar'); ?><br>
                         <?php endif; ?>
-                        <?php if (in_array('wpavatar_hash_method', $network_controlled_options)): ?>
-                            <span class="dashicons dashicons-lock"></span> <?php _e('头像哈希方法', 'wpavatar'); ?><br>
-                        <?php endif; ?>
                         <?php if (in_array('wpavatar_timeout', $network_controlled_options)): ?>
                             <span class="dashicons dashicons-lock"></span> <?php _e('超时设置', 'wpavatar'); ?><br>
                         <?php endif; ?>
 
-                        <?php if (array_intersect(['wpavatar_enable_cravatar', 'wpavatar_cdn_type', 'wpavatar_cravatar_route', 'wpavatar_third_party_mirror', 'wpavatar_custom_cdn', 'wpavatar_hash_method', 'wpavatar_timeout'], $network_controlled_options)): ?>
+                        <?php if (array_intersect(['wpavatar_enable_cravatar', 'wpavatar_cdn_type', 'wpavatar_cravatar_route', 'wpavatar_third_party_mirror', 'wpavatar_custom_cdn', 'wpavatar_timeout'], $network_controlled_options)): ?>
                             <em><?php _e('以上选项由网络管理员控制，您的更改将不会生效。', 'wpavatar'); ?></em>
                         <?php endif; ?>
                     </p>
@@ -262,7 +258,6 @@ class Settings {
                     $cravatar_route = wpavatar_get_option('wpavatar_cravatar_route', 'cravatar.com');
                     $third_party_mirror = wpavatar_get_option('wpavatar_third_party_mirror', 'weavatar.com');
                     $custom_cdn = wpavatar_get_option('wpavatar_custom_cdn', '');
-                    $hash_method = wpavatar_get_option('wpavatar_hash_method', 'md5');
                     $timeout = wpavatar_get_option('wpavatar_timeout', 5);
 
                     // Determine if fields should be disabled in multisite
@@ -271,7 +266,6 @@ class Settings {
                     $disabled_cravatar_route = (is_multisite() && $network_enabled && in_array('wpavatar_cravatar_route', $network_controlled_options)) ? 'disabled' : '';
                     $disabled_third_party_mirror = (is_multisite() && $network_enabled && in_array('wpavatar_third_party_mirror', $network_controlled_options)) ? 'disabled' : '';
                     $disabled_custom_cdn = (is_multisite() && $network_enabled && in_array('wpavatar_custom_cdn', $network_controlled_options)) ? 'disabled' : '';
-                    $disabled_hash_method = (is_multisite() && $network_enabled && in_array('wpavatar_hash_method', $network_controlled_options)) ? 'disabled' : '';
                     $disabled_timeout = (is_multisite() && $network_enabled && in_array('wpavatar_timeout', $network_controlled_options)) ? 'disabled' : '';
                     ?>
                     <table class="form-table">
@@ -321,10 +315,6 @@ class Settings {
                                 <select name="wpavatar_third_party_mirror" class="wpavatar-select" <?php echo $disabled_third_party_mirror; ?>>
                                     <option value="weavatar.com" <?php selected($third_party_mirror, 'weavatar.com'); ?>><?php _e('WeAvatar (weavatar.com)', 'wpavatar'); ?></option>
                                     <option value="libravatar.org" <?php selected($third_party_mirror, 'libravatar.org'); ?>><?php _e('Libravatar (libravatar.org)', 'wpavatar'); ?></option>
-                                    <option value="gravatar.loli.net" <?php selected($third_party_mirror, 'gravatar.loli.net'); ?>><?php _e('Loli镜像 (gravatar.loli.net)', 'wpavatar'); ?></option>
-                                    <option value="gravatar.webp.se/avatar" <?php selected($third_party_mirror, 'gravatar.webp.se/avatar'); ?>><?php _e('Webp源 (gravatar.webp.se)', 'wpavatar'); ?></option>
-                                    <option value="dn-qiniu-avatar.qbox.me/avatar" <?php selected($third_party_mirror, 'dn-qiniu-avatar.qbox.me/avatar'); ?>><?php _e('七牛镜像 (dn-qiniu-avatar)', 'wpavatar'); ?></option>
-                                    <option value="gravatar.w3tt.com/avatar" <?php selected($third_party_mirror, 'gravatar.w3tt.com/avatar'); ?>><?php _e('万维网测试小组 (W3TT) ', 'wpavatar'); ?></option>
                                 </select>
                                 <p class="description"><?php _e('选择第三方头像镜像站', 'wpavatar'); ?></p>
                             </td>
@@ -334,21 +324,6 @@ class Settings {
                             <td>
                                 <input type="text" name="wpavatar_custom_cdn" value="<?php echo esc_attr($custom_cdn); ?>" class="regular-text wpavatar-input" <?php echo $disabled_custom_cdn; ?>>
                                 <p class="description"><?php _e('输入自定义CDN域名，例如：cdn.example.com', 'wpavatar'); ?></p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><?php _e('头像哈希方法', 'wpavatar'); ?></th>
-                            <td>
-                                <label class="wpavatar-radio">
-                                    <input type="radio" name="wpavatar_hash_method" value="md5" <?php checked($hash_method, 'md5'); ?> <?php echo $disabled_hash_method; ?>>
-                                    <span class="wpavatar-radio-label"><?php _e('MD5 (Cravatar默认)', 'wpavatar'); ?></span>
-                                </label><br>
-                                <label class="wpavatar-radio">
-                                    <input type="radio" name="wpavatar_hash_method" value="sha256" <?php checked($hash_method, 'sha256'); ?> <?php echo $disabled_hash_method; ?>>
-                                    <span class="wpavatar-radio-label"><?php _e('SHA256 (Gravatar默认)', 'wpavatar'); ?></span>
-                                </label>
-                                <p class="description"><?php _e('选择头像邮箱的哈希方法，Cravatar目前使用MD5，一般Gravatar镜像均为SHA256', 'wpavatar'); ?></p>
-                                <p class="description hash-method-notice" style="color: #d63638; <?php echo $cdn_type !== 'cravatar_route' ? 'display:none;' : ''; ?>"><?php _e('注意：使用Cravatar服务时，哈希方法将仅使用MD5。', 'wpavatar'); ?> <a href="https://cravatar.com/document/?p=46" target="_blank" rel="noopener noreferrer"><?php _e('进一步了解↗', 'wpavatar'); ?></a></p>
                             </td>
                         </tr>
                         <tr>

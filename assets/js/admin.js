@@ -51,60 +51,16 @@ jQuery(document).ready(function($) {
 
         if (selectedType === 'cravatar_route') {
             $('.cravatar-route-option').show();
-            forceMd5HashMethod(true);
         } else if (selectedType === 'third_party') {
             $('.third-party-option').show();
-            checkIfCravatarRelated($('select[name="wpavatar_third_party_mirror"]').val());
         } else if (selectedType === 'custom') {
             $('.custom-cdn-option').show();
-            checkIfCravatarRelated($('input[name="wpavatar_custom_cdn"]').val());
-        }
-    }
-
-    function checkIfCravatarRelated(value) {
-        if (value && value.toLowerCase().indexOf('cravatar') !== -1) {
-            forceMd5HashMethod(true);
-        } else {
-            forceMd5HashMethod(false);
-        }
-    }
-
-    function forceMd5HashMethod(force) {
-        if (force) {
-            // Save the current user-selected hash method to restore later if needed
-            var currentMethod = $('input[name="wpavatar_hash_method"]:checked').val();
-            if (currentMethod) {
-                $(this).data('previous-hash-method', currentMethod);
-            }
-
-            // Force MD5 and disable SHA256 option
-            $('input[name="wpavatar_hash_method"][value="md5"]').prop('checked', true);
-            $('input[name="wpavatar_hash_method"][value="sha256"]').prop('disabled', true);
-            $('.hash-method-notice').show();
-        } else {
-            // Restore disabled state, but don't change selection
-            $('input[name="wpavatar_hash_method"][value="sha256"]').prop('disabled', false);
-            $('.hash-method-notice').hide();
-
-            // Restore previous selection (if any)
-            var previousMethod = $(this).data('previous-hash-method');
-            if (previousMethod && previousMethod === 'sha256') {
-                $('input[name="wpavatar_hash_method"][value="sha256"]').prop('checked', true);
-            }
         }
     }
 
     $('input[name="wpavatar_cdn_type"]').on('change', updateCdnOptions);
 
     updateCdnOptions();
-
-    $('select[name="wpavatar_third_party_mirror"]').on('change', function() {
-        checkIfCravatarRelated($(this).val());
-    });
-
-    $('input[name="wpavatar_custom_cdn"]').on('input', function() {
-        checkIfCravatarRelated($(this).val());
-    });
 
     // Cache management for single site
     $('#check-cache').on('click', function() {

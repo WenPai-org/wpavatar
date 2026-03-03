@@ -77,7 +77,6 @@ class Network {
                     'wpavatar_cravatar_route',
                     'wpavatar_third_party_mirror',
                     'wpavatar_custom_cdn',
-                    'wpavatar_hash_method',
                     'wpavatar_timeout',
                     'wpavatar_enable_cache',
                     'wpavatar_cache_path',
@@ -324,7 +323,6 @@ class Network {
                                         'wpavatar_cravatar_route' => __('Cravatar官方源', 'wpavatar'),
                                         'wpavatar_third_party_mirror' => __('第三方镜像', 'wpavatar'),
                                         'wpavatar_custom_cdn' => __('自定义CDN', 'wpavatar'),
-                                        'wpavatar_hash_method' => __('头像哈希方法', 'wpavatar'),
                                         'wpavatar_timeout' => __('超时设置', 'wpavatar'),
                                         'wpavatar_enable_cache' => __('启用本地缓存', 'wpavatar'),
                                         'wpavatar_cache_path' => __('缓存目录', 'wpavatar'),
@@ -351,7 +349,6 @@ class Network {
                                                 'wpavatar_cravatar_route',
                                                 'wpavatar_third_party_mirror',
                                                 'wpavatar_custom_cdn',
-                                                'wpavatar_hash_method',
                                                 'wpavatar_timeout'
                                             ]
                                         ],
@@ -480,10 +477,6 @@ class Network {
                                     <select name="wpavatar_third_party_mirror" class="wpavatar-select">
                                         <option value="weavatar.com" <?php selected(get_site_option('wpavatar_third_party_mirror', 'weavatar.com'), 'weavatar.com'); ?>><?php _e('WeAvatar (weavatar.com)', 'wpavatar'); ?></option>
                                         <option value="libravatar.org" <?php selected(get_site_option('wpavatar_third_party_mirror', 'weavatar.com'), 'libravatar.org'); ?>><?php _e('Libravatar (libravatar.org)', 'wpavatar'); ?></option>
-                                        <option value="gravatar.loli.net" <?php selected(get_site_option('wpavatar_third_party_mirror', 'weavatar.com'), 'gravatar.loli.net'); ?>><?php _e('Loli镜像 (gravatar.loli.net)', 'wpavatar'); ?></option>
-                                        <option value="gravatar.webp.se/avatar" <?php selected(get_site_option('wpavatar_third_party_mirror', 'weavatar.com'), 'gravatar.webp.se/avatar'); ?>><?php _e('Webp源 (gravatar.webp.se)', 'wpavatar'); ?></option>
-                                        <option value="dn-qiniu-avatar.qbox.me/avatar" <?php selected(get_site_option('wpavatar_third_party_mirror', 'weavatar.com'), 'dn-qiniu-avatar.qbox.me/avatar'); ?>><?php _e('七牛镜像 (dn-qiniu-avatar)', 'wpavatar'); ?></option>
-                                        <option value="gravatar.w3tt.com/avatar" <?php selected(get_site_option('wpavatar_third_party_mirror', 'weavatar.com'), 'gravatar.w3tt.com/avatar'); ?>><?php _e('万维网测试小组 (W3TT) ', 'wpavatar'); ?></option>
                                     </select>
                                     <p class="description"><?php _e('选择第三方头像镜像站', 'wpavatar'); ?></p>
                                 </td>
@@ -493,21 +486,6 @@ class Network {
                                 <td>
                                     <input type="text" name="wpavatar_custom_cdn" value="<?php echo esc_attr(get_site_option('wpavatar_custom_cdn', '')); ?>" class="regular-text wpavatar-input">
                                     <p class="description"><?php _e('输入自定义CDN域名，例如：cdn.example.com', 'wpavatar'); ?></p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th><?php _e('头像哈希方法', 'wpavatar'); ?></th>
-                                <td>
-                                    <label class="wpavatar-radio">
-                                        <input type="radio" name="wpavatar_hash_method" value="md5" <?php checked(get_site_option('wpavatar_hash_method', 'md5'), 'md5'); ?>>
-                                        <span class="wpavatar-radio-label"><?php _e('MD5 (Cravatar默认)', 'wpavatar'); ?></span>
-                                    </label><br>
-                                    <label class="wpavatar-radio">
-                                        <input type="radio" name="wpavatar_hash_method" value="sha256" <?php checked(get_site_option('wpavatar_hash_method', 'md5'), 'sha256'); ?>>
-                                        <span class="wpavatar-radio-label"><?php _e('SHA256 (Gravatar默认)', 'wpavatar'); ?></span>
-                                    </label>
-                                    <p class="description"><?php _e('选择头像邮箱的哈希方法，Cravatar目前使用MD5，一般Gravatar镜像均为SHA256', 'wpavatar'); ?></p>
-                                    <p class="description hash-method-notice" style="color: #d63638; <?php echo get_site_option('wpavatar_cdn_type', 'cravatar_route') !== 'cravatar_route' ? 'display:none;' : ''; ?>"><?php _e('注意：使用Cravatar服务时，哈希方法将仅使用MD5。', 'wpavatar'); ?></p>
                                 </td>
                             </tr>
                             <tr>
@@ -1063,7 +1041,6 @@ class Network {
             update_site_option('wpavatar_cravatar_route', sanitize_text_field($_POST['wpavatar_cravatar_route'] ?? 'cravatar.com'));
             update_site_option('wpavatar_third_party_mirror', sanitize_text_field($_POST['wpavatar_third_party_mirror'] ?? 'weavatar.com'));
             update_site_option('wpavatar_custom_cdn', sanitize_text_field($_POST['wpavatar_custom_cdn'] ?? ''));
-            update_site_option('wpavatar_hash_method', sanitize_text_field($_POST['wpavatar_hash_method'] ?? 'md5'));
             update_site_option('wpavatar_timeout', intval($_POST['wpavatar_timeout'] ?? 5));
         }
 
@@ -1179,7 +1156,6 @@ class Network {
             'wpavatar_cravatar_route',
             'wpavatar_third_party_mirror',
             'wpavatar_custom_cdn',
-            'wpavatar_hash_method',
             'wpavatar_timeout',
             'wpavatar_enable_cache',
             'wpavatar_cache_path',

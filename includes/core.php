@@ -95,16 +95,9 @@ class Cravatar {
             return $args;
         }
 
-        // 尊重用户选择的哈希方法（所有线路统一）
-        $hash_method = wpavatar_get_option('wpavatar_hash_method', 'md5');
-        $args['hash_method'] = $hash_method;
-
-        // 确保我们有email_hash供后续使用，根据选择的哈希方法计算
-        if ($hash_method === 'sha256' && function_exists('hash')) {
-            $args['wpavatar_email_hash'] = hash('sha256', strtolower(trim($email)));
-        } else {
-            $args['wpavatar_email_hash'] = md5(strtolower(trim($email)));
-        }
+        // 统一使用 SHA256
+        $args['hash_method'] = 'sha256';
+        $args['wpavatar_email_hash'] = hash('sha256', strtolower(trim($email)));
 
         // 添加超时属性
         $timeout = wpavatar_get_option('wpavatar_timeout', 5);
@@ -139,9 +132,6 @@ class Cravatar {
         if (strpos($url, $cdn_domain) !== false) {
             return $url;
         }
-
-        // 获取用户设置的哈希方法
-        $hash_method = wpavatar_get_option('wpavatar_hash_method', 'md5');
 
         // 从URL提取邮箱哈希（SHA256 64位 或 MD5 32位）
         $hash = '';
@@ -474,14 +464,8 @@ class Cache {
             return '';
         }
 
-        // 根据用户设置选择哈希方法（所有线路统一，Cravatar 已支持 SHA256）
-        $hash_method = wpavatar_get_option('wpavatar_hash_method', 'md5');
-
-        if ($hash_method === 'sha256' && function_exists('hash')) {
-            return hash('sha256', strtolower(trim($email)));
-        }
-
-        return md5(strtolower(trim($email)));
+        // 统一使用 SHA256
+        return hash('sha256', strtolower(trim($email)));
     }
 
     public static function get_cache_path($hash, $size) {
