@@ -80,7 +80,9 @@ class Cravatar {
     }
 
     /**
-     * 预处理头像数据，根据配置决定是否强制使用MD5
+     * 预处理头像数据，根据用户设置选择哈希方法
+     *
+     * SHA256 迁移: Cravatar 服务端已支持 SHA256，不再强制 MD5
      */
     public static function pre_get_avatar_data($args, $id_or_email) {
         if (is_null($args)) {
@@ -93,24 +95,12 @@ class Cravatar {
             return $args;
         }
 
-        // 检查是否为 Cravatar 线路，只有 Cravatar 线路才强制使用 MD5
-        $cdn_type = wpavatar_get_option('wpavatar_cdn_type', 'cravatar_route');
-        if ($cdn_type === 'cravatar_route') {
-            // Cravatar 线路强制使用 MD5
-            $args['hash_method'] = 'md5';
-
-            // 移除SHA256散列标记（如果存在）
-            if (isset($args['hash']) && $args['hash'] === 'sha256') {
-                unset($args['hash']);
-            }
-        } else {
-            // 尊重用户选择的哈希方法
-            $hash_method = wpavatar_get_option('wpavatar_hash_method', 'md5');
-            $args['hash_method'] = $hash_method;
-        }
+        // 尊重用户选择的哈希方法（所有线路统一）
+        $hash_method = wpavatar_get_option('wpavatar_hash_method', 'md5');
+        $args['hash_method'] = $hash_method;
 
         // 确保我们有email_hash供后续使用，根据选择的哈希方法计算
-        if ($args['hash_method'] === 'sha256' && function_exists('hash')) {
+        if ($hash_method === 'sha256' && function_exists('hash')) {
             $args['wpavatar_email_hash'] = hash('sha256', strtolower(trim($email)));
         } else {
             $args['wpavatar_email_hash'] = md5(strtolower(trim($email)));
@@ -125,7 +115,9 @@ class Cravatar {
     }
 
     /**
-     * 直接替换头像URL，根据配置决定是否强制使用Cravatar和MD5哈希
+     * 直接替换头像URL，根据用户哈希设置构建 Cravatar URL
+     *
+     * SHA256 迁移: 不再强制 MD5，Cravatar 服务端通过 hash 长度自动识别算法
      */
     public static function get_avatar_url($url, $id_or_email) {
         // 如果地址已经是我们支持的域名，则直接返回
@@ -151,36 +143,12 @@ class Cravatar {
         // 获取用户设置的哈希方法
         $hash_method = wpavatar_get_option('wpavatar_hash_method', 'md5');
 
-        // 仅当使用Cravatar线路或者自定义CDN包含"cravatar"时，强制使用MD5
-        $force_md5 = ($cdn_type === 'cravatar_route' ||
-                     ($cdn_type === 'custom' && strpos(strtolower($cdn_domain), 'cravatar') !== false));
-
-        if ($force_md5) {
-            // 对于Cravatar，删除hash=sha256参数
-            $url = str_replace(['?hash=sha256', '&hash=sha256'], ['', ''], $url);
-        }
-
-        // 从URL提取邮箱哈希
+        // 从URL提取邮箱哈希（SHA256 64位 或 MD5 32位）
         $hash = '';
 
-        // 根据URL中是否包含SHA256或MD5哈希进行处理
         if (preg_match('/\/avatar\/([a-f0-9]{64})/', $url, $matches)) {
-            // SHA256哈希
-            if ($force_md5) {
-                // 如果强制使用MD5，需要重新计算哈希
-                $email = self::get_email_from_id_or_email($id_or_email);
-                if (!empty($email)) {
-                    $hash = md5(strtolower(trim($email)));
-                } else {
-                    // 如果无法获取邮箱，则使用默认头像
-                    return self::replace_avatar_url($url);
-                }
-            } else {
-                // 尊重SHA256
-                $hash = $matches[1];
-            }
+            $hash = $matches[1];
         } elseif (preg_match('/\/avatar\/([a-f0-9]{32})/', $url, $matches)) {
-            // MD5哈希
             $hash = $matches[1];
         }
 
@@ -196,11 +164,6 @@ class Cravatar {
         $parsed_url = parse_url($url);
         if (isset($parsed_url['query'])) {
             parse_str($parsed_url['query'], $query_params);
-        }
-
-        // 如果使用SHA256并且不是强制使用MD5的情况，添加哈希参数
-        if ($hash_method === 'sha256' && !$force_md5 && strlen($hash) === 64) {
-            $query_params['hash'] = 'sha256';
         }
 
         // 构建完整URL
@@ -262,12 +225,7 @@ class Cravatar {
     }
 
     public static function replace_avatar_url($url) {
-        // 移除hash=sha256参数，因为Cravatar不支持
-        if (strpos($url, 'hash=sha256') !== false) {
-            $url = str_replace(['?hash=sha256', '&hash=sha256'], ['', ''], $url);
-        }
-
-        // 更换Gravatar域名为Cravatar域名
+        // 更换Gravatar域名为Cravatar域名（保留所有查询参数包括 hash=sha256）
         foreach (self::$gravatar_domains as $domain) {
             if (strpos($url, $domain) !== false) {
                 $cdn_type = wpavatar_get_option('wpavatar_cdn_type', 'cravatar_route');
@@ -516,33 +474,14 @@ class Cache {
             return '';
         }
 
-        // 获取用户设置的哈希方法
-        $cdn_type = wpavatar_get_option('wpavatar_cdn_type', 'cravatar_route');
+        // 根据用户设置选择哈希方法（所有线路统一，Cravatar 已支持 SHA256）
         $hash_method = wpavatar_get_option('wpavatar_hash_method', 'md5');
 
-        // 检查是否需要强制使用MD5（针对Cravatar服务）
-        $force_md5 = false;
-        if ($cdn_type === 'cravatar_route') {
-            $force_md5 = true;
-        } elseif ($cdn_type === 'custom') {
-            $custom_cdn = wpavatar_get_option('wpavatar_custom_cdn', '');
-            if (strpos(strtolower($custom_cdn), 'cravatar') !== false) {
-                $force_md5 = true;
-            }
+        if ($hash_method === 'sha256' && function_exists('hash')) {
+            return hash('sha256', strtolower(trim($email)));
         }
 
-        // 根据设置和条件选择哈希方法
-        if ($force_md5 || $hash_method === 'md5') {
-            return md5(strtolower(trim($email)));
-        } else {
-            // 使用SHA256
-            if (function_exists('hash')) {
-                return hash('sha256', strtolower(trim($email)));
-            } else {
-                // 如果不支持hash函数，回退到MD5
-                return md5(strtolower(trim($email)));
-            }
-        }
+        return md5(strtolower(trim($email)));
     }
 
     public static function get_cache_path($hash, $size) {
