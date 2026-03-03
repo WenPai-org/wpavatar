@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<ruleset name="WPAvatar">
+	<description>WPAvatar coding standards</description>
+
+	<!-- Check all PHP files -->
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<arg value="sp"/>
+
+	<!-- Use WordPress coding standards -->
+	<rule ref="WordPress">
+		<!-- 排除合理的警告 -->
+		<exclude name="WordPress.Security.NonceVerification.Recommended"/>
+		<exclude name="WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents"/>
+		<exclude name="WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents"/>
+		<exclude name="WordPress.WP.AlternativeFunctions.unlink_unlink"/>
+		<exclude name="WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_error_reporting"/>
+		<exclude name="WordPress.PHP.NoSilencedErrors.Discouraged"/>
+
+		<!-- 文档注释相关 - 暂时排除，后续补充 -->
+		<exclude name="Squiz.Commenting.FunctionComment.Missing"/>
+		<exclude name="Squiz.Commenting.FileComment.Missing"/>
+		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
+		<exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop"/>
+
+		<!-- 翻译注释 - 暂时排除 -->
+		<exclude name="WordPress.WP.I18n.MissingTranslatorsComment"/>
+
+		<!-- 未使用参数 - 接口实现需要 -->
+		<exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.Found"/>
+	</rule>
+
+	<!-- 检查的目录 -->
+	<file>.</file>
+
+	<!-- 排除的目录 -->
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/tests/*</exclude-pattern>
+	<exclude-pattern>*/.git/*</exclude-pattern>
+</ruleset>
