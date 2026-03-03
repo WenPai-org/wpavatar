@@ -54,7 +54,7 @@ class Network {
 		if ( get_site_option( 'wpavatar_network_enabled', 1 ) ) {
 			// Create cache directory for the new site
 			$cache_path     = get_site_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR );
-			$site_cache_dir = trailingslashit( $cache_path ) . 'site-' . $blog_id;
+			$site_cache_dir = trailingslashit( $cache_path )) . 'site-' . $blog_id;
 
 			if ( ! file_exists( $site_cache_dir ) ) {
 				wp_mkdir_p( $site_cache_dir );
@@ -181,7 +181,7 @@ class Network {
 	 * Add network action links
 	 */
 	public static function add_network_action_links( $links ) {
-		$settings_link = '<a href="' . network_admin_url( 'settings.php?page=wpavatar-network' ) . '">' . __( '网络设置', 'wpavatar' ) . '</a>';
+		$settings_link = '<a href="' . network_admin_url( 'settings.php?page=wpavatar-network' )) . '">' . __( '网络设置', 'wpavatar' )) . '</a>';
 		array_unshift( $links, $settings_link );
 		return $links;
 	}
@@ -205,14 +205,14 @@ class Network {
 
 		if ( get_site_option( 'wpavatar_network_enforce', 0 ) ) {
 			echo '<div class="notice notice-warning"><p>' .
-				__( 'WPAvatar 插件正由网络管理员强制管理。所有设置将使用网络级别配置，任何更改将被忽略。如有疑问请联系网络管理员。', 'wpavatar' ) .
+				__( 'WPAvatar 插件正由网络管理员强制管理。所有设置将使用网络级别配置，任何更改将被忽略。如有疑问请联系网络管理员。', 'wpavatar' )) .
 				'</p></div>';
 		} elseif ( $controlled_count > 0 ) {
 			echo '<div class="notice notice-info"><p>' .
-				sprintf(
+				esc_html( sprintf(
 					__( 'WPAvatar 插件的 %d 项设置由网络管理员控制。这些设置的更改将不会生效。', 'wpavatar' ),
 					$controlled_count
-				) .
+				)) .
 				'</p></div>';
 		}
 	}
@@ -238,7 +238,7 @@ class Network {
 		// Display update message if settings were just updated
 		if ( isset( $_GET['updated'] ) && 'true' === $_GET['updated'] ) {
 			echo '<div class="notice notice-success is-dismissible"><p>' .
-				__( '网络设置已保存。', 'wpavatar' ) .
+				__( '网络设置已保存。', 'wpavatar' )) .
 				'</p></div>';
 		}
 
@@ -399,13 +399,13 @@ class Network {
 									echo '<div class="network-control-options">';
 									foreach ( $option_groups as $group => $group_data ) {
 										echo '<div class="option-group">';
-										echo '<h4>' . esc_html( $group_data['title'] ) . '</h4>';
+										echo '<h4>' . esc_html( $group_data['title'] )) . '</h4>';
 
 										foreach ( $group_data['options'] as $option ) {
 											echo '<label class="wpavatar-checkbox">';
-											echo '<input type="checkbox" name="wpavatar_network_controlled_options[]" value="' . esc_attr( $option ) . '" ' .
-												( in_array( $option, $controlled_options ) ? 'checked' : '' ) . '>';
-											echo '<span class="wpavatar-checkbox-label">' . esc_html( $all_options[ $option ] ) . '</span>';
+											echo '<input type="checkbox" name="wpavatar_network_controlled_options[]" value="' . esc_attr( $option )) . '" ' .
+												( in_array( $option, $controlled_options ) ? 'checked' : '' )) . '>';
+											echo '<span class="wpavatar-checkbox-label">' . esc_html( $all_options[ $option ] )) . '</span>';
 											echo '</label><br>';
 										}
 
@@ -817,8 +817,8 @@ class Network {
 									$blog_name = get_bloginfo( 'name' );
 									restore_current_blog();
 
-									echo '<option value="' . esc_attr( $site->blog_id ) . '">' .
-										esc_html( $blog_name ) . ' (' . esc_html( $site->domain . $site->path ) . ')</option>';
+									echo '<option value="' . esc_attr( $site->blog_id )) . '">' .
+										esc_html( $blog_name )) . ' (' . esc_html( $site->domain . $site->path )) . ')</option>';
 								}
 								?>
 							</select>
@@ -1058,7 +1058,7 @@ class Network {
 
 			// Sanitize cache path
 			$cache_path = sanitize_text_field( $_POST['wpavatar_cache_path'] ?? WPAVATAR_CACHE_DIR );
-			$cache_path = rtrim( $cache_path, '/\\' ) . '/';
+			$cache_path = rtrim( $cache_path, '/\\' )) . '/';
 
 			if ( ! preg_match( '~^(?:/|\\\\|[a-zA-Z]:)~', $cache_path ) ) {
 				$cache_path = WP_CONTENT_DIR . '/' . ltrim( $cache_path, '/\\' );
@@ -1260,7 +1260,7 @@ class Network {
 
 			// Ensure site cache directory exists
 			$cache_base     = get_site_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR );
-			$site_cache_dir = trailingslashit( $cache_base ) . 'site-' . $site->blog_id;
+			$site_cache_dir = trailingslashit( $cache_base )) . 'site-' . $site->blog_id;
 
 			if ( ! file_exists( $site_cache_dir ) ) {
 				wp_mkdir_p( $site_cache_dir );

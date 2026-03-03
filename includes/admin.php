@@ -285,7 +285,7 @@ class Settings {
 							<th><?php _e( '启用初认头像', 'wpavatar' ); ?></th>
 							<td>
 								<label class="wpavatar-switch">
-									<input type="checkbox" name="wpavatar_enable_cravatar" value="1" <?php checked( $enable_cravatar ); ?> <?php echo $disabled_enable_cravatar; ?>>
+									<input type="checkbox" name="wpavatar_enable_cravatar" value="1" <?php checked( $enable_cravatar ); ?> <?php echo esc_attr( $disabled_enable_cravatar ); ?>>
 									<span class="wpavatar-slider"></span>
 									<span class="wpavatar-switch-label"><?php _e( '替换WordPress默认头像为Cravatar', 'wpavatar' ); ?></span>
 								</label>
@@ -296,15 +296,15 @@ class Settings {
 							<th><?php _e( '线路选择', 'wpavatar' ); ?></th>
 							<td>
 								<label class="wpavatar-radio">
-									<input type="radio" name="wpavatar_cdn_type" value="cravatar_route" <?php checked( $cdn_type, 'cravatar_route' ); ?> <?php echo $disabled_cdn_type; ?>>
+									<input type="radio" name="wpavatar_cdn_type" value="cravatar_route" <?php checked( $cdn_type, 'cravatar_route' ); ?> <?php echo esc_attr( $disabled_cdn_type ); ?>>
 									<span class="wpavatar-radio-label"><?php _e( 'Cravatar自选线路', 'wpavatar' ); ?></span>
 								</label><br>
 								<label class="wpavatar-radio">
-									<input type="radio" name="wpavatar_cdn_type" value="third_party" <?php checked( $cdn_type, 'third_party' ); ?> <?php echo $disabled_cdn_type; ?>>
+									<input type="radio" name="wpavatar_cdn_type" value="third_party" <?php checked( $cdn_type, 'third_party' ); ?> <?php echo esc_attr( $disabled_cdn_type ); ?>>
 									<span class="wpavatar-radio-label"><?php _e( '第三方镜像', 'wpavatar' ); ?></span>
 								</label><br>
 								<label class="wpavatar-radio">
-									<input type="radio" name="wpavatar_cdn_type" value="custom" <?php checked( $cdn_type, 'custom' ); ?> <?php echo $disabled_cdn_type; ?>>
+									<input type="radio" name="wpavatar_cdn_type" value="custom" <?php checked( $cdn_type, 'custom' ); ?> <?php echo esc_attr( $disabled_cdn_type ); ?>>
 									<span class="wpavatar-radio-label"><?php _e( '自定义CDN', 'wpavatar' ); ?></span>
 								</label>
 							</td>
@@ -312,7 +312,7 @@ class Settings {
 						<tr class="cdn-option cravatar-route-option" <?php echo $cdn_type !== 'cravatar_route' ? 'style="display:none;"' : ''; ?>>
 							<th><?php _e( 'Cravatar官方源', 'wpavatar' ); ?></th>
 							<td>
-								<select name="wpavatar_cravatar_route" class="wpavatar-select" <?php echo $disabled_cravatar_route; ?>>
+								<select name="wpavatar_cravatar_route" class="wpavatar-select" <?php echo esc_attr( $disabled_cravatar_route ); ?>>
 									<option value="cravatar.cn" <?php selected( $cravatar_route, 'cravatar.cn' ); ?>><?php _e( '默认线路 (cravatar.com)', 'wpavatar' ); ?></option>
 									<option value="cn.cravatar.com" <?php selected( $cravatar_route, 'cn.cravatar.com' ); ?>><?php _e( '中国 (cn.cravatar.com)', 'wpavatar' ); ?></option>
 									<option value="hk.cravatar.com" <?php selected( $cravatar_route, 'hk.cravatar.com' ); ?>><?php _e( '香港 (hk.cravatar.com)', 'wpavatar' ); ?></option>
@@ -324,7 +324,7 @@ class Settings {
 						<tr class="cdn-option third-party-option" <?php echo $cdn_type !== 'third_party' ? 'style="display:none;"' : ''; ?>>
 							<th><?php _e( '第三方镜像', 'wpavatar' ); ?></th>
 							<td>
-								<select name="wpavatar_third_party_mirror" class="wpavatar-select" <?php echo $disabled_third_party_mirror; ?>>
+								<select name="wpavatar_third_party_mirror" class="wpavatar-select" <?php echo esc_attr( $disabled_third_party_mirror ); ?>>
 									<option value="weavatar.com" <?php selected( $third_party_mirror, 'weavatar.com' ); ?>><?php _e( 'WeAvatar (weavatar.com)', 'wpavatar' ); ?></option>
 									<option value="libravatar.org" <?php selected( $third_party_mirror, 'libravatar.org' ); ?>><?php _e( 'Libravatar (libravatar.org)', 'wpavatar' ); ?></option>
 								</select>
@@ -334,14 +334,14 @@ class Settings {
 						<tr class="cdn-option custom-cdn-option" <?php echo $cdn_type !== 'custom' ? 'style="display:none;"' : ''; ?>>
 							<th><?php _e( '自定义CDN', 'wpavatar' ); ?></th>
 							<td>
-								<input type="text" name="wpavatar_custom_cdn" value="<?php echo esc_attr( $custom_cdn ); ?>" class="regular-text wpavatar-input" <?php echo $disabled_custom_cdn; ?>>
+								<input type="text" name="wpavatar_custom_cdn" value="<?php echo esc_attr( $custom_cdn ); ?>" class="regular-text wpavatar-input" <?php echo esc_attr( $disabled_custom_cdn ); ?>>
 								<p class="description"><?php _e( '输入自定义CDN域名，例如：cdn.example.com', 'wpavatar' ); ?></p>
 							</td>
 						</tr>
 						<tr>
 							<th><?php _e( '超时设置', 'wpavatar' ); ?></th>
 							<td>
-								<input type="number" name="wpavatar_timeout" value="<?php echo esc_attr( $timeout ); ?>" min="1" max="30" class="small-text wpavatar-input" <?php echo $disabled_timeout; ?>>
+								<input type="number" name="wpavatar_timeout" value="<?php echo esc_attr( $timeout ); ?>" min="1" max="30" class="small-text wpavatar-input" <?php echo esc_attr( $disabled_timeout ); ?>>
 								<?php _e( '秒', 'wpavatar' ); ?>
 								<p class="description"><?php _e( '头像请求的最大等待时间，超过后将使用备用头像', 'wpavatar' ); ?></p>
 							</td>
@@ -406,7 +406,7 @@ class Settings {
 							<th><?php _e( '启用本地缓存', 'wpavatar' ); ?></th>
 							<td>
 								<label class="wpavatar-switch">
-									<input type="checkbox" name="wpavatar_enable_cache" value="1" <?php checked( $enable_cache ); ?> <?php echo $disabled_enable_cache; ?>>
+									<input type="checkbox" name="wpavatar_enable_cache" value="1" <?php checked( $enable_cache ); ?> <?php echo esc_attr( $disabled_enable_cache ); ?>>
 									<span class="wpavatar-slider"></span>
 									<span class="wpavatar-switch-label"><?php _e( '缓存头像到本地服务器', 'wpavatar' ); ?></span>
 								</label>
@@ -416,7 +416,7 @@ class Settings {
 						<tr>
 							<th><?php _e( '缓存目录', 'wpavatar' ); ?></th>
 							<td>
-								<input type="text" name="wpavatar_cache_path" value="<?php echo esc_attr( $cache_path ); ?>" class="regular-text wpavatar-input" <?php echo $disabled_cache_path; ?>>
+								<input type="text" name="wpavatar_cache_path" value="<?php echo esc_attr( $cache_path ); ?>" class="regular-text wpavatar-input" <?php echo esc_attr( $disabled_cache_path ); ?>>
 								<?php if ( is_multisite() ) : ?>
 								<p class="description"><?php printf( __( '确保目录可写，当前站点将创建子目录：%s', 'wpavatar' ), trailingslashit( $cache_path ) . 'site-' . get_current_blog_id() ); ?></p>
 								<?php else : ?>
@@ -427,7 +427,7 @@ class Settings {
 						<tr>
 							<th><?php _e( '缓存过期时间', 'wpavatar' ); ?></th>
 							<td>
-								<input type="number" name="wpavatar_cache_expire" value="<?php echo esc_attr( $cache_expire ); ?>" min="1" max="30" class="small-text wpavatar-input" <?php echo $disabled_cache_expire; ?>>
+								<input type="number" name="wpavatar_cache_expire" value="<?php echo esc_attr( $cache_expire ); ?>" min="1" max="30" class="small-text wpavatar-input" <?php echo esc_attr( $disabled_cache_expire ); ?>>
 								<?php _e( '天', 'wpavatar' ); ?>
 								<p class="description"><?php _e( '头像缓存的有效期，过期后将重新获取', 'wpavatar' ); ?></p>
 							</td>
@@ -484,7 +484,7 @@ class Settings {
 						<tr>
 							<th><?php _e( 'SEO替代文本', 'wpavatar' ); ?></th>
 							<td>
-								<input type="text" name="wpavatar_seo_alt" value="<?php echo esc_attr( $seo_alt ); ?>" class="regular-text wpavatar-input" <?php echo $disabled_seo_alt; ?>>
+								<input type="text" name="wpavatar_seo_alt" value="<?php echo esc_attr( $seo_alt ); ?>" class="regular-text wpavatar-input" <?php echo esc_attr( $disabled_seo_alt ); ?>>
 								<p class="description"><?php _e( '头像的ALT文本，%s将被替换为用户名', 'wpavatar' ); ?></p>
 							</td>
 						</tr>
@@ -492,7 +492,7 @@ class Settings {
 							<th><?php _e( '头像加载失败处理', 'wpavatar' ); ?></th>
 							<td>
 								<label class="wpavatar-switch">
-									<input type="checkbox" name="wpavatar_fallback_mode" value="1" <?php checked( $fallback_mode ); ?> <?php echo $disabled_fallback_mode; ?>>
+									<input type="checkbox" name="wpavatar_fallback_mode" value="1" <?php checked( $fallback_mode ); ?> <?php echo esc_attr( $disabled_fallback_mode ); ?>>
 									<span class="wpavatar-slider"></span>
 									<span class="wpavatar-switch-label"><?php _e( '启用备用头像', 'wpavatar' ); ?></span>
 								</label>
@@ -505,7 +505,7 @@ class Settings {
 								<div class="default-avatar-options">
 									<?php foreach ( $local_avatars as $key => $avatar ) : ?>
 									<label>
-										<input type="radio" name="wpavatar_fallback_avatar" value="<?php echo esc_attr( $key ); ?>" <?php checked( $fallback_avatar, $key ); ?> <?php echo $disabled_fallback_avatar; ?>>
+										<input type="radio" name="wpavatar_fallback_avatar" value="<?php echo esc_attr( $key ); ?>" <?php checked( $fallback_avatar, $key ); ?> <?php echo esc_attr( $disabled_fallback_avatar ); ?>>
 										<img src="<?php echo esc_url( $avatar['url'] ); ?>" alt="<?php echo esc_attr( $avatar['name'] ); ?>" width="48" height="48">
 										<span class="avatar-option-name"><?php echo esc_html( $avatar['name'] ); ?></span>
 									</label>
@@ -611,21 +611,21 @@ class Settings {
 						<tr>
 							<th><?php _e( '默认头像大小', 'wpavatar' ); ?></th>
 							<td>
-								<input type="number" name="wpavatar_shortcode_size" value="<?php echo esc_attr( $shortcode_size ); ?>" min="16" max="512" class="small-text wpavatar-input" <?php echo $disabled_shortcode_size; ?>>
+								<input type="number" name="wpavatar_shortcode_size" value="<?php echo esc_attr( $shortcode_size ); ?>" min="16" max="512" class="small-text wpavatar-input" <?php echo esc_attr( $disabled_shortcode_size ); ?>>
 								<p class="description"><?php _e( '简码默认头像大小（像素）', 'wpavatar' ); ?></p>
 							</td>
 						</tr>
 						<tr>
 							<th><?php _e( '默认CSS类名', 'wpavatar' ); ?></th>
 							<td>
-								<input type="text" name="wpavatar_shortcode_class" value="<?php echo esc_attr( $shortcode_class ); ?>" class="regular-text wpavatar-input" <?php echo $disabled_shortcode_class; ?>>
+								<input type="text" name="wpavatar_shortcode_class" value="<?php echo esc_attr( $shortcode_class ); ?>" class="regular-text wpavatar-input" <?php echo esc_attr( $disabled_shortcode_class ); ?>>
 								<p class="description"><?php _e( '简码生成的头像默认CSS类', 'wpavatar' ); ?></p>
 							</td>
 						</tr>
 						<tr>
 							<th><?php _e( '默认头像形状', 'wpavatar' ); ?></th>
 							<td>
-								<select name="wpavatar_shortcode_shape" class="wpavatar-select" <?php echo $disabled_shortcode_shape; ?>>
+								<select name="wpavatar_shortcode_shape" class="wpavatar-select" <?php echo esc_attr( $disabled_shortcode_shape ); ?>>
 									<option value="square" <?php selected( $shortcode_shape, 'square' ); ?>><?php _e( '方形', 'wpavatar' ); ?></option>
 									<option value="rounded" <?php selected( $shortcode_shape, 'rounded' ); ?>><?php _e( '圆角方形', 'wpavatar' ); ?></option>
 									<option value="circle" <?php selected( $shortcode_shape, 'circle' ); ?>><?php _e( '圆形', 'wpavatar' ); ?></option>
