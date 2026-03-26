@@ -304,23 +304,27 @@ class Cache {
 
 		if ( ! file_exists( $base_dir ) ) {
 			if ( ! wp_mkdir_p( $base_dir ) ) {
-				add_settings_error(
-					'wpavatar_cache',
-					'cache_dir_error',
-					__( '无法创建缓存目录，请检查权限', 'wpavatar' ),
-					'error'
-				);
+				if ( function_exists( 'add_settings_error' ) ) {
+					add_settings_error(
+						'wpavatar_cache',
+						'cache_dir_error',
+						__( '无法创建缓存目录，请检查权限', 'wpavatar' ),
+						'error'
+					);
+				}
 				return false;
 			}
 		}
 
 		if ( ! is_writable( $base_dir ) ) {
-			add_settings_error(
-				'wpavatar_cache',
-				'cache_dir_writable',
-				__( '缓存目录不可写，请检查权限', 'wpavatar' ),
-				'error'
-			);
+			if ( function_exists( 'add_settings_error' ) ) {
+				add_settings_error(
+					'wpavatar_cache',
+					'cache_dir_writable',
+					__( '缓存目录不可写，请检查权限', 'wpavatar' ),
+					'error'
+				);
+			}
 			return false;
 		}
 
@@ -350,23 +354,27 @@ class Cache {
 
 			if ( ! file_exists( $site_dir ) ) {
 				if ( ! wp_mkdir_p( $site_dir ) ) {
-					add_settings_error(
-						'wpavatar_cache',
-						'cache_dir_error',
-						__( '无法创建站点缓存目录，请检查权限', 'wpavatar' ),
-						'error'
-					);
+					if ( function_exists( 'add_settings_error' ) ) {
+						add_settings_error(
+							'wpavatar_cache',
+							'cache_dir_error',
+							__( '无法创建站点缓存目录，请检查权限', 'wpavatar' ),
+							'error'
+						);
+					}
 					return false;
 				}
 			}
 
 			if ( ! is_writable( $site_dir ) ) {
-				add_settings_error(
-					'wpavatar_cache',
-					'cache_dir_writable',
-					__( '站点缓存目录不可写，请检查权限', 'wpavatar' ),
-					'error'
-				);
+				if ( function_exists( 'add_settings_error' ) ) {
+					add_settings_error(
+						'wpavatar_cache',
+						'cache_dir_writable',
+						__( '站点缓存目录不可写，请检查权限', 'wpavatar' ),
+						'error'
+					);
+				}
 				return false;
 			}
 
