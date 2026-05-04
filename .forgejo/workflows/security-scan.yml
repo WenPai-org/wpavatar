@@ -1,0 +1,128 @@
+name: 安全扫描
+
+on:
+  push:
+    branches: ['main', 'master']
+    paths:
+      - 'Dockerfile*'
+      - 'docker-compose*.yml'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'yarn.lock'
+      - 'pnpm-lock.yaml'
+      - 'go.mod'
+      - 'go.sum'
+  pull_request:
+    branches: ['main', 'master']
+  schedule:
+    - cron: '0 3 * * 1'  # 每周一凌晨 3 点
+
+jobs:
+  security-scan:
+    runs-on: linux-arm64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Hadolint Dockerfile 检查
+        run: |
+          # 检查是否存在 Dockerfile
+          DOCKERFILES=$(find . -name 'Dockerfile*' -not -path './.git/*' 2>/dev/null)
+          if [ -z "$DOCKERFILES" ]; then
+            echo "未找到 Dockerfile，跳过"
+            exit 0
+          fi
+          # 如果未安装 hadolint 则跳过
+          if ! command -v hadolint &> /dev/null; then
+            echo "hadolint 未安装，跳过 Dockerfile 检查"
+            exit 0
+          fi
+          FAILED=0
+          for df in $DOCKERFILES; do
+            echo "--- 检查 $df ---"
+            hadolint "$df" || FAILED=1
+          done
+          if [ $FAILED -eq 1 ]; then
+            echo "::warning::Dockerfile 存在规范问题，请检查上方输出"
+          fi
+
+      - name: PHP Composer 安全审计
+        run: |
+          if [ ! -f composer.lock ]; then
+            echo "未找到 composer.lock，跳过"
+            exit 0
+          fi
+          composer audit --format=table || {
+            echo "::error::Composer 依赖存在已知安全漏洞"
+            exit 1
+          }
+          echo "Composer 安全审计通过"
+
+      - name: npm 安全审计
+        run: |
+          if [ ! -f package-lock.json ] && [ ! -f yarn.lock ] && [ ! -f pnpm-lock.yaml ]; then
+            echo "未找到 JS 锁文件，跳过"
+            exit 0
+          fi
+          # npm audit 只报告 high 和 critical
+          if [ -f package-lock.json ]; then
+            npm audit --audit-level=high || {
+              echo "::error::npm 依赖存在高危安全漏洞"
+              exit 1
+            }
+          elif [ -f pnpm-lock.yaml ]; then
+            pnpm audit --audit-level=high || {
+              echo "::error::pnpm 依赖存在高危安全漏洞"
+              exit 1
+            }
+          elif [ -f yarn.lock ]; then
+            yarn npm audit --severity high || {
+              echo "::error::yarn 依赖存在高危安全漏洞"
+              exit 1
+            }
+          fi
+          echo "JS 依赖安全审计通过"
+
+      - name: Go 依赖漏洞检查
+        run: |
+          if [ ! -f go.mod ]; then
+            echo "未找到 go.mod，跳过"
+            exit 0
+          fi
+          # govulncheck 检查已知漏洞
+          if ! command -v govulncheck &> /dev/null; then
+            go install golang.org/x/vuln/cmd/govulncheck@latest
+            export PATH="$(go env GOPATH)/bin:$PATH"
+          fi
+          govulncheck ./... || {
+            echo "::error::Go 依赖存在已知安全漏洞"
+            exit 1
+          }
+          echo "Go 依赖安全检查通过"
+
+      - name: Trivy 容器镜像扫描
+        run: |
+          DOCKERFILES=$(find . -name 'Dockerfile' -not -path './.git/*' 2>/dev/null)
+          if [ -z "$DOCKERFILES" ]; then
+            echo "未找到 Dockerfile，跳过镜像扫描"
+            exit 0
+          fi
+          if ! command -v trivy &> /dev/null; then
+            echo "trivy 未安装，跳过容器镜像扫描"
+            exit 0
+          fi
+          # 构建并扫描镜像
+          IMAGE_NAME="ci-security-scan:$$"
+          podman build -t "$IMAGE_NAME" -f Dockerfile . || {
+            echo "::warning::容器构建失败，跳过镜像扫描"
+            exit 0
+          }
+          trivy image --severity HIGH,CRITICAL --exit-code 1 "$IMAGE_NAME" || {
+            echo "::error::容器镜像存在高危漏洞"
+            podman rmi "$IMAGE_NAME" 2>/dev/null
+            exit 1
+          }
+          podman rmi "$IMAGE_NAME" 2>/dev/null
+          echo "容器镜像安全扫描通过"

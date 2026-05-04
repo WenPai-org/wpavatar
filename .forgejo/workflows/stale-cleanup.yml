@@ -1,0 +1,17 @@
+name: Stale Issue/PR 清理
+
+on:
+  schedule:
+    - cron: '0 5 * * 1'  # 每周一凌晨 5 点
+  workflow_dispatch:
+
+jobs:
+  stale-cleanup:
+    runs-on: linux-arm64
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 清理所有原创仓库的过期 Issue 和 PR
+        env:
+          FORGEJO_TOKEN: ${{ secrets.FORGEJO_TOKEN }}
+        run: python3 scripts/stale-cleanup.py

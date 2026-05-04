@@ -1,0 +1,17 @@
+name: Auto Label
+
+on:
+  schedule:
+    - cron: '30 5 * * 1'  # 每周一凌晨 5:30（stale-cleanup 之后）
+  workflow_dispatch:
+
+jobs:
+  auto-label:
+    runs-on: linux-arm64
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 自动给 PR 打标签
+        env:
+          FORGEJO_TOKEN: ${{ secrets.FORGEJO_TOKEN }}
+        run: python3 scripts/auto-label.py

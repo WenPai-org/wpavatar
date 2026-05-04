@@ -1,0 +1,41 @@
+name: WordPress 插件 CI
+
+on:
+  push:
+    branches: ['main', 'master']
+  pull_request:
+    branches: ['main', 'master']
+
+jobs:
+  ci:
+    if: github.repository != 'WenPai-org/ci-workflows'
+    runs-on: linux-arm64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: PHP Parallel Lint
+        run: |
+          parallel-lint --exclude vendor --exclude node_modules .
+
+      - name: PHPCS 代码规范检查
+        run: |
+          # 如果仓库有自定义 phpcs 配置则使用，否则用默认 WordPress 标准
+          if [ -f phpcs.xml ] || [ -f phpcs.xml.dist ] || [ -f .phpcs.xml ] || [ -f .phpcs.xml.dist ]; then
+            phpcs .
+          else
+            phpcs --standard=WordPress-Extra \
+              --extensions=php \
+              --ignore=vendor/*,node_modules/*,tests/*,lib/* \
+              --report=full \
+              -s .
+          fi
+
+      - name: Gitleaks 密钥泄露扫描
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            gitleaks detect --source=. --log-opts="$GITHUB_SHA~1..$GITHUB_SHA" --verbose --exit-code 1
+          else
+            gitleaks detect --source=. --verbose --exit-code 1
+          fi
+          echo "gitleaks 扫描通过"
