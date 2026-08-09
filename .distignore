@@ -1,0 +1,9 @@
+.git
+.forgejo
+.wp-env.json
+docs
+tests
+scripts
+dist
+phpcs.xml
+phpunit.xml.dist

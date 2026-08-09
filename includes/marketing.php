@@ -36,6 +36,7 @@ class Marketing {
 			array(
 				'type'    => 'integer',
 				'default' => 15,
+				'sanitize_callback' => 'wpavatar_sanitize_marketing_count',
 			)
 		);
 		register_setting(
@@ -44,6 +45,7 @@ class Marketing {
 			array(
 				'type'    => 'integer',
 				'default' => 45,
+				'sanitize_callback' => 'wpavatar_sanitize_marketing_size',
 			)
 		);
 		register_setting(
@@ -52,6 +54,7 @@ class Marketing {
 			array(
 				'type'    => 'integer',
 				'default' => 15,
+				'sanitize_callback' => 'wpavatar_sanitize_marketing_count',
 			)
 		);
 		register_setting(
@@ -60,6 +63,7 @@ class Marketing {
 			array(
 				'type'    => 'integer',
 				'default' => 40,
+				'sanitize_callback' => 'wpavatar_sanitize_marketing_size',
 			)
 		);
 	}
@@ -169,6 +173,9 @@ class Marketing {
 		);
 
 		// 获取全部文章的最新评论，限制为指定的评论者数量
+		$atts['number'] = wpavatar_sanitize_marketing_count( $atts['number'] );
+		$atts['size']   = wpavatar_sanitize_marketing_size( $atts['size'] );
+
 		$comments = get_comments(
 			array(
 				'number' => $atts['number'] * 3, // 获取更多评论以确保有足够不重复的评论者
@@ -242,6 +249,9 @@ class Marketing {
 			$atts
 		);
 
+		$atts['number'] = wpavatar_sanitize_marketing_count( $atts['number'] );
+		$atts['size']   = wpavatar_sanitize_marketing_size( $atts['size'] );
+
 		$users = get_users(
 			array(
 				'orderby' => 'registered',
@@ -287,11 +297,15 @@ class Marketing {
 			$atts
 		);
 
-		$args  = array(
+		$atts['number'] = wpavatar_sanitize_marketing_count( $atts['number'] );
+		$atts['size']   = wpavatar_sanitize_marketing_size( $atts['size'] );
+
+		$args = array(
 			'orderby' => 'registered',
 			'order'   => 'DESC',
-			'number'  => intval( $atts['number'] ) * 2, // 获取更多用户以便随机选择
+			'number'  => $atts['number'] * 2, // 获取更多用户以便随机选择
 		);
+
 		$users = get_users( $args );
 
 		if ( empty( $users ) ) {
@@ -331,6 +345,8 @@ class Marketing {
 			),
 			$atts
 		);
+
+		$atts['size'] = wpavatar_sanitize_avatar_size( $atts['size'] );
 
 		$post_id = get_the_ID();
 		if ( ! $post_id ) {

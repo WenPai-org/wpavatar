@@ -113,60 +113,32 @@ class Cravatar {
 	 * SHA256 迁移: 不再强制 MD5，Cravatar 服务端通过 hash 长度自动识别算法
 	 */
 	public static function get_avatar_url( $url, $id_or_email ) {
-		// 如果地址已经是我们支持的域名，则直接返回
-		$cdn_type   = wpavatar_get_option( 'wpavatar_cdn_type', 'cravatar_route' );
-		$cdn_domain = '';
+		$cdn_domain = wpavatar_get_cdn_domain();
+		$parsed_url = wp_parse_url( $url );
 
-		if ( 'cravatar_route' === $cdn_type ) {
-			$cdn_domain = wpavatar_get_option( 'wpavatar_cravatar_route', 'cravatar.com' );
-		} elseif ( 'third_party' === $cdn_type ) {
-			$cdn_domain = wpavatar_get_option( 'wpavatar_third_party_mirror', 'weavatar.com' );
-		} elseif ( 'custom' === $cdn_type ) {
-			$cdn_domain = wpavatar_get_option( 'wpavatar_custom_cdn', '' );
-			if ( empty( $cdn_domain ) ) {
-				$cdn_domain = 'cravatar.com';
-			}
-		}
-
-		// 检查URL是否已经使用了支持的域名
-		if ( strpos( $url, $cdn_domain ) !== false ) {
+		if ( is_array( $parsed_url ) && isset( $parsed_url['host'] ) && strtolower( rtrim( $parsed_url['host'], '.' ) ) === strtolower( $cdn_domain ) ) {
 			return $url;
 		}
 
-		// 从URL提取邮箱哈希（SHA256 64位 或 MD5 32位）
 		$hash = '';
-
-		if ( preg_match( '/\/avatar\/([a-f0-9]{64})/', $url, $matches ) ) {
-			$hash = $matches[1];
-		} elseif ( preg_match( '/\/avatar\/([a-f0-9]{32})/', $url, $matches ) ) {
-			$hash = $matches[1];
+		if ( preg_match( '/\/avatar\/([a-f0-9]{64})/i', $url, $matches ) ) {
+			$hash = strtolower( $matches[1] );
+		} elseif ( preg_match( '/\/avatar\/([a-f0-9]{32})/i', $url, $matches ) ) {
+			$hash = strtolower( $matches[1] );
 		}
 
 		if ( empty( $hash ) ) {
 			return self::replace_avatar_url( $url );
 		}
 
-		// 构建新的头像URL
 		$new_url = 'https://' . $cdn_domain . '/avatar/' . $hash;
-
-		// 保留原始URL中的参数
-		$query_params = array();
-		$parsed_url   = parse_url( $url );
-		if ( isset( $parsed_url['query'] ) ) {
-			parse_str( $parsed_url['query'], $query_params );
-		}
-
-		// 构建完整URL
-		if ( ! empty( $query_params ) ) {
-			$new_url .= '?' . http_build_query( $query_params );
+		if ( is_array( $parsed_url ) && isset( $parsed_url['query'] ) ) {
+			$new_url .= '?' . $parsed_url['query'];
 		}
 
 		return $new_url;
 	}
 
-	/**
-	 * 从ID或邮箱获取邮箱地址
-	 */
 	public static function get_email_from_id_or_email( $id_or_email ) {
 		$email = '';
 
@@ -215,30 +187,22 @@ class Cravatar {
 	}
 
 	public static function replace_avatar_url( $url ) {
-		// 更换Gravatar域名为Cravatar域名（保留所有查询参数包括 hash=sha256）
-		foreach ( self::$gravatar_domains as $domain ) {
-			if ( strpos( $url, $domain ) !== false ) {
-				$cdn_type   = wpavatar_get_option( 'wpavatar_cdn_type', 'cravatar_route' );
-				$cdn_domain = '';
-
-				if ( 'cravatar_route' === $cdn_type ) {
-					$cdn_domain = wpavatar_get_option( 'wpavatar_cravatar_route', 'cravatar.com' );
-				} elseif ( 'third_party' === $cdn_type ) {
-					$cdn_domain = wpavatar_get_option( 'wpavatar_third_party_mirror', 'weavatar.com' );
-				} elseif ( 'custom' === $cdn_type ) {
-					$custom_cdn = wpavatar_get_option( 'wpavatar_custom_cdn', '' );
-					if ( ! empty( $custom_cdn ) ) {
-						$cdn_domain = $custom_cdn;
-					} else {
-						$cdn_domain = 'cravatar.com';
-					}
-				}
-
-				return str_replace( $domain, $cdn_domain, $url );
-			}
+		$parsed_url = wp_parse_url( $url );
+		if ( ! is_array( $parsed_url ) || empty( $parsed_url['host'] ) ) {
+			return $url;
 		}
 
-		return $url;
+		$host = strtolower( rtrim( $parsed_url['host'], '.' ) );
+		if ( ! in_array( $host, self::$gravatar_domains, true ) ) {
+			return $url;
+		}
+
+		return preg_replace(
+			'~^https?://' . preg_quote( $parsed_url['host'], '~' ) . '~i',
+			'https://' . wpavatar_get_cdn_domain(),
+			$url,
+			1
+		);
 	}
 
 	public static function add_seo_alt( $avatar, $id_or_email, $size, $default, $alt ) {
@@ -260,8 +224,8 @@ class Cravatar {
 				$user = get_user_by( 'email', $id_or_email );
 			}
 
-			$alt_text = $user ? sprintf( $seo_alt, $user->display_name ) : __( '用户头像', 'wpavatar' );
-			$avatar   = preg_replace( '/alt=([\'"])[^\'"]*\\1/', "alt='$alt_text'", $avatar );
+			$alt_text = $user ? str_replace( '%s', $user->display_name, $seo_alt ) : __( 'User avatar', 'wpavatar' );
+			$avatar   = preg_replace( '/alt=([\'"])[^\'"]*\\1/', "alt='" . esc_attr( $alt_text ) . "'", $avatar );
 		}
 
 		// 添加头像加载失败的备用显示
@@ -299,7 +263,7 @@ class Cache {
 	}
 
 	public static function setup_cache_dir() {
-		$base_dir = wpavatar_get_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR );
+		$base_dir = wpavatar_get_cache_base_dir();
 		$base_dir = rtrim( $base_dir, '/\\' ) . '/';
 
 		if ( ! file_exists( $base_dir ) ) {
@@ -408,58 +372,33 @@ class Cache {
 			return $avatar;
 		}
 
-		preg_match( '/src=([\'"])([^\'"]+)\\1/', $avatar, $matches );
+		preg_match( '/\ssrc=([\'"])([^\'"]+)\\1/i', $avatar, $matches );
 		if ( empty( $matches[2] ) ) {
 			return $avatar;
 		}
 
-		$url = $matches[2];
+		$html_url = $matches[2];
+		$url      = html_entity_decode( $html_url, ENT_QUOTES, 'UTF-8' );
 
-		$is_avatar_url = false;
-
-		$cdn_type = wpavatar_get_option( 'wpavatar_cdn_type', 'cravatar_route' );
-		if ( 'cravatar_route' === $cdn_type ) {
-			$cdn_domain = wpavatar_get_option( 'wpavatar_cravatar_route', 'cravatar.com' );
-			if ( strpos( $url, $cdn_domain ) !== false ) {
-				$is_avatar_url = true;
-			}
-		} elseif ( 'third_party' === $cdn_type ) {
-			$cdn_domain = wpavatar_get_option( 'wpavatar_third_party_mirror', 'weavatar.com' );
-			if ( strpos( $url, $cdn_domain ) !== false ) {
-				$is_avatar_url = true;
-			}
-		} elseif ( 'custom' === $cdn_type ) {
-			$cdn_domain = wpavatar_get_option( 'wpavatar_custom_cdn', '' );
-			if ( ! empty( $cdn_domain ) && strpos( $url, $cdn_domain ) !== false ) {
-				$is_avatar_url = true;
-			}
-		}
-
-		if ( ! $is_avatar_url ) {
-			foreach ( Cravatar::$gravatar_domains as $domain ) {
-				if ( strpos( $url, $domain ) !== false ) {
-					$is_avatar_url = true;
-					break;
-				}
-			}
-		}
-
-		if ( ! $is_avatar_url ) {
+		if ( ! wpavatar_is_allowed_avatar_url( $url ) ) {
 			return $avatar;
 		}
 
 		$hash       = self::get_avatar_hash( $id_or_email );
 		$cache_file = self::get_cache_path( $hash, $size );
+		if ( empty( $cache_file ) ) {
+			return $avatar;
+		}
 
 		$cache_expire = wpavatar_get_option( 'wpavatar_cache_expire', 7 ) * DAY_IN_SECONDS;
 		if ( file_exists( $cache_file ) && filemtime( $cache_file ) > ( time() - $cache_expire ) ) {
 			$cached_url = content_url( str_replace( WP_CONTENT_DIR, '', $cache_file ) );
-			return str_replace( $url, esc_url( $cached_url ), $avatar );
+			return str_replace( $html_url, esc_url( $cached_url ), $avatar );
 		}
 
 		if ( self::cache_remote_avatar( $url, $cache_file ) ) {
 			$cached_url = content_url( str_replace( WP_CONTENT_DIR, '', $cache_file ) );
-			return str_replace( $url, esc_url( $cached_url ), $avatar );
+			return str_replace( $html_url, esc_url( $cached_url ), $avatar );
 		}
 
 		return $avatar;
@@ -477,75 +416,84 @@ class Cache {
 	}
 
 	public static function get_cache_path( $hash, $size ) {
-		$dir = wpavatar_get_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR );
-		$dir = trailingslashit( $dir );
-
-		// Add site-specific directory if multisite
-		if ( is_multisite() ) {
-			$blog_id = get_current_blog_id();
-			$dir     = $dir . 'site-' . $blog_id . '/';
+		if ( ! preg_match( '/^[a-f0-9]{32}(?:[a-f0-9]{32})?$/', $hash ) ) {
+			return '';
 		}
 
-		wp_mkdir_p( $dir );
-		return $dir . "{$hash}-{$size}.jpg";
+		$size = wpavatar_sanitize_avatar_size( $size );
+		$dir  = trailingslashit( wpavatar_get_cache_base_dir() );
+
+		if ( is_multisite() ) {
+			$dir .= 'site-' . get_current_blog_id() . '/';
+		}
+
+		if ( ! wp_mkdir_p( $dir ) ) {
+			return '';
+		}
+
+		return $dir . $hash . '-' . $size . '.jpg';
 	}
 
 	public static function cache_remote_avatar( $url, $dest ) {
+		if ( empty( $dest ) || ! wpavatar_is_allowed_avatar_url( $url ) ) {
+			return false;
+		}
+
 		$dir = dirname( $dest );
-		if ( ! file_exists( $dir ) ) {
-			if ( ! wp_mkdir_p( $dir ) ) {
-				error_log( 'WPAvatar: Failed to create cache directory: ' . $dir );
+		if ( ( ! file_exists( $dir ) && ! wp_mkdir_p( $dir ) ) || ! is_writable( $dir ) ) {
+			return false;
+		}
+
+		$lock = @fopen( $dest . '.lock', 'x' );
+		if ( false === $lock ) {
+			return false;
+		}
+
+		$tmp = '';
+		try {
+			$response = wp_safe_remote_get(
+				$url,
+				array(
+					'timeout'             => wpavatar_sanitize_timeout( wpavatar_get_option( 'wpavatar_timeout', 5 ) ),
+					'redirection'         => 2,
+					'limit_response_size' => 2 * MB_IN_BYTES,
+					'user-agent'          => 'WPAvatar/' . WPAVATAR_VERSION . '; ' . home_url(),
+				)
+			);
+
+			if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
 				return false;
 			}
+
+			$image = wp_remote_retrieve_body( $response );
+			if ( empty( $image ) || strlen( $image ) > 2 * MB_IN_BYTES ) {
+				return false;
+			}
+
+			$image_info = function_exists( 'getimagesizefromstring' ) ? @getimagesizefromstring( $image ) : false;
+			$mime       = is_array( $image_info ) ? ( $image_info['mime'] ?? '' ) : '';
+			if ( ! in_array( $mime, array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' ), true ) ) {
+				return false;
+			}
+
+			$tmp = tempnam( $dir, 'wpavatar-' );
+			if ( false === $tmp || false === file_put_contents( $tmp, $image, LOCK_EX ) ) {
+				return false;
+			}
+
+			@chmod( $tmp, 0644 );
+			if ( ! @rename( $tmp, $dest ) ) {
+				return false;
+			}
+			$tmp = '';
+			return true;
+		} finally {
+			if ( $tmp && file_exists( $tmp ) ) {
+				@unlink( $tmp );
+			}
+			fclose( $lock );
+			@unlink( $dest . '.lock' );
 		}
-
-		if ( ! is_writable( $dir ) ) {
-			error_log( 'WPAvatar: Cache directory is not writable: ' . $dir );
-			return false;
-		}
-
-		$timeout = wpavatar_get_option( 'wpavatar_timeout', 5 );
-
-		$response = wp_remote_get(
-			$url,
-			array(
-				'timeout'    => $timeout,
-				'user-agent' => 'WPAvatar/' . WPAVATAR_VERSION . '; ' . home_url(),
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			error_log( 'WPAvatar: Error fetching avatar: ' . $response->get_error_message() );
-			return false;
-		}
-
-		$response_code = wp_remote_retrieve_response_code( $response );
-		if ( $response_code !== 200 ) {
-			error_log( 'WPAvatar: Bad response code: ' . $response_code );
-			return false;
-		}
-
-		$image = wp_remote_retrieve_body( $response );
-		if ( empty( $image ) ) {
-			error_log( 'WPAvatar: Empty image received' );
-			return false;
-		}
-
-		$content_type = wp_remote_retrieve_header( $response, 'content-type' );
-		if ( strpos( $content_type, 'image/' ) !== 0 ) {
-			error_log( 'WPAvatar: Invalid content type: ' . $content_type );
-			return false;
-		}
-
-		$result = file_put_contents( $dest, $image );
-		if ( $result === false ) {
-			error_log( 'WPAvatar: Failed to write cache file: ' . $dest );
-			return false;
-		}
-
-		@chmod( $dest, 0644 );
-
-		return true;
 	}
 
 	public static function cache_comment_avatar( $comment_id, $comment_approved ) {
@@ -607,7 +555,7 @@ class Cache {
 	}
 
 	public static function purge_expired() {
-		$base_dir = wpavatar_get_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR );
+		$base_dir = wpavatar_get_cache_base_dir();
 		if ( ! file_exists( $base_dir ) || ! is_dir( $base_dir ) ) {
 			return;
 		}
@@ -650,7 +598,7 @@ class Cache {
 	}
 
 	public static function check_cache_status() {
-		$base_dir = wpavatar_get_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR );
+		$base_dir = wpavatar_get_cache_base_dir();
 
 		// For multisite, check site-specific directory
 		if ( is_multisite() ) {
@@ -707,7 +655,7 @@ class Cache {
 	}
 
 	public static function check_all_cache_status() {
-		$base_dir = wpavatar_get_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR );
+		$base_dir = wpavatar_get_cache_base_dir();
 
 		$global_stats = array(
 			'path'        => $base_dir,
@@ -905,7 +853,7 @@ class Shortcode {
 			return '';
 		}
 
-		return $atts['before'] . $user->display_name . $atts['after'];
+		return wp_kses_post( $atts['before'] ) . esc_html( $user->display_name ) . wp_kses_post( $atts['after'] );
 	}
 
 	public static function menu_item_replace( $item_output, $item, $depth, $args ) {

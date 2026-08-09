@@ -44,17 +44,18 @@ class Network {
 		}
 
 		// Hook for new blog creation
-		add_action( 'wpmu_new_blog', array( __CLASS__, 'new_site_created' ) );
+		add_action( 'wp_initialize_site', array( __CLASS__, 'new_site_created' ), 100, 2 );
 	}
 
 	/**
 	 * Handle creation of new blog in multisite
 	 */
-	public static function new_site_created( $blog_id ) {
-		if ( get_site_option( 'wpavatar_network_enabled', 1 ) ) {
+	public static function new_site_created( $new_site, $args = array() ) {
+		$blog_id = $new_site instanceof \WP_Site ? (int) $new_site->blog_id : absint( $new_site );
+		if ( $blog_id > 0 && get_site_option( 'wpavatar_network_enabled', 1 ) ) {
 			// Create cache directory for the new site
-			$cache_path     = get_site_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR );
-			$site_cache_dir = trailingslashit( $cache_path )) . 'site-' . $blog_id;
+			$cache_path     = wpavatar_sanitize_cache_path( get_site_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR ) );
+			$site_cache_dir = trailingslashit( $cache_path ) . 'site-' . $blog_id;
 
 			if ( ! file_exists( $site_cache_dir ) ) {
 				wp_mkdir_p( $site_cache_dir );
@@ -95,7 +96,10 @@ class Network {
 				);
 
 				foreach ( $options_to_copy as $option ) {
-					update_option( $option, get_site_option( $option ) );
+					$network_value = wpavatar_sanitize_option_value( $option, get_site_option( $option ) );
+					if ( null !== $network_value ) {
+						update_option( $option, $network_value );
+					}
 				}
 
 				restore_current_blog();
@@ -133,7 +137,7 @@ class Network {
 			array(
 				'nonce'            => wp_create_nonce( 'wpavatar_admin_nonce' ),
 				'ajaxurl'          => admin_url( 'admin-ajax.php' ),
-				'cache_path'       => get_site_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR ),
+				'cache_path'       => wpavatar_sanitize_cache_path( get_site_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR ) ),
 				'plugin_url'       => WPAVATAR_PLUGIN_URL,
 				'assets_url'       => WPAVATAR_PLUGIN_URL . 'assets/',
 				'is_network_admin' => is_network_admin() ? '1' : '0',
@@ -181,7 +185,7 @@ class Network {
 	 * Add network action links
 	 */
 	public static function add_network_action_links( $links ) {
-		$settings_link = '<a href="' . network_admin_url( 'settings.php?page=wpavatar-network' )) . '">' . __( '网络设置', 'wpavatar' )) . '</a>';
+		$settings_link = '<a href="' . network_admin_url( 'settings.php?page=wpavatar-network' ) . '">' . __( '网络设置', 'wpavatar' ) . '</a>';
 		array_unshift( $links, $settings_link );
 		return $links;
 	}
@@ -205,7 +209,7 @@ class Network {
 
 		if ( get_site_option( 'wpavatar_network_enforce', 0 ) ) {
 			echo '<div class="notice notice-warning"><p>' .
-				__( 'WPAvatar 插件正由网络管理员强制管理。所有设置将使用网络级别配置，任何更改将被忽略。如有疑问请联系网络管理员。', 'wpavatar' )) .
+				__( 'WPAvatar 插件正由网络管理员强制管理。所有设置将使用网络级别配置，任何更改将被忽略。如有疑问请联系网络管理员。', 'wpavatar' ) .
 				'</p></div>';
 		} elseif ( $controlled_count > 0 ) {
 			echo '<div class="notice notice-info"><p>' .
@@ -238,7 +242,7 @@ class Network {
 		// Display update message if settings were just updated
 		if ( isset( $_GET['updated'] ) && 'true' === $_GET['updated'] ) {
 			echo '<div class="notice notice-success is-dismissible"><p>' .
-				__( '网络设置已保存。', 'wpavatar' )) .
+				__( '网络设置已保存。', 'wpavatar' ) .
 				'</p></div>';
 		}
 
@@ -399,13 +403,13 @@ class Network {
 									echo '<div class="network-control-options">';
 									foreach ( $option_groups as $group => $group_data ) {
 										echo '<div class="option-group">';
-										echo '<h4>' . esc_html( $group_data['title'] )) . '</h4>';
+										echo '<h4>' . esc_html( $group_data['title'] ) . '</h4>';
 
 										foreach ( $group_data['options'] as $option ) {
 											echo '<label class="wpavatar-checkbox">';
-											echo '<input type="checkbox" name="wpavatar_network_controlled_options[]" value="' . esc_attr( $option )) . '" ' .
-												( in_array( $option, $controlled_options ) ? 'checked' : '' )) . '>';
-											echo '<span class="wpavatar-checkbox-label">' . esc_html( $all_options[ $option ] )) . '</span>';
+											echo '<input type="checkbox" name="wpavatar_network_controlled_options[]" value="' . esc_attr( $option ) . '" ' .
+												( in_array( $option, $controlled_options ) ? 'checked' : '' ) . '>';
+											echo '<span class="wpavatar-checkbox-label">' . esc_html( $all_options[ $option ] ) . '</span>';
 											echo '</label><br>';
 										}
 
@@ -545,7 +549,7 @@ class Network {
 							<tr>
 								<th><?php _e( '缓存根目录', 'wpavatar' ); ?></th>
 								<td>
-									<input type="text" name="wpavatar_cache_path" value="<?php echo esc_attr( get_site_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR ) ); ?>" class="regular-text wpavatar-input">
+									<input type="text" name="wpavatar_cache_path" value="<?php echo esc_attr( wpavatar_sanitize_cache_path( get_site_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR ) ) ); ?>" class="regular-text wpavatar-input">
 									<p class="description"><?php _e( '确保目录可写，每个站点将在此目录下创建独立的子目录', 'wpavatar' ); ?></p>
 								</td>
 							</tr>
@@ -817,8 +821,8 @@ class Network {
 									$blog_name = get_bloginfo( 'name' );
 									restore_current_blog();
 
-									echo '<option value="' . esc_attr( $site->blog_id )) . '">' .
-										esc_html( $blog_name )) . ' (' . esc_html( $site->domain . $site->path )) . ')</option>';
+									echo '<option value="' . esc_attr( $site->blog_id ) . '">' .
+										esc_html( $blog_name ) . ' (' . esc_html( $site->domain . $site->path ) . ')</option>';
 								}
 								?>
 							</select>
@@ -1029,7 +1033,7 @@ class Network {
 		check_admin_referer( 'wpavatar_network_settings' );
 
 		// Get the current tab
-		$current_tab = isset( $_POST['tab'] ) ? sanitize_text_field( $_POST['tab'] ) : '';
+		$current_tab = isset( $_POST['tab'] ) ? sanitize_key( wp_unslash( $_POST['tab'] ) ) : '';
 
 		// Process network management settings
 		if ( $current_tab === 'network' ) {
@@ -1038,18 +1042,26 @@ class Network {
 			update_site_option( 'wpavatar_network_enforce', isset( $_POST['wpavatar_network_enforce'] ) ? 1 : 0 );
 
 			// Network controlled options
-			$controlled_options = isset( $_POST['wpavatar_network_controlled_options'] ) ? $_POST['wpavatar_network_controlled_options'] : array();
+			$controlled_options = isset( $_POST['wpavatar_network_controlled_options'] ) ? (array) wp_unslash( $_POST['wpavatar_network_controlled_options'] ) : array();
+			$controlled_options = array_values( array_intersect( array_keys( array_filter( array(
+				'wpavatar_enable_cravatar' => true, 'wpavatar_cdn_type' => true, 'wpavatar_cravatar_route' => true,
+				'wpavatar_third_party_mirror' => true, 'wpavatar_custom_cdn' => true, 'wpavatar_timeout' => true,
+				'wpavatar_enable_cache' => true, 'wpavatar_cache_path' => true, 'wpavatar_cache_expire' => true,
+				'wpavatar_seo_alt' => true, 'wpavatar_fallback_mode' => true, 'wpavatar_fallback_avatar' => true,
+				'wpavatar_shortcode_size' => true, 'wpavatar_shortcode_class' => true, 'wpavatar_shortcode_shape' => true,
+				'wpavatar_commenters_count' => true, 'wpavatar_commenters_size' => true, 'wpavatar_users_count' => true, 'wpavatar_users_size' => true,
+			) ) ), array_map( 'sanitize_key', $controlled_options ) ) );
 			update_site_option( 'wpavatar_network_controlled_options', $controlled_options );
 		}
 
 		// Process basic settings
 		if ( $current_tab === 'basic' ) {
 			update_site_option( 'wpavatar_enable_cravatar', isset( $_POST['wpavatar_enable_cravatar'] ) ? 1 : 0 );
-			update_site_option( 'wpavatar_cdn_type', sanitize_text_field( $_POST['wpavatar_cdn_type'] ?? 'cravatar_route' ) );
-			update_site_option( 'wpavatar_cravatar_route', sanitize_text_field( $_POST['wpavatar_cravatar_route'] ?? 'cravatar.com' ) );
-			update_site_option( 'wpavatar_third_party_mirror', sanitize_text_field( $_POST['wpavatar_third_party_mirror'] ?? 'weavatar.com' ) );
-			update_site_option( 'wpavatar_custom_cdn', sanitize_text_field( $_POST['wpavatar_custom_cdn'] ?? '' ) );
-			update_site_option( 'wpavatar_timeout', intval( $_POST['wpavatar_timeout'] ?? 5 ) );
+			update_site_option( 'wpavatar_cdn_type', wpavatar_sanitize_cdn_type( wp_unslash( $_POST['wpavatar_cdn_type'] ?? 'cravatar_route' ) ) );
+			update_site_option( 'wpavatar_cravatar_route', wpavatar_sanitize_cravatar_route( wp_unslash( $_POST['wpavatar_cravatar_route'] ?? 'cravatar.com' ) ) );
+			update_site_option( 'wpavatar_third_party_mirror', wpavatar_sanitize_third_party_mirror( wp_unslash( $_POST['wpavatar_third_party_mirror'] ?? 'weavatar.com' ) ) );
+			update_site_option( 'wpavatar_custom_cdn', wpavatar_sanitize_custom_cdn( wp_unslash( $_POST['wpavatar_custom_cdn'] ?? '' ) ) );
+			update_site_option( 'wpavatar_timeout', wpavatar_sanitize_timeout( $_POST['wpavatar_timeout'] ?? 5 ) );
 		}
 
 		// Process cache settings
@@ -1057,8 +1069,8 @@ class Network {
 			update_site_option( 'wpavatar_enable_cache', isset( $_POST['wpavatar_enable_cache'] ) ? 1 : 0 );
 
 			// Sanitize cache path
-			$cache_path = sanitize_text_field( $_POST['wpavatar_cache_path'] ?? WPAVATAR_CACHE_DIR );
-			$cache_path = rtrim( $cache_path, '/\\' )) . '/';
+			$cache_path = wpavatar_sanitize_cache_path( wp_unslash( $_POST['wpavatar_cache_path'] ?? WPAVATAR_CACHE_DIR ) );
+			$cache_path = rtrim( $cache_path, '/\\' ) . '/';
 
 			if ( ! preg_match( '~^(?:/|\\\\|[a-zA-Z]:)~', $cache_path ) ) {
 				$cache_path = WP_CONTENT_DIR . '/' . ltrim( $cache_path, '/\\' );
@@ -1097,29 +1109,29 @@ class Network {
 				update_site_option( 'wpavatar_cache_path', $cache_path );
 			}
 
-			update_site_option( 'wpavatar_cache_expire', intval( $_POST['wpavatar_cache_expire'] ?? 15 ) );
+			update_site_option( 'wpavatar_cache_expire', wpavatar_sanitize_cache_expire( $_POST['wpavatar_cache_expire'] ?? 15 ) );
 		}
 
 		// Process advanced settings
 		if ( $current_tab === 'advanced' ) {
-			update_site_option( 'wpavatar_seo_alt', sanitize_text_field( $_POST['wpavatar_seo_alt'] ?? '%s的头像' ) );
+			update_site_option( 'wpavatar_seo_alt', sanitize_text_field( wp_unslash( $_POST['wpavatar_seo_alt'] ?? '%s的头像' ) ) );
 			update_site_option( 'wpavatar_fallback_mode', isset( $_POST['wpavatar_fallback_mode'] ) ? 1 : 0 );
-			update_site_option( 'wpavatar_fallback_avatar', sanitize_text_field( $_POST['wpavatar_fallback_avatar'] ?? 'default' ) );
+			update_site_option( 'wpavatar_fallback_avatar', wpavatar_sanitize_fallback_avatar( wp_unslash( $_POST['wpavatar_fallback_avatar'] ?? 'default' ) ) );
 		}
 
 		// Process shortcode settings
 		if ( $current_tab === 'shortcodes' ) {
-			update_site_option( 'wpavatar_shortcode_size', intval( $_POST['wpavatar_shortcode_size'] ?? 96 ) );
-			update_site_option( 'wpavatar_shortcode_class', sanitize_text_field( $_POST['wpavatar_shortcode_class'] ?? 'wpavatar' ) );
-			update_site_option( 'wpavatar_shortcode_shape', sanitize_text_field( $_POST['wpavatar_shortcode_shape'] ?? 'square' ) );
+			update_site_option( 'wpavatar_shortcode_size', wpavatar_sanitize_avatar_size( $_POST['wpavatar_shortcode_size'] ?? 96 ) );
+			update_site_option( 'wpavatar_shortcode_class', wpavatar_sanitize_shortcode_class( wp_unslash( $_POST['wpavatar_shortcode_class'] ?? 'wpavatar' ) ) );
+			update_site_option( 'wpavatar_shortcode_shape', wpavatar_sanitize_shortcode_shape( wp_unslash( $_POST['wpavatar_shortcode_shape'] ?? 'square' ) ) );
 		}
 
 		// Process marketing settings
 		if ( $current_tab === 'marketing' ) {
-			update_site_option( 'wpavatar_commenters_count', intval( $_POST['wpavatar_commenters_count'] ?? 15 ) );
-			update_site_option( 'wpavatar_commenters_size', intval( $_POST['wpavatar_commenters_size'] ?? 45 ) );
-			update_site_option( 'wpavatar_users_count', intval( $_POST['wpavatar_users_count'] ?? 15 ) );
-			update_site_option( 'wpavatar_users_size', intval( $_POST['wpavatar_users_size'] ?? 40 ) );
+			update_site_option( 'wpavatar_commenters_count', wpavatar_sanitize_marketing_count( $_POST['wpavatar_commenters_count'] ?? 15 ) );
+			update_site_option( 'wpavatar_commenters_size', wpavatar_sanitize_marketing_size( $_POST['wpavatar_commenters_size'] ?? 45 ) );
+			update_site_option( 'wpavatar_users_count', wpavatar_sanitize_marketing_count( $_POST['wpavatar_users_count'] ?? 15 ) );
+			update_site_option( 'wpavatar_users_size', wpavatar_sanitize_marketing_size( $_POST['wpavatar_users_size'] ?? 40 ) );
 		}
 
 		// Redirect back to the appropriate page with update message
@@ -1136,7 +1148,7 @@ class Network {
 			$redirect_url = add_query_arg( 'tab', $current_tab, $redirect_url );
 		}
 
-		wp_redirect( $redirect_url );
+		wp_safe_redirect( $redirect_url );
 		exit;
 	}
 
@@ -1151,8 +1163,8 @@ class Network {
 
 		check_admin_referer( 'wpavatar_import_site_settings' );
 
-		$blog_id = intval( $_POST['import_blog_id'] );
-		if ( $blog_id <= 0 ) {
+		$blog_id = absint( $_POST['import_blog_id'] );
+		if ( $blog_id <= 0 || ! get_site( $blog_id ) ) {
 			wp_die( __( '无效的站点ID。', 'wpavatar' ) );
 			return;
 		}
@@ -1187,15 +1199,18 @@ class Network {
 		// Copy options from site to network
 		foreach ( $options_to_import as $option ) {
 			$value = get_option( $option );
-			if ( $value !== false ) {
-				update_site_option( $option, $value );
+			if ( false !== $value ) {
+				$value = wpavatar_sanitize_option_value( $option, $value );
+				if ( null !== $value ) {
+					update_site_option( $option, $value );
+				}
 			}
 		}
 
 		restore_current_blog();
 
 		// Redirect back with success message
-		wp_redirect(
+		wp_safe_redirect(
 			add_query_arg(
 				array(
 					'page'     => 'wpavatar-network',
@@ -1236,8 +1251,11 @@ class Network {
 			// Apply all options in the controlled list
 			foreach ( $controlled_options as $option ) {
 				$network_value = get_site_option( $option );
-				if ( $network_value !== false ) {
-					update_option( $option, $network_value );
+				if ( false !== $network_value ) {
+					$network_value = wpavatar_sanitize_option_value( $option, $network_value );
+					if ( null !== $network_value ) {
+						update_option( $option, $network_value );
+					}
 				}
 			}
 
@@ -1252,15 +1270,18 @@ class Network {
 			foreach ( $marketing_options as $option ) {
 				if ( in_array( $option, $controlled_options ) ) {
 					$network_value = get_site_option( $option );
-					if ( $network_value !== false ) {
-						update_option( $option, $network_value );
+					if ( false !== $network_value ) {
+						$network_value = wpavatar_sanitize_option_value( $option, $network_value );
+						if ( null !== $network_value ) {
+							update_option( $option, $network_value );
+						}
 					}
 				}
 			}
 
 			// Ensure site cache directory exists
-			$cache_base     = get_site_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR );
-			$site_cache_dir = trailingslashit( $cache_base )) . 'site-' . $site->blog_id;
+			$cache_base     = wpavatar_sanitize_cache_path( get_site_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR ) );
+			$site_cache_dir = trailingslashit( $cache_base ) . 'site-' . $site->blog_id;
 
 			if ( ! file_exists( $site_cache_dir ) ) {
 				wp_mkdir_p( $site_cache_dir );
@@ -1276,7 +1297,7 @@ class Network {
 		}
 
 		// Redirect back with success message
-		wp_redirect(
+		wp_safe_redirect(
 			add_query_arg(
 				array(
 					'page'    => 'wpavatar-network',

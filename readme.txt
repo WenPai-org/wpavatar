@@ -2,8 +2,8 @@
 Contributors: wpfanyi
 Tags: wpavatar, avatar, wp avatar, 头像, gravatar, cravatar
 Requires at least: 5.4
-Tested up to: 6.8.1
-Requires PHP: 5.6
+Tested up to: 7.0
+Requires PHP: 7.0
 Stable tag: 1.9.5
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html

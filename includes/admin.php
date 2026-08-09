@@ -20,47 +20,33 @@ class Settings {
 	}
 
 	public static function register_settings() {
-		// 注册设置组和设置字段
-		register_setting( 'wpavatar_basic', 'wpavatar_enable_cravatar', array( 'type' => 'boolean' ) );
-		register_setting( 'wpavatar_basic', 'wpavatar_cdn_type', array( 'type' => 'string' ) );
-		register_setting( 'wpavatar_basic', 'wpavatar_cravatar_route', array( 'type' => 'string' ) );
-		register_setting( 'wpavatar_basic', 'wpavatar_third_party_mirror', array( 'type' => 'string' ) );
-		register_setting( 'wpavatar_basic', 'wpavatar_custom_cdn', array( 'type' => 'string' ) );
-		register_setting( 'wpavatar_basic', 'wpavatar_timeout', array( 'type' => 'integer' ) );
+		register_setting( 'wpavatar_basic', 'wpavatar_enable_cravatar', array( 'type' => 'boolean', 'sanitize_callback' => 'rest_sanitize_boolean' ) );
+		register_setting( 'wpavatar_basic', 'wpavatar_cdn_type', array( 'type' => 'string', 'sanitize_callback' => 'wpavatar_sanitize_cdn_type' ) );
+		register_setting( 'wpavatar_basic', 'wpavatar_cravatar_route', array( 'type' => 'string', 'sanitize_callback' => 'wpavatar_sanitize_cravatar_route' ) );
+		register_setting( 'wpavatar_basic', 'wpavatar_third_party_mirror', array( 'type' => 'string', 'sanitize_callback' => 'wpavatar_sanitize_third_party_mirror' ) );
+		register_setting( 'wpavatar_basic', 'wpavatar_custom_cdn', array( 'type' => 'string', 'sanitize_callback' => 'wpavatar_sanitize_custom_cdn' ) );
+		register_setting( 'wpavatar_basic', 'wpavatar_timeout', array( 'type' => 'integer', 'sanitize_callback' => 'wpavatar_sanitize_timeout' ) );
 
-		register_setting( 'wpavatar_cache', 'wpavatar_enable_cache', array( 'type' => 'boolean' ) );
-		register_setting(
-			'wpavatar_cache',
-			'wpavatar_cache_path',
-			array(
-				'type'              => 'string',
-				'sanitize_callback' => array( __CLASS__, 'sanitize_cache_path' ),
-			)
-		);
-		register_setting( 'wpavatar_cache', 'wpavatar_cache_expire', array( 'type' => 'integer' ) );
+		register_setting( 'wpavatar_cache', 'wpavatar_enable_cache', array( 'type' => 'boolean', 'sanitize_callback' => 'rest_sanitize_boolean' ) );
+		register_setting( 'wpavatar_cache', 'wpavatar_cache_path', array( 'type' => 'string', 'sanitize_callback' => array( __CLASS__, 'sanitize_cache_path' ) ) );
+		register_setting( 'wpavatar_cache', 'wpavatar_cache_expire', array( 'type' => 'integer', 'sanitize_callback' => 'wpavatar_sanitize_cache_expire' ) );
 
-		register_setting( 'wpavatar_advanced', 'wpavatar_seo_alt', array( 'type' => 'string' ) );
-		register_setting( 'wpavatar_advanced', 'wpavatar_fallback_mode', array( 'type' => 'boolean' ) );
-		register_setting( 'wpavatar_advanced', 'wpavatar_fallback_avatar', array( 'type' => 'string' ) );
+		register_setting( 'wpavatar_advanced', 'wpavatar_seo_alt', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ) );
+		register_setting( 'wpavatar_advanced', 'wpavatar_fallback_mode', array( 'type' => 'boolean', 'sanitize_callback' => 'rest_sanitize_boolean' ) );
+		register_setting( 'wpavatar_advanced', 'wpavatar_fallback_avatar', array( 'type' => 'string', 'sanitize_callback' => 'wpavatar_sanitize_fallback_avatar' ) );
 
-		register_setting( 'wpavatar_shortcodes', 'wpavatar_shortcode_size', array( 'type' => 'integer' ) );
-		register_setting( 'wpavatar_shortcodes', 'wpavatar_shortcode_class', array( 'type' => 'string' ) );
-		register_setting( 'wpavatar_shortcodes', 'wpavatar_shortcode_shape', array( 'type' => 'string' ) );
+		register_setting( 'wpavatar_shortcodes', 'wpavatar_shortcode_size', array( 'type' => 'integer', 'sanitize_callback' => 'wpavatar_sanitize_avatar_size' ) );
+		register_setting( 'wpavatar_shortcodes', 'wpavatar_shortcode_class', array( 'type' => 'string', 'sanitize_callback' => 'wpavatar_sanitize_shortcode_class' ) );
+		register_setting( 'wpavatar_shortcodes', 'wpavatar_shortcode_shape', array( 'type' => 'string', 'sanitize_callback' => 'wpavatar_sanitize_shortcode_shape' ) );
 
-		// 注册营销组件设置
-		register_setting( 'wpavatar_marketing', 'wpavatar_commenters_count', array( 'type' => 'integer' ) );
-		register_setting( 'wpavatar_marketing', 'wpavatar_commenters_size', array( 'type' => 'integer' ) );
-		register_setting( 'wpavatar_marketing', 'wpavatar_users_count', array( 'type' => 'integer' ) );
-		register_setting( 'wpavatar_marketing', 'wpavatar_users_size', array( 'type' => 'integer' ) );
+		register_setting( 'wpavatar_marketing', 'wpavatar_commenters_count', array( 'type' => 'integer', 'sanitize_callback' => 'wpavatar_sanitize_marketing_count' ) );
+		register_setting( 'wpavatar_marketing', 'wpavatar_commenters_size', array( 'type' => 'integer', 'sanitize_callback' => 'wpavatar_sanitize_marketing_size' ) );
+		register_setting( 'wpavatar_marketing', 'wpavatar_users_count', array( 'type' => 'integer', 'sanitize_callback' => 'wpavatar_sanitize_marketing_count' ) );
+		register_setting( 'wpavatar_marketing', 'wpavatar_users_size', array( 'type' => 'integer', 'sanitize_callback' => 'wpavatar_sanitize_marketing_size' ) );
 	}
 
 	public static function sanitize_cache_path( $value ) {
-		$value = sanitize_text_field( $value );
-		$value = rtrim( $value, '/\\' ) . '/';
-
-		if ( ! preg_match( '~^(?:/|\\\\|[a-zA-Z]:)~', $value ) ) {
-			$value = WP_CONTENT_DIR . '/' . ltrim( $value, '/\\' );
-		}
+		$value = wpavatar_sanitize_cache_path( $value );
 
 		if ( ! file_exists( $value ) ) {
 			if ( ! wp_mkdir_p( $value ) ) {
@@ -196,7 +182,7 @@ class Settings {
 			}
 		}
 
-		$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'basic';
+		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'basic';
 		?>
 		<div class="wrap wpavatar-settings">
 			<h1><?php esc_html_e( '文派头像设置', 'wpavatar' ); ?>

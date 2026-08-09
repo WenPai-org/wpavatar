@@ -9,6 +9,9 @@
  * Text Domain: wpavatar
  * Domain Path: /languages
  * Network: true
+ * Requires PHP: 7.0
+ * License: GPL-2.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -18,53 +21,8 @@ define( 'WPAVATAR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WPAVATAR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'WPAVATAR_CACHE_DIR', WP_CONTENT_DIR . '/uploads/cravatar' );
 
-// Create necessary plugin directories if they don't exist
-if ( ! file_exists( WPAVATAR_PLUGIN_DIR . 'assets' ) ) {
-	wp_mkdir_p( WPAVATAR_PLUGIN_DIR . 'assets' );
-}
-
-if ( ! file_exists( WPAVATAR_PLUGIN_DIR . 'assets/css' ) ) {
-	wp_mkdir_p( WPAVATAR_PLUGIN_DIR . 'assets/css' );
-
-	$css_file = WPAVATAR_PLUGIN_DIR . 'admin.css';
-	if ( file_exists( $css_file ) ) {
-		copy( $css_file, WPAVATAR_PLUGIN_DIR . 'assets/css/admin.css' );
-	}
-}
-
-if ( ! file_exists( WPAVATAR_PLUGIN_DIR . 'assets/js' ) ) {
-	wp_mkdir_p( WPAVATAR_PLUGIN_DIR . 'assets/js' );
-
-	$js_file = WPAVATAR_PLUGIN_DIR . 'admin.js';
-	if ( file_exists( $js_file ) ) {
-		copy( $js_file, WPAVATAR_PLUGIN_DIR . 'assets/js/admin.js' );
-	}
-}
-
-if ( ! file_exists( WPAVATAR_PLUGIN_DIR . 'assets/images' ) ) {
-	wp_mkdir_p( WPAVATAR_PLUGIN_DIR . 'assets/images' );
-}
-
-// 检查必要的插件目录是否存在
-if ( ! file_exists( WPAVATAR_PLUGIN_DIR . 'includes' ) ) {
-	wp_mkdir_p( WPAVATAR_PLUGIN_DIR . 'includes' );
-
-	if ( file_exists( WPAVATAR_PLUGIN_DIR . 'core.php' ) ) {
-		copy( WPAVATAR_PLUGIN_DIR . 'core.php', WPAVATAR_PLUGIN_DIR . 'includes/core.php' );
-	}
-
-	if ( file_exists( WPAVATAR_PLUGIN_DIR . 'admin.php' ) ) {
-		copy( WPAVATAR_PLUGIN_DIR . 'admin.php', WPAVATAR_PLUGIN_DIR . 'includes/admin.php' );
-	}
-
-	// 创建营销组件文件
-	if ( file_exists( WPAVATAR_PLUGIN_DIR . 'marketing.php' ) ) {
-		$marketing_content = file_get_contents( WPAVATAR_PLUGIN_DIR . 'marketing.php' );
-		file_put_contents( WPAVATAR_PLUGIN_DIR . 'includes/marketing.php', $marketing_content );
-	}
-}
-
-// 包含核心文件
+// Installed plugin files are immutable at runtime; missing package files fail closed.
+require_once WPAVATAR_PLUGIN_DIR . 'includes/functions.php';
 require_once WPAVATAR_PLUGIN_DIR . 'includes/core.php';
 require_once WPAVATAR_PLUGIN_DIR . 'includes/admin.php';
 require_once WPAVATAR_PLUGIN_DIR . 'includes/multisite.php';
@@ -83,7 +41,7 @@ function wpavatar_purge_cache_ajax() {
 	}
 
 	// Get cache directory path
-	$dir = wpavatar_get_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR );
+	$dir = wpavatar_get_cache_base_dir();
 
 	// Add blog-specific directory if multisite
 	if ( is_multisite() ) {
@@ -125,7 +83,7 @@ function wpavatar_purge_all_cache_ajax() {
 	}
 
 	// Get base cache directory path
-	$base_dir = wpavatar_get_option( 'wpavatar_cache_path', WPAVATAR_CACHE_DIR );
+	$base_dir = wpavatar_get_cache_base_dir();
 	$base_dir = rtrim( $base_dir, '/\\' ) . '/';
 
 	if ( ! file_exists( $base_dir ) || ! is_dir( $base_dir ) ) {
@@ -200,37 +158,7 @@ add_action(
 		// Load text domain for translations
 		load_plugin_textdomain( 'wpavatar', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
-		// Create default avatar if it doesn't exist
-		$default_avatar = WPAVATAR_PLUGIN_DIR . 'assets/images/default-avatar.png';
-		if ( ! file_exists( $default_avatar ) ) {
-			$placeholder = WPAVATAR_PLUGIN_DIR . 'assets/images/placeholder-avatar.png';
-
-			if ( file_exists( $placeholder ) ) {
-				copy( $placeholder, $default_avatar );
-			} else {
-				$avatar_image = imagecreatetruecolor( 96, 96 );
-				$bg_color     = imagecolorallocate( $avatar_image, 238, 238, 238 );
-				$text_color   = imagecolorallocate( $avatar_image, 68, 68, 68 );
-
-				imagefill( $avatar_image, 0, 0, $bg_color );
-				imagestring( $avatar_image, 5, 30, 40, 'Avatar', $text_color );
-
-				wp_mkdir_p( dirname( $default_avatar ) );
-				imagepng( $avatar_image, $default_avatar );
-				imagedestroy( $avatar_image );
-			}
-		}
-
-		// Fetch Cravatar logo if it doesn't exist
-		$cravatar_logo = WPAVATAR_PLUGIN_DIR . 'assets/images/cravatar-logo.png';
-		if ( ! file_exists( $cravatar_logo ) && function_exists( 'file_get_contents' ) ) {
-			$logo_url  = 'https://cn.cravatar.com/avatar/00000000000000000000000000000000?d=cravatar_logo';
-			$logo_data = @file_get_contents( $logo_url );
-			if ( $logo_data ) {
-				wp_mkdir_p( dirname( $cravatar_logo ) );
-				@file_put_contents( $cravatar_logo, $logo_data );
-			}
-		}
+		// Static assets are shipped in the release package and are never generated or downloaded here.
 
 		// Initialize multisite network support first
 		if ( is_multisite() ) {
