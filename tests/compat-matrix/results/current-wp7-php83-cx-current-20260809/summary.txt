@@ -1,0 +1,29 @@
++ docker + compose + -p + wpavatar-matrix-wp7-php83-single-cx-current-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + up + -d + db + wordpress
+ Network wpavatar-matrix-wp7-php83-single-cx-current-20260809_default Creating
+ Network wpavatar-matrix-wp7-php83-single-cx-current-20260809_default Created
+ Volume wpavatar-matrix-wp7-php83-single-cx-current-20260809_wp_data Creating
+ Volume wpavatar-matrix-wp7-php83-single-cx-current-20260809_wp_data Created
+ Volume wpavatar-matrix-wp7-php83-single-cx-current-20260809_db_data Creating
+ Volume wpavatar-matrix-wp7-php83-single-cx-current-20260809_db_data Created
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-db-1 Creating
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-db-1 Created
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-wordpress-1 Creating
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-wordpress-1 Created
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-db-1 Starting
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-db-1 Started
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-db-1 Waiting
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-db-1 Healthy
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-wordpress-1 Starting
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-wordpress-1 Started
+single.up exit=0
+single.http_ready=1
++ docker + compose + -p + wpavatar-matrix-wp7-php83-single-cx-current-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + run + --rm + cli + core + install + --url=http://127.0.0.1:19171 + --title=WPAvatar-Matrix + --admin_user=admin + --admin_password=matrix-pass + --admin_email=admin@example.test + --skip-email
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-db-1 Running
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-wordpress-1 Running
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-db-1 Waiting
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-db-1 Healthy
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-db-1 Waiting
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-db-1 Healthy
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-cli-run-65d8f0bef8a0 Creating
+ Container wpavatar-matrix-wp7-php83-single-cx-current-20260809-cli-run-65d8f0bef8a0 Created
+Error: Error establishing a database connection. This either means that the username and password information in your `wp-config.php` file is incorrect or that contact with the database server at `db` could not be established. This could mean your host’s database server is down.

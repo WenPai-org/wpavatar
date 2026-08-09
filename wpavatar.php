@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WPAvatar
- * Version: 1.9.5
+ * Version: 1.9.6
  * Plugin URI: https://wpavatar.com/download
  * Description: Replace Gravatar with Cravatar, a perfect replacement of Gravatar in China.
  * Author: WPfanyi
@@ -9,6 +9,7 @@
  * Text Domain: wpavatar
  * Domain Path: /languages
  * Network: true
+ * Requires at least: 5.4
  * Requires PHP: 7.0
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -16,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'WPAVATAR_VERSION', '1.9.5' );
+define( 'WPAVATAR_VERSION', '1.9.6' );
 define( 'WPAVATAR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WPAVATAR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'WPAVATAR_CACHE_DIR', WP_CONTENT_DIR . '/uploads/cravatar' );

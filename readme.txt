@@ -4,7 +4,7 @@ Tags: wpavatar, avatar, wp avatar, gravatar, cravatar
 Requires at least: 5.4
 Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 1.9.5
+Stable tag: 1.9.6
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,6 +66,12 @@ Starting with WPAvatar consists of just two steps: installing and setting up the
 3. WPAvatar Shortcodes
 
 == Changelog ==
+
+### 1.9.6 ###
+
+* Fixed syntax errors that could prevent activation on single-site and multisite installations
+* Hardened avatar cache path validation, remote fetching, and cache cleanup
+* Improved multisite settings safety and added release verification gates
 
 ### 1.9.4 ###
 

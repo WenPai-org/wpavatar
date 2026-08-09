@@ -1,0 +1,15 @@
++ docker + compose + -p + wpavatar-matrix-wp7-php83-single-cx-current3-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + up + -d + db + wordpress
+ Network wpavatar-matrix-wp7-php83-single-cx-current3-20260809_default Creating
+ Network wpavatar-matrix-wp7-php83-single-cx-current3-20260809_default Created
+ Volume wpavatar-matrix-wp7-php83-single-cx-current3-20260809_db_data Creating
+ Volume wpavatar-matrix-wp7-php83-single-cx-current3-20260809_db_data Created
+ Volume wpavatar-matrix-wp7-php83-single-cx-current3-20260809_wp_data Creating
+ Volume wpavatar-matrix-wp7-php83-single-cx-current3-20260809_wp_data Created
+ Container wpavatar-matrix-wp7-php83-single-cx-current3-20260809-db-1 Creating
+ Container wpavatar-matrix-wp7-php83-single-cx-current3-20260809-db-1 Created
+ Container wpavatar-matrix-wp7-php83-single-cx-current3-20260809-wordpress-1 Creating
+ Container wpavatar-matrix-wp7-php83-single-cx-current3-20260809-wordpress-1 Created
+ Container wpavatar-matrix-wp7-php83-single-cx-current3-20260809-db-1 Starting
+
+MATRIX=ABORTED(coordination: yielded Docker to upgrade-path worker before sample collection)
+MATRIX_EXIT=143
