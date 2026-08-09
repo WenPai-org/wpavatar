@@ -51,7 +51,7 @@ function wpavatar_purge_cache_ajax() {
 
 	$dir = rtrim( $dir, '/\\' ) . '/';
 
-	if ( ! file_exists( $dir ) || ! is_dir( $dir ) ) {
+	if ( ! wpavatar_is_path_within_content( $dir ) || ! file_exists( $dir ) || ! is_dir( $dir ) ) {
 		wp_send_json_error( __( '缓存目录不存在', 'wpavatar' ) );
 		return;
 	}
@@ -62,13 +62,15 @@ function wpavatar_purge_cache_ajax() {
 	if ( $files ) {
 		foreach ( $files as $file ) {
 			if ( strpos( $file, $dir ) === 0 && file_exists( $file ) ) {
-				if ( @unlink( $file ) ) {
+				wp_delete_file( $file );
+				if ( ! file_exists( $file ) ) {
 					++$count;
 				}
 			}
 		}
 	}
 
+	/* translators: %d: Number of cache files deleted. */
 	wp_send_json_success( sprintf( __( '已清空 %d 个缓存文件', 'wpavatar' ), $count ) );
 }
 
@@ -86,7 +88,7 @@ function wpavatar_purge_all_cache_ajax() {
 	$base_dir = wpavatar_get_cache_base_dir();
 	$base_dir = rtrim( $base_dir, '/\\' ) . '/';
 
-	if ( ! file_exists( $base_dir ) || ! is_dir( $base_dir ) ) {
+	if ( ! wpavatar_is_path_within_content( $base_dir ) || ! file_exists( $base_dir ) || ! is_dir( $base_dir ) ) {
 		wp_send_json_error( __( '缓存目录不存在', 'wpavatar' ) );
 		return;
 	}
@@ -102,7 +104,8 @@ function wpavatar_purge_all_cache_ajax() {
 			if ( $files ) {
 				foreach ( $files as $file ) {
 					if ( file_exists( $file ) ) {
-						if ( @unlink( $file ) ) {
+						wp_delete_file( $file );
+						if ( ! file_exists( $file ) ) {
 							++$count;
 						}
 					}
@@ -116,13 +119,15 @@ function wpavatar_purge_all_cache_ajax() {
 	if ( $legacy_files ) {
 		foreach ( $legacy_files as $file ) {
 			if ( file_exists( $file ) ) {
-				if ( @unlink( $file ) ) {
+				wp_delete_file( $file );
+				if ( ! file_exists( $file ) ) {
 					++$count;
 				}
 			}
 		}
 	}
 
+	/* translators: %d: Number of cache files deleted across all sites. */
 	wp_send_json_success( sprintf( __( '已清空所有站点的 %d 个缓存文件', 'wpavatar' ), $count ) );
 }
 
@@ -217,7 +222,7 @@ function wpavatar_replace_gravatar_text( $translated_text, $text, $domain ) {
 	$screen_id      = $current_screen ? $current_screen->id : '';
 
 	$is_discussion_page = ( 'options-discussion' === $screen_id ||
-							( isset( $_GET['page'] ) && 'discussion' === $_GET['page'] ) );
+							( isset( $_GET['page'] ) && 'discussion' === sanitize_key( wp_unslash( $_GET['page'] ) ) ) );
 
 	$is_comments_page = ( 'edit-comments' === $screen_id ||
 						'comment' === $screen_id );
@@ -258,7 +263,7 @@ function wpavatar_replace_gravatar_text_plural( $translated_text, $single, $plur
 						'comment' === $screen_id ||
 						'profile' === $screen_id ||
 						'user-edit' === $screen_id ||
-						( isset( $_GET['page'] ) && 'discussion' === $_GET['page'] ) );
+						( isset( $_GET['page'] ) && 'discussion' === sanitize_key( wp_unslash( $_GET['page'] ) ) ) );
 
 	if ( $is_relevant_page ) {
 		$translated_text = str_replace( 'Gravatar', 'Cravatar', $translated_text );
@@ -288,7 +293,7 @@ function wpavatar_get_option( $option_name, $default = false ) {
 			}
 
 			// If this option is controlled by network or network enforces all settings
-			if ( in_array( $option_name, $network_controlled_options ) || get_site_option( 'wpavatar_network_enforce', 0 ) ) {
+			if ( in_array( $option_name, $network_controlled_options, true ) || get_site_option( 'wpavatar_network_enforce', 0 ) ) {
 				return get_site_option( $option_name, $default );
 			}
 		}

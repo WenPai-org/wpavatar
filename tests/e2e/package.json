@@ -1,0 +1,10 @@
+{
+  "name": "wpavatar-e2e",
+  "private": true,
+  "scripts": {
+    "test": "playwright test wpavatar.spec.js --workers=1 --reporter=line"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1"
+  }
+}

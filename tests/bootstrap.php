@@ -35,5 +35,13 @@ function wp_get_current_user() { return (object) array( 'ID' => 0, 'display_name
 function is_email( $value ) { return false !== filter_var( $value, FILTER_VALIDATE_EMAIL ); }
 function get_user_by( $field, $value ) { return $GLOBALS['wpavatar_test_user'] ?? false; }
 function get_option( $name, $default = false ) { return $default; }
+function get_comments( $args = array() ) {
+ return isset( $GLOBALS['wpavatar_get_comments'] ) ? ( $GLOBALS['wpavatar_get_comments'] )( $args ) : array();
+}
+function get_users( $args = array() ) { return array(); }
+function get_avatar( $id_or_email, $size = 96, $default = '', $alt = '', $args = array() ) {
+ return '[avatar:' . (string) $id_or_email . ']';
+}
 require_once dirname( __DIR__ ) . '/includes/functions.php';
 require_once dirname( __DIR__ ) . '/includes/core.php';
+require_once dirname( __DIR__ ) . '/includes/marketing.php';

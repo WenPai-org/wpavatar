@@ -1,0 +1,36 @@
+includes:
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+    level: 5
+    paths:
+        - wpavatar.php
+        - includes/functions.php
+        - includes/core.php
+        - includes/admin.php
+        - includes/multisite.php
+        - includes/marketing.php
+    scanFiles:
+        - includes/wpcy-compatibility.php
+    bootstrapFiles:
+        - tests/phpstan/bootstrap.php
+    tmpDir: /tmp/wpavatar-phpstan
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        # WordPress JSON/die helpers terminate in production; explicit returns keep test doubles safe.
+        -
+            identifier: deadCode.unreachable
+            path: wpavatar.php
+        -
+            identifier: deadCode.unreachable
+            path: includes/multisite.php
+        # wp_delete_file() mutates filesystem state, which the WordPress stub cannot express.
+        -
+            identifier: booleanNot.alwaysFalse
+            path: wpavatar.php
+        # Core::init() is an intentional compatibility no-op retained by the existing bootstrap contract.
+        -
+            identifier: staticMethod.resultUnused
+            path: wpavatar.php
+    parallel:
+        maximumNumberOfProcesses: 1

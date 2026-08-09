@@ -280,7 +280,7 @@ class Cache {
 			}
 		}
 
-		if ( ! is_writable( $base_dir ) ) {
+		if ( ! wpavatar_is_writable_directory( $base_dir ) ) {
 			if ( function_exists( 'add_settings_error' ) ) {
 				add_settings_error(
 					'wpavatar_cache',
@@ -330,7 +330,7 @@ class Cache {
 				}
 			}
 
-			if ( ! is_writable( $site_dir ) ) {
+			if ( ! wpavatar_is_writable_directory( $site_dir ) ) {
 				if ( function_exists( 'add_settings_error' ) ) {
 					add_settings_error(
 						'wpavatar_cache',
@@ -427,7 +427,7 @@ class Cache {
 			$dir .= 'site-' . get_current_blog_id() . '/';
 		}
 
-		if ( ! wp_mkdir_p( $dir ) ) {
+		if ( ! wpavatar_is_path_within_content( $dir ) || ! wp_mkdir_p( $dir ) || ! wpavatar_is_path_within_content( $dir ) ) {
 			return '';
 		}
 
@@ -440,10 +440,11 @@ class Cache {
 		}
 
 		$dir = dirname( $dest );
-		if ( ( ! file_exists( $dir ) && ! wp_mkdir_p( $dir ) ) || ! is_writable( $dir ) ) {
+		if ( ( ! file_exists( $dir ) && ! wp_mkdir_p( $dir ) ) || ! wpavatar_is_writable_directory( $dir ) ) {
 			return false;
 		}
 
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Exclusive create is required for the cache lock.
 		$lock = @fopen( $dest . '.lock', 'x' );
 		if ( false === $lock ) {
 			return false;
@@ -471,7 +472,7 @@ class Cache {
 			}
 
 			$image_info = function_exists( 'getimagesizefromstring' ) ? @getimagesizefromstring( $image ) : false;
-			$mime       = is_array( $image_info ) ? ( $image_info['mime'] ?? '' ) : '';
+			$mime       = is_array( $image_info ) ? $image_info['mime'] : '';
 			if ( ! in_array( $mime, array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' ), true ) ) {
 				return false;
 			}
@@ -481,7 +482,12 @@ class Cache {
 				return false;
 			}
 
-			@chmod( $tmp, 0644 );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod,WordPress.PHP.NoSilencedErrors.Discouraged -- The published cache file must be readable when PHP-FPM and the web server use different users.
+			if ( ! @chmod( $tmp, 0644 ) ) {
+				return false;
+			}
+
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomic cache publication avoids partial avatar responses.
 			if ( ! @rename( $tmp, $dest ) ) {
 				return false;
 			}
@@ -489,10 +495,11 @@ class Cache {
 			return true;
 		} finally {
 			if ( $tmp && file_exists( $tmp ) ) {
-				@unlink( $tmp );
+				wp_delete_file( $tmp );
 			}
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closes the exclusive native lock handle.
 			fclose( $lock );
-			@unlink( $dest . '.lock' );
+			wp_delete_file( $dest . '.lock' );
 		}
 	}
 
@@ -556,7 +563,7 @@ class Cache {
 
 	public static function purge_expired() {
 		$base_dir = wpavatar_get_cache_base_dir();
-		if ( ! file_exists( $base_dir ) || ! is_dir( $base_dir ) ) {
+		if ( ! wpavatar_is_path_within_content( $base_dir ) || ! file_exists( $base_dir ) || ! is_dir( $base_dir ) ) {
 			return;
 		}
 
@@ -568,12 +575,12 @@ class Cache {
 			$blog_id  = get_current_blog_id();
 			$site_dir = trailingslashit( $base_dir ) . 'site-' . $blog_id . '/';
 
-			if ( file_exists( $site_dir ) && is_dir( $site_dir ) ) {
+			if ( wpavatar_is_path_within_content( $site_dir ) && file_exists( $site_dir ) && is_dir( $site_dir ) ) {
 				$files = glob( $site_dir . '*.jpg' );
 				if ( $files ) {
 					foreach ( $files as $file ) {
 						if ( filemtime( $file ) < $expire_time ) {
-							@unlink( $file );
+							wp_delete_file( $file );
 						}
 					}
 				}
@@ -584,7 +591,7 @@ class Cache {
 			if ( $files ) {
 				foreach ( $files as $file ) {
 					if ( filemtime( $file ) < $expire_time ) {
-						@unlink( $file );
+						wp_delete_file( $file );
 					}
 				}
 			}
@@ -607,16 +614,16 @@ class Cache {
 
 			$stats = array(
 				'path'       => $site_dir,
-				'exists'     => file_exists( $site_dir ) && is_dir( $site_dir ),
-				'writable'   => is_writable( $site_dir ),
+				'exists'     => wpavatar_is_path_within_content( $site_dir ) && file_exists( $site_dir ) && is_dir( $site_dir ),
+				'writable'   => wpavatar_is_writable_directory( $site_dir ),
 				'file_count' => 0,
 				'size'       => 0,
 			);
 
 			if ( $stats['exists'] ) {
 				$files               = glob( trailingslashit( $site_dir ) . '*.jpg' );
-				$stats['file_count'] = count( $files ?: array() );
-				foreach ( $files ?: array() as $file ) {
+				$stats['file_count'] = count( $files ? $files : array() );
+				foreach ( $files ? $files : array() as $file ) {
 					$stats['size'] += filesize( $file );
 				}
 				$stats['size'] = size_format( $stats['size'] );
@@ -625,16 +632,16 @@ class Cache {
 			// For single site
 			$stats = array(
 				'path'       => $base_dir,
-				'exists'     => file_exists( $base_dir ) && is_dir( $base_dir ),
-				'writable'   => is_writable( $base_dir ),
+				'exists'     => wpavatar_is_path_within_content( $base_dir ) && file_exists( $base_dir ) && is_dir( $base_dir ),
+				'writable'   => wpavatar_is_writable_directory( $base_dir ),
 				'file_count' => 0,
 				'size'       => 0,
 			);
 
 			if ( $stats['exists'] ) {
 				$files               = glob( trailingslashit( $base_dir ) . '*.jpg' );
-				$stats['file_count'] = count( $files ?: array() );
-				foreach ( $files ?: array() as $file ) {
+				$stats['file_count'] = count( $files ? $files : array() );
+				foreach ( $files ? $files : array() as $file ) {
 					$stats['size'] += filesize( $file );
 				}
 				$stats['size'] = size_format( $stats['size'] );
@@ -644,11 +651,11 @@ class Cache {
 						ob_start();
 		?>
 						<div class="cache-stats">
-							<p><?php printf( __( '缓存目录: %s', 'wpavatar' ), esc_html( $stats['path'] ) ); ?></p>
-							<p><?php printf( __( '目录存在: %s', 'wpavatar' ), $stats['exists'] ? __( '是', 'wpavatar' ) : __( '否', 'wpavatar' ) ); ?></p>
-							<p><?php printf( __( '目录可写: %s', 'wpavatar' ), $stats['writable'] ? __( '是', 'wpavatar' ) : __( '否', 'wpavatar' ) ); ?></p>
-							<p><?php printf( __( '缓存文件数: %d', 'wpavatar' ), $stats['file_count'] ); ?></p>
-							<p><?php printf( __( '缓存总大小: %s', 'wpavatar' ), $stats['size'] ); ?></p>
+							<p><?php /* translators: %s is the cache directory path. */ printf( esc_html__( '缓存目录: %s', 'wpavatar' ), esc_html( $stats['path'] ) ); ?></p>
+							<p><?php /* translators: %s is yes or no. */ printf( esc_html__( '目录存在: %s', 'wpavatar' ), esc_html( $stats['exists'] ? __( '是', 'wpavatar' ) : __( '否', 'wpavatar' ) ) ); ?></p>
+							<p><?php /* translators: %s is yes or no. */ printf( esc_html__( '目录可写: %s', 'wpavatar' ), esc_html( $stats['writable'] ? __( '是', 'wpavatar' ) : __( '否', 'wpavatar' ) ) ); ?></p>
+							<p><?php /* translators: %d is the cached file count. */ printf( esc_html__( '缓存文件数: %d', 'wpavatar' ), absint( $stats['file_count'] ) ); ?></p>
+							<p><?php /* translators: %s is the formatted cache size. */ printf( esc_html__( '缓存总大小: %s', 'wpavatar' ), esc_html( $stats['size'] ) ); ?></p>
 						</div>
 						<?php
 						return ob_get_clean();
@@ -659,8 +666,8 @@ class Cache {
 
 		$global_stats = array(
 			'path'        => $base_dir,
-			'exists'      => file_exists( $base_dir ) && is_dir( $base_dir ),
-			'writable'    => is_writable( $base_dir ),
+			'exists'      => wpavatar_is_path_within_content( $base_dir ) && file_exists( $base_dir ) && is_dir( $base_dir ),
+			'writable'    => wpavatar_is_writable_directory( $base_dir ),
 			'site_count'  => 0,
 			'total_files' => 0,
 			'total_size'  => 0,
@@ -671,18 +678,18 @@ class Cache {
 		if ( $global_stats['exists'] ) {
 			// Find all site directories
 			$site_dirs                  = glob( trailingslashit( $base_dir ) . 'site-*', GLOB_ONLYDIR );
-			$global_stats['site_count'] = count( $site_dirs ?: array() );
+			$global_stats['site_count'] = count( $site_dirs ? $site_dirs : array() );
 
 			// Check each site directory
-			foreach ( $site_dirs ?: array() as $site_dir ) {
+			foreach ( $site_dirs ? $site_dirs : array() as $site_dir ) {
 				$blog_id = intval( str_replace( trailingslashit( $base_dir ) . 'site-', '', $site_dir ) );
 				if ( $blog_id > 0 ) {
 					$files                        = glob( $site_dir . '/*.jpg' );
-					$file_count                   = count( $files ?: array() );
+					$file_count                   = count( $files ? $files : array() );
 					$global_stats['total_files'] += $file_count;
 
 					$size = 0;
-					foreach ( $files ?: array() as $file ) {
+					foreach ( $files ? $files : array() as $file ) {
 						$size                       += filesize( $file );
 						$global_stats['total_size'] += filesize( $file );
 					}
@@ -698,7 +705,7 @@ class Cache {
 
 					$site_stats[] = array(
 						'id'    => $blog_id,
-						'name'  => $blog_name ?: sprintf( __( '站点 #%d', 'wpavatar' ), $blog_id ),
+						'name'  => $blog_name ? $blog_name : sprintf( /* translators: %d is a site ID. */ __( '站点 #%d', 'wpavatar' ), $blog_id ),
 						'files' => $file_count,
 						'size'  => size_format( $size ),
 					);
@@ -707,12 +714,12 @@ class Cache {
 
 			// Also check for legacy non-site specific files
 			$legacy_files = glob( trailingslashit( $base_dir ) . '*.jpg' );
-			$legacy_count = count( $legacy_files ?: array() );
+			$legacy_count = count( $legacy_files ? $legacy_files : array() );
 			if ( $legacy_count > 0 ) {
 				$global_stats['total_files'] += $legacy_count;
 
 				$legacy_size = 0;
-				foreach ( $legacy_files ?: array() as $file ) {
+				foreach ( $legacy_files ? $legacy_files : array() as $file ) {
 					$legacy_size                += filesize( $file );
 					$global_stats['total_size'] += filesize( $file );
 				}
@@ -737,29 +744,29 @@ class Cache {
 		ob_start();
 		?>
 						<div class="network-cache-stats">
-							<h4><?php _e( '全局缓存统计', 'wpavatar' ); ?></h4>
-							<p><?php printf( __( '缓存根目录: %s', 'wpavatar' ), esc_html( $global_stats['path'] ) ); ?></p>
-							<p><?php printf( __( '目录存在: %s', 'wpavatar' ), $global_stats['exists'] ? __( '是', 'wpavatar' ) : __( '否', 'wpavatar' ) ); ?></p>
-							<p><?php printf( __( '目录可写: %s', 'wpavatar' ), $global_stats['writable'] ? __( '是', 'wpavatar' ) : __( '否', 'wpavatar' ) ); ?></p>
-							<p><?php printf( __( '站点缓存目录数: %d', 'wpavatar' ), $global_stats['site_count'] ); ?></p>
-							<p><?php printf( __( '总缓存文件数: %d', 'wpavatar' ), $global_stats['total_files'] ); ?></p>
-							<p><?php printf( __( '总缓存大小: %s', 'wpavatar' ), size_format( $global_stats['total_size'] ) ); ?></p>
+							<h4><?php esc_html_e( '全局缓存统计', 'wpavatar' ); ?></h4>
+							<p><?php /* translators: %s is the network cache directory path. */ printf( esc_html__( '缓存根目录: %s', 'wpavatar' ), esc_html( $global_stats['path'] ) ); ?></p>
+							<p><?php /* translators: %s is yes or no. */ printf( esc_html__( '目录存在: %s', 'wpavatar' ), esc_html( $global_stats['exists'] ? __( '是', 'wpavatar' ) : __( '否', 'wpavatar' ) ) ); ?></p>
+							<p><?php /* translators: %s is yes or no. */ printf( esc_html__( '目录可写: %s', 'wpavatar' ), esc_html( $global_stats['writable'] ? __( '是', 'wpavatar' ) : __( '否', 'wpavatar' ) ) ); ?></p>
+							<p><?php /* translators: %d is the site cache directory count. */ printf( esc_html__( '站点缓存目录数: %d', 'wpavatar' ), absint( $global_stats['site_count'] ) ); ?></p>
+							<p><?php /* translators: %d is the total cached file count. */ printf( esc_html__( '总缓存文件数: %d', 'wpavatar' ), absint( $global_stats['total_files'] ) ); ?></p>
+							<p><?php /* translators: %s is the formatted total cache size. */ printf( esc_html__( '总缓存大小: %s', 'wpavatar' ), esc_html( size_format( $global_stats['total_size'] ) ) ); ?></p>
 
 			<?php if ( ! empty( $site_stats ) ) : ?>
-								<h4><?php _e( '站点缓存详情', 'wpavatar' ); ?></h4>
+								<h4><?php esc_html_e( '站点缓存详情', 'wpavatar' ); ?></h4>
 								<table class="widefat striped" style="margin-top: 10px;">
 									<thead>
 										<tr>
-											<th><?php _e( '站点', 'wpavatar' ); ?></th>
-											<th><?php _e( '文件数', 'wpavatar' ); ?></th>
-											<th><?php _e( '大小', 'wpavatar' ); ?></th>
+											<th><?php esc_html_e( '站点', 'wpavatar' ); ?></th>
+											<th><?php esc_html_e( '文件数', 'wpavatar' ); ?></th>
+											<th><?php esc_html_e( '大小', 'wpavatar' ); ?></th>
 										</tr>
 									</thead>
 									<tbody>
 										<?php foreach ( $site_stats as $stat ) : ?>
 											<tr>
 												<td><?php echo esc_html( $stat['name'] ); ?></td>
-												<td><?php echo esc_html( $stat['files'] ); ?></td>
+												<td><?php echo esc_html( (string) $stat['files'] ); ?></td>
 												<td><?php echo esc_html( $stat['size'] ); ?></td>
 											</tr>
 										<?php endforeach; ?>

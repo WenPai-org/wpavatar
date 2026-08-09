@@ -8,6 +8,53 @@
 defined( 'ABSPATH' ) || exit;
 
 
+/**
+ * Check that a path resolves inside wp-content.
+ *
+ * For a path that does not exist yet, the nearest existing parent is resolved.
+ * This rejects cache paths that traverse a symbolic link outside wp-content.
+ *
+ * @param string $path Path to validate.
+ * @return bool
+ * @phpstan-impure Reads live filesystem state, which can change between calls.
+ */
+function wpavatar_is_path_within_content( $path ) {
+	$content_real = realpath( WP_CONTENT_DIR );
+	if ( false === $content_real ) {
+		return false;
+	}
+
+	$probe = wp_normalize_path( untrailingslashit( $path ) );
+	while ( ! file_exists( $probe ) && dirname( $probe ) !== $probe ) {
+		$probe = dirname( $probe );
+	}
+
+	$probe_real = realpath( $probe );
+	if ( false === $probe_real ) {
+		return false;
+	}
+
+	$content_real = wp_normalize_path( untrailingslashit( $content_real ) );
+	$probe_real   = wp_normalize_path( untrailingslashit( $probe_real ) );
+
+	return $probe_real === $content_real || 0 === strpos( $probe_real . '/', $content_real . '/' );
+}
+
+
+/**
+ * Check whether a cache directory is writable.
+ *
+ * WP_Filesystem does not expose a side-effect-free writability probe and may
+ * require credentials, so runtime cache checks use the native predicate.
+ *
+ * @param string $path Directory path.
+ * @return bool
+ */
+function wpavatar_is_writable_directory( $path ) {
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable -- Read-only capability probe; WP_Filesystem has no equivalent.
+	return wpavatar_is_path_within_content( $path ) && is_dir( $path ) && is_writable( $path );
+}
+
 function wpavatar_add_settings_error( $setting, $code, $message ) {
 	if ( function_exists( 'add_settings_error' ) ) {
 		add_settings_error( $setting, $code, $message );
@@ -133,6 +180,11 @@ function wpavatar_sanitize_cache_path( $value ) {
 	$content_dir = wp_normalize_path( untrailingslashit( WP_CONTENT_DIR ) );
 	if ( false !== strpos( $value, '/../' ) || $value === $content_dir . '/..' || 0 !== strpos( $value . '/', $content_dir . '/' ) ) {
 		wpavatar_add_settings_error( 'wpavatar_cache', 'unsafe_cache_path', __( '缓存目录必须位于 wp-content 目录内。', 'wpavatar' ) );
+		return trailingslashit( WPAVATAR_CACHE_DIR );
+	}
+
+	if ( ! wpavatar_is_path_within_content( $value ) ) {
+		wpavatar_add_settings_error( 'wpavatar_cache', 'unsafe_cache_symlink', __( '缓存目录不能通过符号链接指向 wp-content 之外。', 'wpavatar' ) );
 		return trailingslashit( WPAVATAR_CACHE_DIR );
 	}
 

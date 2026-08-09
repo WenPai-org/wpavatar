@@ -7,3 +7,7 @@ scripts
 dist
 phpcs.xml
 phpunit.xml.dist
+composer.json
+composer.lock
+phpstan.neon.dist
+phpcs-release.xml.dist
