@@ -20,3 +20,14 @@
 - [CX] 最终 allowlist 包 `dist/wpavatar-1.9.5.zip` SHA-256 `d6fcfb96b24056fc5c103fc291d9f1b763ba1d545ef658ee54fadaa2a5d8dd0a`。竞态损坏包已隔离并明确禁止使用。
 - [CX] FeiCode AGit dry-run `HEAD:refs/for/main/wpavatar-audit-r2` exit 0 且未创建 PR。正式 PR、最终提交和 URL 见本节后续记录；仍禁止合并、发布和部署。
 - [CX] 实现提交 `983f4d922d0c783243f4ed34d4014d0b5210a9f4` 已通过 AGit 创建 FeiCode PR #2：`https://feicode.com/WenPai-org/wpavatar/pulls/2`；PR 保持 open，未合并、未部署、未发布。
+
+## 2026-08-09 - [CX] 第三轮 1.9.6 候选、矩阵与安全升级
+
+- [CX] 第三轮实现提交 `82c61ea67a84c5470ae28aca0fea6d91a0f058ed`：版本头、常量、Stable tag 与 changelog 同步为 1.9.6；主插件头补最低 WordPress 5.4；打包脚本增加三重版本门禁、changelog、权限、符号链接和可复现时间戳检查。
+- [CX] WordPress 5.4/PHP 7.4.33 与 WordPress 7.0.3/PHP 8.3.33 的单站/多站真实矩阵均 exit 0；均验证候选 1.9.6、Cravatar 路由、缓存隔离、HTTP 和插件阶段 debug 0。失败与协调中止样本保留在 `tests/compat-matrix/results/`。
+- [CX] 旧 v1.9.5 官方源 parse fatal 为 exit 255；新增不加载旧插件的安全替换入口。最终 `final-fast-1786278072` 单站/网络多站 1.9.5→1.9.6 均 PASS，DB/代码备份和 option/site_option/缓存/sentinel 保留；历史权限、MariaDB 与 timeout 124 FAIL 未隐藏。
+- [CX] 营销短代码未删除。兼容拆分决策见 `docs/marketing-shortcode-migration.md`：V+1 新装默认关闭、旧站保持启用；V+2 拆 commenters/users/random add-on，author 留核心；不删 option、不改正文。
+- [CX] 本地 release PHPCS 0/0；全量 PHPCS 77/18 FAIL；PHPStan level 5 PASS，level 6 初始 186 FAIL；PHPUnit 12/26 PASS。
+- [CX] PR #2 旧 HEAD 的 gitleaks/security-scan/wp-plugin-ci 三个 job 全部因 fork PR 审批门禁 BLOCKED、零执行样本。最终 HEAD 推送后需重查，只有具备 FeiCode Actions 审批权限者可放行。
+- [CX] 需要用户决定：WordPress.org 单一公开更新通道或实现完整 FeiCode updater；最低 PHP 7.0/7.4；FeiCode release 资产策略；营销 add-on 发布方式与兼容窗口。仍禁止合并、发布、部署。
+- [CX] 最终 1.9.6 评审包：`dist/wpavatar-1.9.6.zip`，SHA-256 `d9073e499cf2927b1ec6728bd016053f874d50364f89f1fcf6775d96e5ad29a2`；两次可复现构建一致，21 文件逐项 hash/权限/包内 lint/unzip 均 PASS；Plugin Check 0 errors/14 warnings、exit 0。仅供评审，未发布。
