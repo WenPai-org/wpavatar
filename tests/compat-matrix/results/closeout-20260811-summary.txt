@@ -15,4 +15,4 @@ Preserved FAIL samples
 
 Evidence preservation
 - Raw logs remain on the WenPai VM under /tmp/wpavatar-matrix-*-closeout.wrapper.log and in the untracked run artifact directories recorded during execution; they are intentionally excluded from Git because command transcripts contain test-only fixture credentials that trigger Gitleaks.
-- No production credential was used. The first final-HEAD Gitleaks rerun correctly failed after raw test transcripts were committed; this sanitized summary replaces those transcripts and the final Gitleaks result must be rerun and recorded separately.
+- No production credential was used. The first final-HEAD Gitleaks rerun correctly failed after raw test transcripts were committed; this sanitized summary replaces those transcripts and the final Gitleaks rerun reported no leaks with exit 0.
