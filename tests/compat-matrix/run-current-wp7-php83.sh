@@ -4,7 +4,8 @@ set -uo pipefail
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 COMPOSE_FILE="$ROOT/tests/compat-matrix/compose.yml"
 RUN_ID="${WPAVATAR_MATRIX_RUN_ID:-$$}"
-RESULT_DIR="$ROOT/tests/compat-matrix/results/current-wp7-php83-${RUN_ID}"
+MATRIX_LABEL="${MATRIX_LABEL:-current-wp7-php83}"
+RESULT_DIR="$ROOT/tests/compat-matrix/results/${MATRIX_LABEL}-${RUN_ID}"
 mkdir -p "$RESULT_DIR"
 SUMMARY="$RESULT_DIR/summary.txt"
 : > "$SUMMARY"
@@ -12,6 +13,7 @@ SUMMARY="$RESULT_DIR/summary.txt"
 export WP_IMAGE="${WP_IMAGE:-wordpress:7.0.2-php8.3-apache}"
 export WP_CLI_IMAGE="${WP_CLI_IMAGE:-wordpress:cli-php8.3}"
 EXPECTED_WP_VERSION="${EXPECTED_WP_VERSION:-7.0.3}"
+EXPECTED_PHP_PREFIX="${EXPECTED_PHP_PREFIX:-8.3}"
 export WPAVATAR_PLUGIN_DIR="$ROOT"
 
 record() {
@@ -28,7 +30,7 @@ record() {
 run_case() {
   local mode=$1
   local port=$2
-  local project="wpavatar-matrix-wp7-php83-${mode}-${RUN_ID}"
+  local project="wpavatar-matrix-${MATRIX_LABEL}-${mode}-${RUN_ID}"
   export WP_PORT=$port
   local -a dc=(docker compose -p "$project" -f "$COMPOSE_FILE")
   local -a wp=("${dc[@]}" exec -T wordpress wp --allow-root)
@@ -94,9 +96,11 @@ run_case() {
     record "multisite.create_subsite" "${wp[@]}" site create --slug=two --title=Two --email=admin@example.test || rc=1
   fi
 
-  record "${mode}.runtime_version" "${wp[@]}" eval 'global $wp_version; if ( "7.0.3" !== $wp_version || 0 !== strpos( PHP_VERSION, "8.3." ) ) { fwrite( STDERR, "unexpected WP/PHP: " . $wp_version . "/" . PHP_VERSION ); exit( 1 ); } echo "WP=$wp_version PHP=" . PHP_VERSION . "\n";' || rc=1
+  runtime_assert="global \$wp_version; if ( \"$EXPECTED_WP_VERSION\" !== \$wp_version || 0 !== strpos( PHP_VERSION, \"$EXPECTED_PHP_PREFIX.\" ) ) { fwrite( STDERR, \"unexpected WP/PHP: \" . \$wp_version . \"/\" . PHP_VERSION ); exit( 1 ); } echo \"WP=\$wp_version PHP=\" . PHP_VERSION . \"\\n\";"
+  record "${mode}.runtime_version" "${wp[@]}" eval "$runtime_assert" || rc=1
   record "${mode}.candidate_version" "${wp[@]}" eval 'if ( "1.9.6" !== WPAVATAR_VERSION ) { fwrite( STDERR, "unexpected candidate version=" . WPAVATAR_VERSION ); exit( 1 ); } echo "WPAVATAR_VERSION=" . WPAVATAR_VERSION . "\n";' || rc=1
   record "${mode}.candidate_metadata" "${wp[@]}" plugin get wpavatar --field=version || rc=1
+  record "${mode}.requires_php_metadata" "${wp[@]}" eval 'require_once ABSPATH . "wp-admin/includes/plugin.php"; $data=get_plugin_data(WP_PLUGIN_DIR . "/wpavatar/wpavatar.php"); if ( "7.4" !== $data["RequiresPHP"] ) { fwrite(STDERR,wp_json_encode($data)); exit(1); } echo "REQUIRES_PHP=" . $data["RequiresPHP"] . "\n";' || rc=1
   candidate_metadata=$("${wp[@]}" plugin get wpavatar --field=version 2>>"$SUMMARY")
   if [[ "$candidate_metadata" != 1.9.6 ]]; then echo "${mode}.candidate_metadata_assert=FAIL($candidate_metadata)" | tee -a "$SUMMARY"; rc=1; else echo "${mode}.candidate_metadata_assert=PASS(1.9.6)" | tee -a "$SUMMARY"; fi
   if [[ $mode == single ]]; then
@@ -105,9 +109,11 @@ run_case() {
       $email="matrix@example.test";
       $url=get_avatar_url($email,array("size"=>96));
       $host=wp_parse_url($url,PHP_URL_HOST);
-      $hash=hash("sha256",$email);
-      $path=\WPAvatar\Cache::get_cache_path($hash,96);
-      if("cravatar.com"!==$host || false===strpos($url,"/avatar/".$hash) || false!==strpos($path,"/site-") || false===strpos(wp_normalize_path($path),wp_normalize_path(WP_CONTENT_DIR."/uploads/cravatar/"))){fwrite(STDERR,wp_json_encode(compact("url","host","path")));exit(1);} echo wp_json_encode(compact("url","host","path"))."\n";' || rc=1
+      $avatar_md5=md5($email);
+      $avatar_sha256=hash("sha256",$email);
+      $cache_hash=hash("sha256",$email);
+      $path=\WPAvatar\Cache::get_cache_path($cache_hash,96);
+      if("cravatar.com"!==$host || (false===strpos($url,"/avatar/".$avatar_md5) && false===strpos($url,"/avatar/".$avatar_sha256)) || false!==strpos($path,"/site-") || false===strpos(wp_normalize_path($path),wp_normalize_path(WP_CONTENT_DIR."/uploads/cravatar/"))){fwrite(STDERR,wp_json_encode(compact("url","host","path")));exit(1);} echo wp_json_encode(compact("url","host","path"))."\n";' || rc=1
   else
     record "multisite.active_assert" "${wp[@]}" plugin is-active wpavatar --network || rc=1
     record "multisite.route_cache_assert" "${wp[@]}" eval '
@@ -119,7 +125,7 @@ run_case() {
       if("cravatar.com"!==$host1 || "cravatar.com"!==$host2 || false===strpos($path1,"/site-1/") || false===strpos($path2,"/site-".$other."/") || $path1===$path2){fwrite(STDERR,wp_json_encode(compact("url1","url2","path1","path2","other")));exit(1);}echo wp_json_encode(compact("url1","url2","path1","path2","other"))."\n";' || rc=1
   fi
 
-  record "${mode}.front_http" curl --max-time 10 -fsS -o /dev/null "http://127.0.0.1:${port}/" || rc=1
+  record "${mode}.front_http" curl --retry 5 --retry-all-errors --retry-delay 3 --max-time 30 -fsS -o /dev/null "http://127.0.0.1:${port}/" || rc=1
   record "${mode}.debug_assert" "${wp[@]}" eval '$p=WP_CONTENT_DIR."/debug.log";$lines=file_exists($p)?array_values(array_filter(file($p),"strlen")):array();if($lines){fwrite(STDERR,implode("",$lines));exit(1);}echo "DEBUG_NONEMPTY_LINES=0\n";' || rc=1
   if [[ $rc -eq 0 ]]; then
     echo "${mode}=PASS" | tee -a "$SUMMARY"

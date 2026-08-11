@@ -4,7 +4,7 @@ define( 'WP_CONTENT_DIR', sys_get_temp_dir() . '/wpavatar-tests/wp-content' );
 define( 'WPAVATAR_CACHE_DIR', WP_CONTENT_DIR . '/uploads/cravatar' );
 define( 'WPAVATAR_PLUGIN_DIR', dirname( __DIR__ ) . '/' );
 define( 'WPAVATAR_PLUGIN_URL', 'https://example.test/wp-content/plugins/wpavatar/' );
-define( 'WPAVATAR_VERSION', '1.9.5' );
+define( 'WPAVATAR_VERSION', '1.9.6' );
 define( 'DAY_IN_SECONDS', 86400 );
 define( 'MB_IN_BYTES', 1048576 );
 $GLOBALS['wpavatar_test_options'] = array();

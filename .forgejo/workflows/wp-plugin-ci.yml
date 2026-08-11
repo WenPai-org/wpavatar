@@ -13,23 +13,42 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: PHP Parallel Lint
-        run: |
-          parallel-lint --exclude vendor --exclude node_modules .
+        run: parallel-lint --exclude vendor --exclude node_modules .
 
-      - name: PHPCS 代码规范检查
+      - name: Install development gates
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Metadata and WordPress.org update-channel policy
         run: |
-          # 如果仓库有自定义 phpcs 配置则使用，否则用默认 WordPress 标准
-          if [ -f phpcs.xml ] || [ -f phpcs.xml.dist ] || [ -f .phpcs.xml ] || [ -f .phpcs.xml.dist ]; then
-            phpcs .
-          else
-            phpcs --standard=WordPress-Extra \
-              --extensions=php \
-              --ignore=vendor/*,node_modules/*,tests/*,lib/* \
-              --report=full \
-              -s .
-          fi
+          rm -f dist/wpavatar-1.9.6.zip
+          SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)" bash scripts/build-release.sh
+          test "$(sed -n 's/^ \* Requires PHP: //p' wpavatar.php)" = '7.4'
+          test "$(sed -n 's/^Requires PHP: //p' readme.txt)" = '7.4'
+          ! grep -Eq '^ \* Update URI:' wpavatar.php
+          ! grep -RIEq '(pre_set_site_transient_update_plugins|site_transient_update_plugins|plugins_api|update_plugins_[a-z0-9_.-]+)' wpavatar.php includes
+
+      - name: PHPUnit and PHPStan level 5
+        run: composer check
+
+      - name: Release PHPCS
+        run: vendor/bin/phpcs --standard=phpcs-release.xml.dist
+
+      - name: Reproducible release package
+        run: |
+          epoch="$(git show -s --format=%ct HEAD)"
+          tmpdir="$(mktemp -d)"
+          trap 'rm -rf "$tmpdir"' EXIT
+          first_sha="$(sha256sum dist/wpavatar-1.9.6.zip | awk '{print $1}')"
+          mv dist/wpavatar-1.9.6.zip "$tmpdir/wpavatar-first.zip"
+          SOURCE_DATE_EPOCH="$epoch" bash scripts/build-release.sh
+          second_sha="$(sha256sum dist/wpavatar-1.9.6.zip | awk '{print $1}')"
+          test "$first_sha" = "$second_sha"
+          cmp "$tmpdir/wpavatar-first.zip" dist/wpavatar-1.9.6.zip
+          unzip -t dist/wpavatar-1.9.6.zip
 
       - name: Gitleaks 密钥泄露扫描
         run: |

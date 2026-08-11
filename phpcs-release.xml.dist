@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <ruleset name="WPAvatar release-risk checks">
-	<description>Security, database, internationalization, and PHP 7.0+ compatibility checks kept separate from the legacy formatting baseline in phpcs.xml.</description>
+	<description>Security, database, internationalization, and PHP 7.4+ compatibility checks kept separate from the legacy formatting baseline in phpcs.xml.</description>
 
 	<arg name="extensions" value="php"/>
 	<arg name="colors"/>
-	<config name="testVersion" value="7.0-"/>
+	<config name="testVersion" value="7.4-"/>
 
 	<file>wpavatar.php</file>
 	<file>includes</file>

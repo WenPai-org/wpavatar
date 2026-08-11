@@ -26,8 +26,17 @@
 - [CX] 第三轮实现提交 `82c61ea67a84c5470ae28aca0fea6d91a0f058ed`：版本头、常量、Stable tag 与 changelog 同步为 1.9.6；主插件头补最低 WordPress 5.4；打包脚本增加三重版本门禁、changelog、权限、符号链接和可复现时间戳检查。
 - [CX] WordPress 5.4/PHP 7.4.33 与 WordPress 7.0.3/PHP 8.3.33 的单站/多站真实矩阵均 exit 0；均验证候选 1.9.6、Cravatar 路由、缓存隔离、HTTP 和插件阶段 debug 0。失败与协调中止样本保留在 `tests/compat-matrix/results/`。
 - [CX] 旧 v1.9.5 官方源 parse fatal 为 exit 255；新增不加载旧插件的安全替换入口。最终 `final-fast-1786278072` 单站/网络多站 1.9.5→1.9.6 均 PASS，DB/代码备份和 option/site_option/缓存/sentinel 保留；历史权限、MariaDB 与 timeout 124 FAIL 未隐藏。
-- [CX] 营销短代码未删除。兼容拆分决策见 `docs/marketing-shortcode-migration.md`：V+1 新装默认关闭、旧站保持启用；V+2 拆 commenters/users/random add-on，author 留核心；不删 option、不改正文。
+- [CX 2026-08-11 approved] 营销短代码在 1.9.6 中全部保留且行为不变；下一主版本拆 commenters/users/random add-on，author 留核心，并保留 option、正文、兼容迁移和回滚。
 - [CX] 本地 release PHPCS 0/0；全量 PHPCS 77/18 FAIL；PHPStan level 5 PASS，level 6 初始 186 FAIL；PHPUnit 12/26 PASS。
 - [CX] PR #2 旧 HEAD 的 gitleaks/security-scan/wp-plugin-ci 三个 job 全部因 fork PR 审批门禁 BLOCKED、零执行样本。最终 HEAD 推送后需重查，只有具备 FeiCode Actions 审批权限者可放行。
-- [CX] 需要用户决定：WordPress.org 单一公开更新通道或实现完整 FeiCode updater；最低 PHP 7.0/7.4；FeiCode release 资产策略；营销 add-on 发布方式与兼容窗口。仍禁止合并、发布、部署。
-- [CX] 最终 1.9.6 评审包：`dist/wpavatar-1.9.6.zip`，SHA-256 `d9073e499cf2927b1ec6728bd016053f874d50364f89f1fcf6775d96e5ad29a2`；两次可复现构建一致，21 文件逐项 hash/权限/包内 lint/unzip 均 PASS；Plugin Check 0 errors/14 warnings、exit 0。仅供评审，未发布。
+- [CX 2026-08-11 resolved] 用户已批准 1.9.6、PHP 7.4、WordPress.org 唯一公开自动更新通道、FeiCode 代码真源/release 资产，以及下一主版本拆 marketing add-on 并保留迁移/回滚。仍禁止合并、发布、部署。
+- [CX] 第三轮 1.9.6 评审包（待发布收口轮次取代）：`dist/wpavatar-1.9.6.zip`，SHA-256 `d9073e499cf2927b1ec6728bd016053f874d50364f89f1fcf6775d96e5ad29a2`；两次可复现构建一致，21 文件逐项 hash/权限/包内 lint/unzip 均 PASS；Plugin Check 0 errors/14 warnings、exit 0。仅供评审，未发布。
+
+
+## 2026-08-11 - [CX] 发布收口第一批
+
+- [CX] 已按批准决策统一为候选 1.9.6、最低 WordPress 5.4、最低 PHP 7.4；WordPress.org 是唯一自动更新通道，FeiCode 只作代码真源和人工 release 资产保存位置。运行源码无 `Update URI` 或自定义 updater hook。
+- [CX] 营销/社区列表短代码在 1.9.6 保留且行为不变；下一主版本拆 commenters/users/random add-on，author 留核心；迁移与回滚不删 option、正文或用户数据。决策文档：`docs/marketing-shortcode-migration.md`。
+- [CX] 收口实现提交 `PR #2 发布收口最终 HEAD`。以 `SOURCE_DATE_EPOCH=1786418697` 双构建一致的候选 `dist/wpavatar-1.9.6.zip` SHA-256 为 `c87124add4aa580ed641290fafb0fb0dbb1b9e2b00765495ae4f19dfaccd60b1`；包内 lint、unzip、逐文件 hash 和 0755/0644 权限均 PASS。
+- [CX] PHPUnit 12/26、PHPStan 5、release PHPCS 0/0、Gitleaks、Plugin Check process、E2E、WP5.4/PHP7.4 单/多站、WP7.0.3/PHP8.3 单/多站、1.9.5→1.9.6 安全替换均 exit 0。Plugin Check 保留 0 errors/14 warnings；全量 PHPCS 77/18 与 PHPStan level 6 初始 186 仍为 FAIL。各次 harness/infra FAIL 和 E2E 的已知旧 runtime SKIP 未删除，详见 `docs/audit-2026-08-09.md`。
+- [CX] FeiCode 为 P0、`write_policy=board_required`。PR #2 更新及精确 HEAD 的 fork PR CI 审批必须由 devops 建立/审阅 Board control/change 任务；说明见 `docs/devops-ci-approval.md`。Codex 未自行批准 CI、合并、创建 release、发布或部署。
