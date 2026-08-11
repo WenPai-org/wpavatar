@@ -1,88 +1,950 @@
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: WPAvatar\n"
-"POT-Creation-Date: 2023-04-16 23:45+0800\n"
-"PO-Revision-Date: 2023-04-16 23:45+0800\n"
-"Last-Translator: 薇晓朵 <support@weixiaoduo.com>\n"
-"Language-Team: 薇晓朵 <support@weixiaoduo.com>\n"
+"Project-Id-Version: wpavatar\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-12 00:00+0000\n"
+"PO-Revision-Date: 2026-08-12 00:00+0000\n"
+"Last-Translator: WenPai Localization Team\n"
+"Language-Team: Chinese (China)\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.1.1\n"
-"X-Poedit-Basepath: ..\n"
-"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
-"X-Poedit-WPHeader: wpavatar.php\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
-"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
-"_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
-"X-Poedit-SearchPath-0: .\n"
-"X-Poedit-SearchPathExcluded-0: *.min.js\n"
+"X-Generator: WenPai deterministic i18n pipeline\n"
 
-#: includes/cravatar.php:44
-msgid "Cravatar Logo"
-msgstr "头像"
-
-#: includes/cravatar.php:59
-msgid "You can update your profile picture at Cravatar.cn"
-msgstr "您可以在 Cravatar.cn 更新您的个人资料图片"
-
-#: includes/cravatar.php:72
-msgid "Avatar Settings"
-msgstr "头像设置"
-
-#: includes/cravatar.php:73
-msgid "Avatar"
-msgstr "头像"
-
-#: includes/cravatar.php:86
-msgid "WordPress Avatar Settings"
-msgstr "文派头像设置"
-
-#: includes/cravatar.php:87
-msgid ""
-"Cravatar is the perfect alternative to Gravatar in China, you can update "
-"your avatar at"
-msgstr ""
-"Cravatar（初认头像）是中国 Gravatar 的完美替代方案，您可以在官网更新您的头"
-"像"
-
-#: includes/cravatar.php:95
-msgid "Enable Cravatar"
-msgstr "启用Cravatar"
-
-#: includes/cravatar.php:98
-msgid "Yes"
-msgstr "是"
-
-#: includes/cravatar.php:99
-msgid "No"
-msgstr "否"
-
-#: includes/cravatar.php:104
-msgid "Save Changes"
-msgstr "保存更改"
-
-#. Plugin Name of the plugin/theme
+#. Plugin Name of the plugin
+#: wpavatar.php includes/multisite.php:173
 msgid "WPAvatar"
 msgstr "文派头像"
 
-#. Plugin URI of the plugin/theme
+#. Plugin URI of the plugin
+#: wpavatar.php
 msgid "https://wpavatar.com/download"
 msgstr "https://wpavatar.com/download"
 
-#. Description of the plugin/theme
+#. Description of the plugin
+#: wpavatar.php
 msgid ""
 "Replace Gravatar with Cravatar, a perfect replacement of Gravatar in China."
-msgstr ""
-"替换 Gravatar 头像为 Cravatar 头像，这是 Gravatar 在中国的完美替代方案。"
+msgstr "替换 Gravatar 头像为 Cravatar 头像，这是 Gravatar 在中国的完美替代方案。"
 
-#. Author of the plugin/theme
+#. Author of the plugin
+#: wpavatar.php
 msgid "WPfanyi"
 msgstr "文派翻译"
 
-#. Author URI of the plugin/theme
+#. Author URI of the plugin
+#: wpavatar.php
 msgid "https://wpfanyi.com/"
 msgstr "https://wpfanyi.com/"
+
+#: includes/admin.php:14 includes/admin.php:202 includes/multisite.php:249
+msgid "文派头像设置"
+msgstr "文派头像设置"
+
+#: includes/admin.php:15
+msgid "头像"
+msgstr "头像"
+
+#: includes/admin.php:70 includes/core.php:311 includes/multisite.php:1072
+msgid "无法创建缓存目录，请检查权限"
+msgstr "无法创建缓存目录，请检查权限"
+
+#: includes/admin.php:79 includes/multisite.php:1080
+msgid "指定的路径不是有效目录"
+msgstr "指定的路径不是有效目录"
+
+#: includes/admin.php:87 includes/core.php:324 includes/multisite.php:1087
+msgid "缓存目录不可写，请检查权限"
+msgstr "缓存目录不可写，请检查权限"
+
+#: includes/admin.php:103 includes/core.php:361
+msgid "无法创建站点缓存目录，请检查权限"
+msgstr "无法创建站点缓存目录，请检查权限"
+
+#: includes/admin.php:162 includes/multisite.php:147
+msgid "检查中..."
+msgstr "检查中..."
+
+#: includes/admin.php:163 includes/multisite.php:148
+msgid "正在检查缓存状态..."
+msgstr "正在检查缓存状态..."
+
+#: includes/admin.php:164 includes/multisite.php:149
+msgid "检查失败，请重试"
+msgstr "检查失败，请重试"
+
+#: includes/admin.php:165 includes/multisite.php:150
+msgid "请求失败，请检查网络连接"
+msgstr "请求失败，请检查网络连接"
+
+#: includes/admin.php:166 includes/admin.php:385 includes/multisite.php:151
+msgid "检查缓存状态"
+msgstr "检查缓存状态"
+
+#: includes/admin.php:167 includes/multisite.php:152
+msgid "确定要清空所有缓存头像吗？此操作无法撤销。"
+msgstr "确定要清空所有缓存头像吗？此操作无法撤销。"
+
+#: includes/admin.php:168 includes/multisite.php:153
+msgid "清空中..."
+msgstr "清空中..."
+
+#: includes/admin.php:169 includes/multisite.php:154
+msgid "正在清空缓存..."
+msgstr "正在清空缓存..."
+
+#: includes/admin.php:170 includes/multisite.php:155
+msgid "清空失败，请重试"
+msgstr "清空失败，请重试"
+
+#: includes/admin.php:171 includes/admin.php:386 includes/multisite.php:156
+msgid "清空缓存"
+msgstr "清空缓存"
+
+#: includes/admin.php:172 includes/multisite.php:157
+msgid "请输入自定义CDN域名"
+msgstr "请输入自定义CDN域名"
+
+#: includes/admin.php:173 includes/multisite.php:158
+msgid "请输入缓存目录路径"
+msgstr "请输入缓存目录路径"
+
+#: includes/admin.php:174 includes/multisite.php:159
+msgid "设置已成功保存。"
+msgstr "设置已成功保存。"
+
+#: includes/admin.php:203 includes/multisite.php:250
+#, php-format
+msgid "版本: %s"
+msgstr "版本: %s"
+
+#: includes/admin.php:204 includes/multisite.php:251
+msgid "文档"
+msgstr "文档"
+
+#: includes/admin.php:205 includes/multisite.php:252
+msgid "支持"
+msgstr "支持"
+
+#: includes/admin.php:213 includes/admin.php:231 includes/multisite.php:265
+#: includes/multisite.php:353 includes/multisite.php:434
+msgid "基础设置"
+msgstr "基础设置"
+
+#: includes/admin.php:216 includes/admin.php:358 includes/multisite.php:268
+#: includes/multisite.php:364 includes/multisite.php:517
+msgid "缓存控制"
+msgstr "缓存控制"
+
+#: includes/admin.php:219 includes/admin.php:444 includes/multisite.php:271
+#: includes/multisite.php:372 includes/multisite.php:570
+msgid "高级设置"
+msgstr "高级设置"
+
+#: includes/admin.php:222 includes/multisite.php:274
+#: includes/multisite.php:380
+msgid "头像简码"
+msgstr "头像简码"
+
+#: includes/admin.php:225 includes/multisite.php:277
+#: includes/multisite.php:388
+msgid "营销组件"
+msgstr "营销组件"
+
+#: includes/admin.php:232
+msgid "配置头像服务和CDN设置。"
+msgstr "配置头像服务和CDN设置。"
+
+#: includes/admin.php:238 includes/admin.php:285 includes/multisite.php:329
+#: includes/multisite.php:443
+msgid "启用初认头像"
+msgstr "启用初认头像"
+
+#: includes/admin.php:241 includes/admin.php:296 includes/multisite.php:330
+#: includes/multisite.php:454
+msgid "线路选择"
+msgstr "线路选择"
+
+#: includes/admin.php:244 includes/admin.php:313 includes/multisite.php:331
+#: includes/multisite.php:471
+msgid "Cravatar官方源"
+msgstr "Cravatar官方源"
+
+#: includes/admin.php:247 includes/admin.php:304 includes/admin.php:325
+#: includes/multisite.php:332 includes/multisite.php:462
+#: includes/multisite.php:483
+msgid "第三方镜像"
+msgstr "第三方镜像"
+
+#: includes/admin.php:250 includes/admin.php:308 includes/admin.php:335
+#: includes/multisite.php:333 includes/multisite.php:466
+#: includes/multisite.php:493
+msgid "自定义CDN"
+msgstr "自定义CDN"
+
+#: includes/admin.php:253 includes/admin.php:342 includes/multisite.php:334
+#: includes/multisite.php:500
+msgid "超时设置"
+msgstr "超时设置"
+
+#: includes/admin.php:257 includes/admin.php:375 includes/admin.php:461
+#: includes/admin.php:559 includes/admin.php:717
+msgid "以上选项由网络管理员控制，您的更改将不会生效。"
+msgstr "以上选项由网络管理员控制，您的更改将不会生效。"
+
+#: includes/admin.php:290 includes/multisite.php:448
+msgid "替换WordPress默认头像为Cravatar"
+msgstr "替换WordPress默认头像为Cravatar"
+
+#: includes/admin.php:292 includes/multisite.php:450
+msgid "启用后将WordPress默认的Gravatar头像替换为Cravatar，提高国内访问速度"
+msgstr "启用后将WordPress默认的Gravatar头像替换为Cravatar，提高国内访问速度"
+
+#: includes/admin.php:300 includes/multisite.php:458
+msgid "Cravatar自选线路"
+msgstr "Cravatar自选线路"
+
+#: includes/admin.php:316 includes/multisite.php:474
+msgid "默认线路 (cravatar.com)"
+msgstr "默认线路 (cravatar.com)"
+
+#: includes/admin.php:317 includes/multisite.php:475
+msgid "中国 (cn.cravatar.com)"
+msgstr "中国 (cn.cravatar.com)"
+
+#: includes/admin.php:318 includes/multisite.php:476
+msgid "香港 (hk.cravatar.com)"
+msgstr "香港 (hk.cravatar.com)"
+
+#: includes/admin.php:319 includes/multisite.php:477
+msgid "国际 (en.cravatar.com)"
+msgstr "国际 (en.cravatar.com)"
+
+#: includes/admin.php:321 includes/multisite.php:479
+msgid "选择适合您网站访客的Cravatar线路"
+msgstr "选择适合您网站访客的Cravatar线路"
+
+#: includes/admin.php:328 includes/multisite.php:486
+msgid "WeAvatar (weavatar.com)"
+msgstr "我们阿凡达 (weavatar.com)"
+
+#: includes/admin.php:329 includes/multisite.php:487
+msgid "Libravatar (libravatar.org)"
+msgstr "Libravatar (libravatar.org)"
+
+#: includes/admin.php:331 includes/multisite.php:489
+msgid "选择第三方头像镜像站"
+msgstr "选择第三方头像镜像站"
+
+#: includes/admin.php:338 includes/multisite.php:496
+msgid "输入自定义CDN域名，例如：cdn.example.com"
+msgstr "输入自定义CDN域名，例如：cdn.example.com"
+
+#: includes/admin.php:345 includes/multisite.php:503
+msgid "秒"
+msgstr "秒"
+
+#: includes/admin.php:346 includes/multisite.php:504
+msgid "头像请求的最大等待时间，超过后将使用备用头像"
+msgstr "头像请求的最大等待时间，超过后将使用备用头像"
+
+#: includes/admin.php:352 includes/admin.php:438 includes/admin.php:536
+#: includes/admin.php:640 includes/marketing.php:526
+#: includes/multisite.php:427 includes/multisite.php:510
+#: includes/multisite.php:563 includes/multisite.php:619
+#: includes/multisite.php:681 includes/multisite.php:734
+msgid "保存设置"
+msgstr "保存设置"
+
+#: includes/admin.php:359
+msgid "管理头像缓存设置和操作。"
+msgstr "管理头像缓存设置和操作。"
+
+#: includes/admin.php:365 includes/admin.php:406 includes/multisite.php:335
+#: includes/multisite.php:535
+msgid "启用本地缓存"
+msgstr "启用本地缓存"
+
+#: includes/admin.php:368 includes/admin.php:417 includes/multisite.php:336
+msgid "缓存目录"
+msgstr "缓存目录"
+
+#: includes/admin.php:371 includes/admin.php:428 includes/multisite.php:337
+#: includes/multisite.php:553
+msgid "缓存过期时间"
+msgstr "缓存过期时间"
+
+#: includes/admin.php:382
+msgid "缓存统计"
+msgstr "缓存统计"
+
+#: includes/admin.php:411 includes/multisite.php:540
+msgid "缓存头像到本地服务器"
+msgstr "缓存头像到本地服务器"
+
+#: includes/admin.php:413 includes/multisite.php:542
+msgid "将头像缓存到本地可以减少外部请求，提高网站加载速度"
+msgstr "将头像缓存到本地可以减少外部请求，提高网站加载速度"
+
+#: includes/admin.php:421
+#, php-format
+msgid "确保目录可写，当前站点将创建子目录：%s"
+msgstr "确保目录可写，当前站点将创建子目录：%s"
+
+#: includes/admin.php:423
+msgid "确保目录可写，建议路径：/wp-content/uploads/cravatar"
+msgstr "确保目录可写，建议路径：/wp-content/uploads/cravatar"
+
+#: includes/admin.php:431 includes/multisite.php:556
+msgid "天"
+msgstr "天"
+
+#: includes/admin.php:432 includes/multisite.php:557
+msgid "头像缓存的有效期，过期后将重新获取"
+msgstr "头像缓存的有效期，过期后将重新获取"
+
+#: includes/admin.php:445
+msgid "配置头像的SEO和备用方案。"
+msgstr "配置头像的SEO和备用方案。"
+
+#: includes/admin.php:451 includes/admin.php:485 includes/multisite.php:338
+#: includes/multisite.php:579
+msgid "SEO替代文本"
+msgstr "SEO替代文本"
+
+#: includes/admin.php:454 includes/admin.php:492 includes/multisite.php:339
+#: includes/multisite.php:586
+msgid "头像加载失败处理"
+msgstr "头像加载失败处理"
+
+#: includes/admin.php:457 includes/admin.php:503 includes/multisite.php:340
+#: includes/multisite.php:597
+msgid "备用头像选择"
+msgstr "备用头像选择"
+
+#: includes/admin.php:488 includes/multisite.php:582
+#, php-format
+msgid "头像的ALT文本，%s将被替换为用户名"
+msgstr "头像的ALT文本，%s将被替换为用户名"
+
+#: includes/admin.php:497 includes/multisite.php:591
+msgid "启用备用头像"
+msgstr "启用备用头像"
+
+#: includes/admin.php:499 includes/multisite.php:593
+msgid "当头像服务器无法访问或加载超时时，自动使用本地备用头像，避免拖慢网站加载速度"
+msgstr "当头像服务器无法访问或加载超时时，自动使用本地备用头像，避免拖慢网站加载速度"
+
+#: includes/admin.php:522
+#, php-format
+msgid "选择您的故障备用头像，如需智能线路切换，请使用%s。"
+msgstr "选择您的故障备用头像，如需智能线路切换，请使用%s。"
+
+#: includes/admin.php:526
+msgid "文派叶子 🍃（WPCY.COM）"
+msgstr "文派叶子 🍃（WPCY.COM）"
+
+#: includes/admin.php:542 includes/multisite.php:626
+msgid "简码设置"
+msgstr "简码设置"
+
+#: includes/admin.php:543
+msgid "配置头像简码的默认参数和预览效果。"
+msgstr "配置头像简码的默认参数和预览效果。"
+
+#: includes/admin.php:549 includes/admin.php:612 includes/multisite.php:341
+#: includes/multisite.php:654
+msgid "默认头像大小"
+msgstr "默认头像大小"
+
+#: includes/admin.php:552 includes/admin.php:619 includes/multisite.php:342
+#: includes/multisite.php:661
+msgid "默认CSS类名"
+msgstr "默认CSS类名"
+
+#: includes/admin.php:555 includes/admin.php:626 includes/multisite.php:343
+#: includes/multisite.php:668
+msgid "默认头像形状"
+msgstr "默认头像形状"
+
+#: includes/admin.php:566 includes/multisite.php:630
+msgid "头像预览"
+msgstr "头像预览"
+
+#: includes/admin.php:569 includes/admin.php:581 includes/admin.php:629
+#: includes/multisite.php:633 includes/multisite.php:671
+msgid "方形"
+msgstr "方形"
+
+#: includes/admin.php:573 includes/admin.php:585 includes/multisite.php:637
+msgid "圆角"
+msgstr "圆角"
+
+#: includes/admin.php:577 includes/admin.php:589 includes/admin.php:631
+#: includes/multisite.php:641 includes/multisite.php:673
+msgid "圆形"
+msgstr "圆形"
+
+#: includes/admin.php:593
+msgid "预览使用当前登录账户的头像和示例图片"
+msgstr "预览使用当前登录账户的头像和示例图片"
+
+#: includes/admin.php:615 includes/multisite.php:657
+msgid "简码默认头像大小（像素）"
+msgstr "简码默认头像大小（像素）"
+
+#: includes/admin.php:622 includes/multisite.php:664
+msgid "简码生成的头像默认CSS类"
+msgstr "简码生成的头像默认CSS类"
+
+#: includes/admin.php:630 includes/multisite.php:672
+msgid "圆角方形"
+msgstr "圆角方形"
+
+#: includes/admin.php:633 includes/multisite.php:675
+msgid "简码生成的头像默认形状"
+msgstr "简码生成的头像默认形状"
+
+#: includes/admin.php:644 includes/marketing.php:530
+#: includes/multisite.php:738
+msgid "可用简码"
+msgstr "可用简码"
+
+#: includes/admin.php:649 includes/marketing.php:535
+#: includes/multisite.php:743
+msgid "简码"
+msgstr "简码"
+
+#: includes/admin.php:650 includes/marketing.php:536
+#: includes/multisite.php:744
+msgid "描述"
+msgstr "描述"
+
+#: includes/admin.php:651 includes/marketing.php:537
+#: includes/multisite.php:745
+msgid "参数"
+msgstr "参数"
+
+#: includes/admin.php:652 includes/marketing.php:538
+#: includes/multisite.php:746
+msgid "示例"
+msgstr "示例"
+
+#: includes/admin.php:658
+msgid "显示用户头像"
+msgstr "显示用户头像"
+
+#: includes/admin.php:661 includes/marketing.php:548
+#: includes/marketing.php:560 includes/marketing.php:572
+#: includes/marketing.php:583 includes/multisite.php:756
+#: includes/multisite.php:767 includes/multisite.php:778
+#: includes/multisite.php:788
+msgid "头像大小（像素）"
+msgstr "头像大小（像素）"
+
+#: includes/admin.php:662 includes/admin.php:675
+msgid "用户ID，默认为当前用户"
+msgstr "用户ID，默认为当前用户"
+
+#: includes/admin.php:663
+msgid "CSS类名"
+msgstr "CSS类名"
+
+#: includes/admin.php:664
+msgid "形状：square(方形)、rounded(圆角)、circle(圆形)"
+msgstr "形状：square(方形)、rounded(圆角)、circle(圆形)"
+
+#: includes/admin.php:665
+msgid "可选的标题文本"
+msgstr "可选的标题文本"
+
+#: includes/admin.php:672
+msgid "显示用户名"
+msgstr "显示用户名"
+
+#: includes/admin.php:676
+msgid "用户名前的文本"
+msgstr "用户名前的文本"
+
+#: includes/admin.php:677
+msgid "用户名后的文本"
+msgstr "用户名后的文本"
+
+#: includes/admin.php:684
+msgid "在菜单项中使用"
+msgstr "在菜单项中使用"
+
+#: includes/admin.php:685
+msgid "您可以在菜单项的标题中使用特殊标记来插入头像和用户名："
+msgstr "您可以在菜单项的标题中使用特殊标记来插入头像和用户名："
+
+#: includes/admin.php:687
+msgid "插入当前用户的头像（圆形，32像素）"
+msgstr "插入当前用户的头像（圆形，32像素）"
+
+#: includes/admin.php:688
+msgid "插入当前用户的用户名"
+msgstr "插入当前用户的用户名"
+
+#: includes/admin.php:697 includes/multisite.php:688
+msgid "营销组件设置"
+msgstr "营销组件设置"
+
+#: includes/admin.php:698
+msgid "配置营销组件简码和显示效果。"
+msgstr "配置营销组件简码和显示效果。"
+
+#: includes/admin.php:704 includes/multisite.php:344
+msgid "评论者数量"
+msgstr "评论者数量"
+
+#: includes/admin.php:707 includes/multisite.php:345
+msgid "评论者头像大小"
+msgstr "评论者头像大小"
+
+#: includes/admin.php:710 includes/multisite.php:346
+msgid "用户数量"
+msgstr "用户数量"
+
+#: includes/admin.php:713 includes/multisite.php:347
+msgid "用户头像大小"
+msgstr "用户头像大小"
+
+#: includes/core.php:43
+msgid "默认头像"
+msgstr "默认头像"
+
+#: includes/core.php:50
+msgid "文派Wapuu"
+msgstr "文派Wapuu"
+
+#: includes/core.php:57
+msgid "中国Wapuu"
+msgstr "中国Wapuu"
+
+#: includes/core.php:64
+msgid "Cravatar默认"
+msgstr "Cravatar默认"
+
+#: includes/core.php:71
+msgid "Cravatar标志"
+msgstr "Cravatar标志"
+
+#: includes/core.php:79
+msgid "您可以在初认头像修改您的资料图片"
+msgstr "您可以在初认头像修改您的资料图片"
+
+#: includes/core.php:263
+msgid "用户头像"
+msgstr "用户头像"
+
+#: includes/core.php:374
+msgid "站点缓存目录不可写，请检查权限"
+msgstr "站点缓存目录不可写，请检查权限"
+
+#: includes/core.php:699
+#, php-format
+msgid "缓存目录: %s"
+msgstr "缓存目录: %s"
+
+#: includes/core.php:700 includes/core.php:794
+#, php-format
+msgid "目录存在: %s"
+msgstr "目录存在: %s"
+
+#: includes/core.php:700 includes/core.php:701 includes/core.php:794
+#: includes/core.php:795
+msgid "是"
+msgstr "是"
+
+#: includes/core.php:700 includes/core.php:701 includes/core.php:794
+#: includes/core.php:795
+msgid "否"
+msgstr "否"
+
+#: includes/core.php:701 includes/core.php:795
+#, php-format
+msgid "目录可写: %s"
+msgstr "目录可写: %s"
+
+#: includes/core.php:702
+#, php-format
+msgid "缓存文件数: %d"
+msgstr "缓存文件数: %d"
+
+#: includes/core.php:703
+#, php-format
+msgid "缓存总大小: %s"
+msgstr "缓存总大小: %s"
+
+#: includes/core.php:753
+#, php-format
+msgid "站点 #%d"
+msgstr "站点 #%d"
+
+#: includes/core.php:774
+msgid "旧版缓存文件（非站点特定）"
+msgstr "旧版缓存文件（非站点特定）"
+
+#: includes/core.php:792
+msgid "全局缓存统计"
+msgstr "全局缓存统计"
+
+#: includes/core.php:793
+#, php-format
+msgid "缓存根目录: %s"
+msgstr "缓存根目录: %s"
+
+#: includes/core.php:796
+#, php-format
+msgid "站点缓存目录数: %d"
+msgstr "站点缓存目录数: %d"
+
+#: includes/core.php:797
+#, php-format
+msgid "总缓存文件数: %d"
+msgstr "总缓存文件数: %d"
+
+#: includes/core.php:798
+#, php-format
+msgid "总缓存大小: %s"
+msgstr "总缓存大小: %s"
+
+#: includes/core.php:801
+msgid "站点缓存详情"
+msgstr "站点缓存详情"
+
+#: includes/core.php:805
+msgid "站点"
+msgstr "站点"
+
+#: includes/core.php:806
+msgid "文件数"
+msgstr "文件数"
+
+#: includes/core.php:807
+msgid "大小"
+msgstr "大小"
+
+#: includes/marketing.php:483 includes/multisite.php:697
+msgid "最近评论者设置"
+msgstr "最近评论者设置"
+
+#: includes/marketing.php:486 includes/marketing.php:504
+#: includes/multisite.php:700 includes/multisite.php:718
+msgid "显示数量"
+msgstr "显示数量"
+
+#: includes/marketing.php:489 includes/multisite.php:703
+msgid "显示的最近评论者数量"
+msgstr "显示的最近评论者数量"
+
+#: includes/marketing.php:493 includes/marketing.php:511
+#: includes/multisite.php:707 includes/multisite.php:725
+msgid "头像大小"
+msgstr "头像大小"
+
+#: includes/marketing.php:496 includes/multisite.php:710
+msgid "评论者头像大小（像素）"
+msgstr "评论者头像大小（像素）"
+
+#: includes/marketing.php:501 includes/multisite.php:715
+msgid "用户头像设置"
+msgstr "用户头像设置"
+
+#: includes/marketing.php:507 includes/marketing.php:559
+#: includes/marketing.php:571 includes/multisite.php:721
+#: includes/multisite.php:766 includes/multisite.php:777
+msgid "显示的用户数量"
+msgstr "显示的用户数量"
+
+#: includes/marketing.php:514 includes/multisite.php:728
+msgid "用户头像大小（像素）"
+msgstr "用户头像大小（像素）"
+
+#: includes/marketing.php:520
+msgid "预览效果"
+msgstr "预览效果"
+
+#: includes/marketing.php:522
+msgid "预览显示使用圆形头像样式"
+msgstr "预览显示使用圆形头像样式"
+
+#: includes/marketing.php:544 includes/multisite.php:752
+msgid "显示最近评论者头像"
+msgstr "显示最近评论者头像"
+
+#: includes/marketing.php:547 includes/multisite.php:755
+msgid "显示的评论者数量"
+msgstr "显示的评论者数量"
+
+#: includes/marketing.php:549 includes/marketing.php:561
+#: includes/marketing.php:573
+msgid "是否显示用户名（true/false）"
+msgstr "是否显示用户名（true/false）"
+
+#: includes/marketing.php:556 includes/multisite.php:763
+msgid "显示最新注册的用户头像"
+msgstr "显示最新注册的用户头像"
+
+#: includes/marketing.php:568 includes/multisite.php:774
+msgid "显示随机用户头像"
+msgstr "显示随机用户头像"
+
+#: includes/marketing.php:580 includes/multisite.php:785
+msgid "显示当前文章作者头像"
+msgstr "显示当前文章作者头像"
+
+#: includes/marketing.php:591
+msgid "使用场景"
+msgstr "使用场景"
+
+#: includes/marketing.php:592
+msgid "这些简码非常适合用于："
+msgstr "这些简码非常适合用于："
+
+#: includes/marketing.php:594
+msgid "侧边栏挂件：展示活跃评论者和用户"
+msgstr "侧边栏挂件：展示活跃评论者和用户"
+
+#: includes/marketing.php:595
+msgid "文章底部：增强社区感并鼓励互动"
+msgstr "文章底部：增强社区感并鼓励互动"
+
+#: includes/marketing.php:596
+msgid "关于页面：展示您的社区成员"
+msgstr "关于页面：展示您的社区成员"
+
+#: includes/marketing.php:597
+msgid "会员页面：显示最新加入的会员"
+msgstr "会员页面：显示最新加入的会员"
+
+#: includes/marketing.php:599
+msgid "提示："
+msgstr "提示："
+
+#: includes/marketing.php:599
+msgid "您可以将这些简码与其他WordPress挂件组合使用，创建更丰富的社区展示。"
+msgstr "您可以将这些简码与其他WordPress挂件组合使用，创建更丰富的社区展示。"
+
+#: includes/multisite.php:160
+msgid "确定要从所选站点导入设置吗？此操作将覆盖当前的网络设置。"
+msgstr "确定要从所选站点导入设置吗？此操作将覆盖当前的网络设置。"
+
+#: includes/multisite.php:161
+msgid "确定要重置所有控制选项吗？该操作会将所有站点恢复为各自的设置。"
+msgstr "确定要重置所有控制选项吗？该操作会将所有站点恢复为各自的设置。"
+
+#: includes/multisite.php:172
+msgid "WPAvatar网络设置"
+msgstr "WPAvatar网络设置"
+
+#: includes/multisite.php:184
+msgid "网络设置"
+msgstr "网络设置"
+
+#: includes/multisite.php:208
+msgid "WPAvatar 插件正由网络管理员强制管理。所有设置将使用网络级别配置，任何更改将被忽略。如有疑问请联系网络管理员。"
+msgstr "WPAvatar 插件正由网络管理员强制管理。所有设置将使用网络级别配置，任何更改将被忽略。如有疑问请联系网络管理员。"
+
+#: includes/multisite.php:213
+#, php-format
+msgid "WPAvatar 插件的 %d 项设置由网络管理员控制。这些设置的更改将不会生效。"
+msgstr "WPAvatar 插件的 %d 项设置由网络管理员控制。这些设置的更改将不会生效。"
+
+#: includes/multisite.php:235
+msgid "您没有足够权限访问此页面。"
+msgstr "您没有足够权限访问此页面。"
+
+#: includes/multisite.php:241
+msgid "网络设置已保存。"
+msgstr "网络设置已保存。"
+
+#: includes/multisite.php:262
+msgid "网络管理"
+msgstr "网络管理"
+
+#: includes/multisite.php:280
+msgid "实用工具"
+msgstr "实用工具"
+
+#: includes/multisite.php:287
+msgid "网络管理设置"
+msgstr "网络管理设置"
+
+#: includes/multisite.php:288
+msgid "配置多站点网络的WPAvatar管理方式。"
+msgstr "配置多站点网络的WPAvatar管理方式。"
+
+#: includes/multisite.php:296
+msgid "启用网络级管理"
+msgstr "启用网络级管理"
+
+#: includes/multisite.php:301
+msgid "在所有站点使用网络设置"
+msgstr "在所有站点使用网络设置"
+
+#: includes/multisite.php:303
+msgid "启用后，所有子站点将使用选定的网络设置，子站点的对应设置将被覆盖"
+msgstr "启用后，所有子站点将使用选定的网络设置，子站点的对应设置将被覆盖"
+
+#: includes/multisite.php:307
+msgid "强制使用网络设置"
+msgstr "强制使用网络设置"
+
+#: includes/multisite.php:312
+msgid "完全禁用子站点设置页面"
+msgstr "完全禁用子站点设置页面"
+
+#: includes/multisite.php:314
+msgid "启用后，子站点将无法访问WPAvatar设置页面，完全由网络管理"
+msgstr "启用后，子站点将无法访问WPAvatar设置页面，完全由网络管理"
+
+#: includes/multisite.php:318
+msgid "网络控制选项"
+msgstr "网络控制选项"
+
+#: includes/multisite.php:416
+msgid "选中的选项将在所有站点使用网络设置，未选中的选项可由站点管理员自定义。"
+msgstr "选中的选项将在所有站点使用网络设置，未选中的选项可由站点管理员自定义。"
+
+#: includes/multisite.php:418
+msgid "全选"
+msgstr "全选"
+
+#: includes/multisite.php:419
+msgid "取消全选"
+msgstr "取消全选"
+
+#: includes/multisite.php:420
+msgid "恢复默认"
+msgstr "恢复默认"
+
+#: includes/multisite.php:435
+msgid "配置头像服务和CDN设置，应用于所有网络站点。"
+msgstr "配置头像服务和CDN设置，应用于所有网络站点。"
+
+#: includes/multisite.php:518
+msgid "管理头像缓存设置和操作，应用于所有网络站点。"
+msgstr "管理头像缓存设置和操作，应用于所有网络站点。"
+
+#: includes/multisite.php:521
+msgid "网络缓存统计"
+msgstr "网络缓存统计"
+
+#: includes/multisite.php:524 includes/multisite.php:935
+msgid "检查所有站点缓存"
+msgstr "检查所有站点缓存"
+
+#: includes/multisite.php:525 includes/multisite.php:985
+msgid "清空所有站点缓存"
+msgstr "清空所有站点缓存"
+
+#: includes/multisite.php:546
+msgid "缓存根目录"
+msgstr "缓存根目录"
+
+#: includes/multisite.php:549
+msgid "确保目录可写，每个站点将在此目录下创建独立的子目录"
+msgstr "确保目录可写，每个站点将在此目录下创建独立的子目录"
+
+#: includes/multisite.php:571
+msgid "配置头像的SEO和备用方案，应用于所有网络站点。"
+msgstr "配置头像的SEO和备用方案，应用于所有网络站点。"
+
+#: includes/multisite.php:613
+msgid "选择您的故障备用头像"
+msgstr "选择您的故障备用头像"
+
+#: includes/multisite.php:627
+msgid "配置头像简码的默认参数，应用于所有网络站点。"
+msgstr "配置头像简码的默认参数，应用于所有网络站点。"
+
+#: includes/multisite.php:645
+msgid "预览使用当前登录账户的头像"
+msgstr "预览使用当前登录账户的头像"
+
+#: includes/multisite.php:689
+msgid "配置营销组件简码和显示效果，应用于所有网络站点。"
+msgstr "配置营销组件简码和显示效果，应用于所有网络站点。"
+
+#: includes/multisite.php:802
+msgid "工具"
+msgstr "工具"
+
+#: includes/multisite.php:803
+msgid "网络管理工具和操作。"
+msgstr "网络管理工具和操作。"
+
+#: includes/multisite.php:806
+msgid "从站点导入设置"
+msgstr "从站点导入设置"
+
+#: includes/multisite.php:807
+msgid "将网络中的任意站点的WPAvatar设置导入为网络默认设置。"
+msgstr "将网络中的任意站点的WPAvatar设置导入为网络默认设置。"
+
+#: includes/multisite.php:827
+msgid "导入设置"
+msgstr "导入设置"
+
+#: includes/multisite.php:833
+msgid "批量操作"
+msgstr "批量操作"
+
+#: includes/multisite.php:834
+msgid "对网络中的所有站点进行批量操作。"
+msgstr "对网络中的所有站点进行批量操作。"
+
+#: includes/multisite.php:839
+msgid "将当前网络设置应用到所有站点"
+msgstr "将当前网络设置应用到所有站点"
+
+#: includes/multisite.php:840
+msgid "这将覆盖每个站点的现有设置，使其与网络设置保持一致。"
+msgstr "这将覆盖每个站点的现有设置，使其与网络设置保持一致。"
+
+#: includes/multisite.php:843
+msgid "应用到所有站点"
+msgstr "应用到所有站点"
+
+#: includes/multisite.php:1001
+msgid "确定要将网络设置应用到所有站点吗？此操作将覆盖每个站点的现有设置。"
+msgstr "确定要将网络设置应用到所有站点吗？此操作将覆盖每个站点的现有设置。"
+
+#: includes/multisite.php:1024
+msgid "您没有足够权限修改这些设置。"
+msgstr "您没有足够权限修改这些设置。"
+
+#: includes/multisite.php:1148
+msgid "无效的请求或权限不足。"
+msgstr "无效的请求或权限不足。"
+
+#: includes/multisite.php:1156
+msgid "无效的站点ID。"
+msgstr "无效的站点ID。"
+
+#: includes/multisite.php:1217
+msgid "权限不足。"
+msgstr "权限不足。"
+
+#: wpavatar.php:81 wpavatar.php:123 wpavatar.php:176 wpavatar.php:189
+msgid "权限不足"
+msgstr "权限不足"
+
+#: wpavatar.php:97 wpavatar.php:132
+msgid "缓存目录不存在"
+msgstr "缓存目录不存在"
+
+#: wpavatar.php:114
+#, php-format
+msgid "已清空 %d 个缓存文件"
+msgstr "已清空 %d 个缓存文件"
+
+#: wpavatar.php:168
+#, php-format
+msgid "已清空所有站点的 %d 个缓存文件"
+msgstr "已清空所有站点的 %d 个缓存文件"
