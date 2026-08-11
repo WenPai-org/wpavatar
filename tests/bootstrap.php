@@ -1,6 +1,9 @@
 <?php
 define( 'ABSPATH', __DIR__ . '/' );
 define( 'WP_CONTENT_DIR', sys_get_temp_dir() . '/wpavatar-tests/wp-content' );
+if ( ! is_dir( WP_CONTENT_DIR ) ) {
+	mkdir( WP_CONTENT_DIR, 0777, true );
+}
 define( 'WPAVATAR_CACHE_DIR', WP_CONTENT_DIR . '/uploads/cravatar' );
 define( 'WPAVATAR_PLUGIN_DIR', dirname( __DIR__ ) . '/' );
 define( 'WPAVATAR_PLUGIN_URL', 'https://example.test/wp-content/plugins/wpavatar/' );

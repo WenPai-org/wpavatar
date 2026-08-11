@@ -54,7 +54,7 @@ jobs:
             echo "未找到 composer.lock，跳过"
             exit 0
           fi
-          composer audit --format=table || {
+          composer audit --locked --format=table || {
             echo "::error::Composer 依赖存在已知安全漏洞"
             exit 1
           }
