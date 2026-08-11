@@ -233,7 +233,7 @@ msgstr "我们阿凡达 (weavatar.com)"
 
 #: includes/admin.php:329 includes/multisite.php:487
 msgid "Libravatar (libravatar.org)"
-msgstr "Libravatar (libravatar.org)"
+msgstr "Libravatar 服务（libravatar.org）"
 
 #: includes/admin.php:331 includes/multisite.php:489
 msgid "选择第三方头像镜像站"
