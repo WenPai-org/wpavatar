@@ -1,0 +1,144 @@
++ docker + compose + -p + wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + up + -d + db + wordpress
+ Network wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809_default Creating
+ Network wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809_default Created
+ Volume wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809_wp_data Creating
+ Volume wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809_wp_data Created
+ Volume wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809_db_data Creating
+ Volume wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809_db_data Created
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-db-1 Creating
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-db-1 Created
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-wordpress-1 Creating
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-wordpress-1 Created
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-db-1 Starting
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-db-1 Started
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-db-1 Waiting
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-db-1 Healthy
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-wordpress-1 Starting
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-wordpress-1 Started
+single.up exit=0
+single.http_ready=1
+single.wp_config_ready=1
++ docker + compose + -p + wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + core + download + --version=7.0.3 + --force + --skip-content
+Downloading WordPress 7.0.3 (en_US)...
+md5 hash verified: b76609b2cdc7b9e9b7dbda951a0cb05e
+Success: WordPress downloaded.
+single.core_download_attempt_1 exit=0
++ docker + compose + -p + wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + core + install + --url=http://127.0.0.1:19571 + --title=WPAvatar-Matrix + --admin_user=admin + --admin_password=matrix-pass + --admin_email=admin@example.test + --skip-email
+Success: WordPress installed successfully.
+single.install exit=0
++ docker + compose + -p + wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + plugin + activate + wpavatar
+Plugin 'wpavatar' activated.
+Success: Activated 1 of 1 plugins.
+single.activate exit=0
++ docker + compose + -p + wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + eval + global\ \$wp_version\;\ if\ \(\ \"7.0.3\"\ \!==\ \$wp_version\ \|\|\ 0\ \!==\ strpos\(\ PHP_VERSION\,\ \"8.3.\"\ \)\ \)\ \{\ fwrite\(\ STDERR\,\ \"unexpected\ WP/PHP:\ \"\ .\ \$wp_version\ .\ \"/\"\ .\ PHP_VERSION\ \)\;\ exit\(\ 1\ \)\;\ \}\ echo\ \"WP=\$wp_version\ PHP=\"\ .\ PHP_VERSION\ .\ \"\\n\"\;
+WP=7.0.3 PHP=8.3.33
+single.runtime_version exit=0
++ docker + compose + -p + wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + eval + if\ \(\ \"1.9.6\"\ \!==\ WPAVATAR_VERSION\ \)\ \{\ fwrite\(\ STDERR\,\ \"unexpected\ candidate\ version=\"\ .\ WPAVATAR_VERSION\ \)\;\ exit\(\ 1\ \)\;\ \}\ echo\ \"WPAVATAR_VERSION=\"\ .\ WPAVATAR_VERSION\ .\ \"\\n\"\;
+WPAVATAR_VERSION=1.9.6
+single.candidate_version exit=0
++ docker + compose + -p + wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + plugin + get + wpavatar + --field=version
+1.9.6
+single.candidate_metadata exit=0
+single.candidate_metadata_assert=PASS(1.9.6)
++ docker + compose + -p + wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + plugin + is-active + wpavatar
+single.active_assert exit=0
++ docker + compose + -p + wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + eval + $'\n      $email="matrix@example.test";\n      $url=get_avatar_url($email,array("size"=>96));\n      $host=wp_parse_url($url,PHP_URL_HOST);\n      $hash=hash("sha256",$email);\n      $path=\\WPAvatar\\Cache::get_cache_path($hash,96);\n      if("cravatar.com"!==$host || false===strpos($url,"/avatar/".$hash) || false!==strpos($path,"/site-") || false===strpos(wp_normalize_path($path),wp_normalize_path(WP_CONTENT_DIR."/uploads/cravatar/"))){fwrite(STDERR,wp_json_encode(compact("url","host","path")));exit(1);} echo wp_json_encode(compact("url","host","path"))."\\n";'
+{"url":"https:\/\/cravatar.com\/avatar\/REDACTED_TEST_SHA256?s=96&d=mm&r=g&cache-key=REDACTED_TEST_SHA256","host":"cravatar.com","path":"\/var\/www\/html\/wp-content\/uploads\/cravatar\/REDACTED_TEST_SHA256-96.jpg"}
+single.route_cache_assert exit=0
++ curl + --max-time + 10 + -fsS + -o + /dev/null + http://127.0.0.1:19571/
+single.front_http exit=0
++ docker + compose + -p + wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + eval + \$p=WP_CONTENT_DIR.\"/debug.log\"\;\$lines=file_exists\(\$p\)\?array_values\(array_filter\(file\(\$p\)\,\"strlen\"\)\):array\(\)\;if\(\$lines\)\{fwrite\(STDERR\,implode\(\"\"\,\$lines\)\)\;exit\(1\)\;\}echo\ \"DEBUG_NONEMPTY_LINES=0\\n\"\;
+[09-Aug-2026 12:56:21 UTC] PHP Warning:  translations_api(): An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="https://wordpress.org/support/forums/">support forums</a>. (WordPress could not establish a secure connection to WordPress.org. Please contact your server administrator.) in /var/www/html/wp-includes/functions.php on line 6170
+[09-Aug-2026 12:56:28 UTC] PHP Warning:  translations_api(): An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="https://wordpress.org/support/forums/">support forums</a>. (WordPress could not establish a secure connection to WordPress.org. Please contact your server administrator.) in /var/www/html/wp-includes/functions.php on line 6170
+single.debug_assert exit=1
+single=FAIL
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-wordpress-1 Stopping
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-wordpress-1 Stopped
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-wordpress-1 Removing
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-wordpress-1 Removed
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-db-1 Stopping
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-db-1 Stopped
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-db-1 Removing
+ Container wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809-db-1 Removed
+ Volume wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809_db_data Removing
+ Volume wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809_wp_data Removing
+ Network wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809_default Removing
+ Network wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809_default Removed
+ Volume wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809_wp_data Removed
+ Volume wpavatar-matrix-wp7-php83-single-cx-currentfinal2-20260809_db_data Removed
++ docker + compose + -p + wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + up + -d + db + wordpress
+ Network wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809_default Creating
+ Network wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809_default Created
+ Volume wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809_wp_data Creating
+ Volume wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809_wp_data Created
+ Volume wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809_db_data Creating
+ Volume wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809_db_data Created
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-db-1 Creating
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-db-1 Created
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-wordpress-1 Creating
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-wordpress-1 Created
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-db-1 Starting
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-db-1 Started
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-db-1 Waiting
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-db-1 Healthy
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-wordpress-1 Starting
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-wordpress-1 Started
+multisite.up exit=0
+multisite.http_ready=1
+multisite.wp_config_ready=1
++ docker + compose + -p + wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + core + download + --version=7.0.3 + --force + --skip-content
+Downloading WordPress 7.0.3 (en_US)...
+md5 hash verified: b76609b2cdc7b9e9b7dbda951a0cb05e
+Success: WordPress downloaded.
+multisite.core_download_attempt_1 exit=0
++ docker + compose + -p + wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + core + multisite-install + --url=matrix.test + --title=WPAvatar-Matrix-MS + --admin_user=admin + --admin_password=matrix-pass + --admin_email=admin@example.test + --skip-email + --subdomains
+Created single site database tables.
+Warning: Wildcard DNS may not be configured correctly.
+Added multisite constants to 'wp-config.php'.
+Success: Network installed. Don't forget to set up rewrite rules (and a .htaccess file, if using Apache).
+multisite.install exit=0
++ docker + compose + -p + wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + plugin + activate + wpavatar + --network
+Plugin 'wpavatar' network activated.
+Success: Network activated 1 of 1 plugins.
+multisite.activate exit=0
++ docker + compose + -p + wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + site + create + --slug=two + --title=Two + --email=admin@example.test
+Success: Site 2 created: http://two.matrix.test/
+multisite.create_subsite exit=0
++ docker + compose + -p + wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + eval + global\ \$wp_version\;\ if\ \(\ \"7.0.3\"\ \!==\ \$wp_version\ \|\|\ 0\ \!==\ strpos\(\ PHP_VERSION\,\ \"8.3.\"\ \)\ \)\ \{\ fwrite\(\ STDERR\,\ \"unexpected\ WP/PHP:\ \"\ .\ \$wp_version\ .\ \"/\"\ .\ PHP_VERSION\ \)\;\ exit\(\ 1\ \)\;\ \}\ echo\ \"WP=\$wp_version\ PHP=\"\ .\ PHP_VERSION\ .\ \"\\n\"\;
+WP=7.0.3 PHP=8.3.33
+multisite.runtime_version exit=0
++ docker + compose + -p + wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + eval + if\ \(\ \"1.9.6\"\ \!==\ WPAVATAR_VERSION\ \)\ \{\ fwrite\(\ STDERR\,\ \"unexpected\ candidate\ version=\"\ .\ WPAVATAR_VERSION\ \)\;\ exit\(\ 1\ \)\;\ \}\ echo\ \"WPAVATAR_VERSION=\"\ .\ WPAVATAR_VERSION\ .\ \"\\n\"\;
+WPAVATAR_VERSION=1.9.6
+multisite.candidate_version exit=0
++ docker + compose + -p + wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + plugin + get + wpavatar + --field=version
+1.9.6
+multisite.candidate_metadata exit=0
+multisite.candidate_metadata_assert=PASS(1.9.6)
++ docker + compose + -p + wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + plugin + is-active + wpavatar + --network
+multisite.active_assert exit=0
++ docker + compose + -p + wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + eval + $'\n      $email="matrix@example.test";$hash=hash("sha256",$email);\n      $url1=get_avatar_url($email,array("size"=>96));$path1=\\WPAvatar\\Cache::get_cache_path($hash,96);\n      $sites=get_sites(array("number"=>0,"fields"=>"ids"));$other=0;foreach($sites as $id){if((int)$id!==get_main_site_id()){ $other=(int)$id; break; }}\n      if(!$other){fwrite(STDERR,"no subsite");exit(1);}switch_to_blog($other);$url2=get_avatar_url($email,array("size"=>96));$path2=\\WPAvatar\\Cache::get_cache_path($hash,96);restore_current_blog();\n      $host1=wp_parse_url($url1,PHP_URL_HOST);$host2=wp_parse_url($url2,PHP_URL_HOST);\n      if("cravatar.com"!==$host1 || "cravatar.com"!==$host2 || false===strpos($path1,"/site-1/") || false===strpos($path2,"/site-".$other."/") || $path1===$path2){fwrite(STDERR,wp_json_encode(compact("url1","url2","path1","path2","other")));exit(1);}echo wp_json_encode(compact("url1","url2","path1","path2","other"))."\\n";'
+{"url1":"https:\/\/cravatar.com\/avatar\/REDACTED_TEST_SHA256?s=96&d=mm&r=g&cache-key=REDACTED_TEST_SHA256","url2":"https:\/\/cravatar.com\/avatar\/REDACTED_TEST_SHA256?s=96&d=mm&r=g&cache-key=REDACTED_TEST_SHA256","path1":"\/var\/www\/html\/wp-content\/uploads\/cravatar\/site-1\/REDACTED_TEST_SHA256-96.jpg","path2":"\/var\/www\/html\/wp-content\/uploads\/cravatar\/site-2\/REDACTED_TEST_SHA256-96.jpg","other":2}
+multisite.route_cache_assert exit=0
++ curl + --max-time + 10 + -fsS + -o + /dev/null + http://127.0.0.1:19572/
+multisite.front_http exit=0
++ docker + compose + -p + wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809 + -f + /home/parallels/Projects/wpavatar-codex-audit/tests/compat-matrix/compose.yml + exec + -T + wordpress + wp + --allow-root + eval + \$p=WP_CONTENT_DIR.\"/debug.log\"\;\$lines=file_exists\(\$p\)\?array_values\(array_filter\(file\(\$p\)\,\"strlen\"\)\):array\(\)\;if\(\$lines\)\{fwrite\(STDERR\,implode\(\"\"\,\$lines\)\)\;exit\(1\)\;\}echo\ \"DEBUG_NONEMPTY_LINES=0\\n\"\;
+[09-Aug-2026 12:57:32 UTC] PHP Warning:  translations_api(): An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="https://wordpress.org/support/forums/">support forums</a>. (WordPress could not establish a secure connection to WordPress.org. Please contact your server administrator.) in /var/www/html/wp-includes/functions.php on line 6170
+multisite.debug_assert exit=1
+multisite=FAIL
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-wordpress-1 Stopping
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-wordpress-1 Stopped
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-wordpress-1 Removing
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-wordpress-1 Removed
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-db-1 Stopping
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-db-1 Stopped
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-db-1 Removing
+ Container wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809-db-1 Removed
+ Volume wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809_wp_data Removing
+ Network wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809_default Removing
+ Volume wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809_db_data Removing
+ Volume wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809_wp_data Removed
+ Volume wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809_db_data Removed
+ Network wpavatar-matrix-wp7-php83-multisite-cx-currentfinal2-20260809_default Removed
+WP_IMAGE=wordpress:7.0.2-php8.3-apache
+WP_CLI_IMAGE=wordpress:cli-php8.3
+MATRIX_EXIT=1

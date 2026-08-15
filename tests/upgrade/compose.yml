@@ -1,0 +1,50 @@
+services:
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+      MARIADB_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 2s
+      timeout: 3s
+      retries: 40
+  wordpress:
+    image: wordpress:php8.3-apache
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wp_data:/var/www/html
+  cli:
+    image: wordpress:cli-php8.3
+    entrypoint: ["wp"]
+    depends_on:
+      db:
+        condition: service_healthy
+      wordpress:
+        condition: service_started
+    user: "0:0"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      WP_CLI_ALLOW_ROOT: "1"
+    volumes:
+      - wp_data:/var/www/html
+      - "${WPAVATAR_CANDIDATE_DIR}:/fixtures/candidate:ro"
+      - "${WPAVATAR_LEGACY_OFFICIAL_DIR}:/fixtures/legacy-official:ro"
+      - "${WPAVATAR_LEGACY_FIXED_DIR}:/fixtures/legacy-fixed:ro"
+      - "${WPAVATAR_UPGRADE_DIR}:/fixtures/upgrade:ro"
+      - "${WPAVATAR_UPGRADE_BACKUP_DIR}:/upgrade-backups"
+    working_dir: /var/www/html
+volumes:
+  wp_data:

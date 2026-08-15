@@ -1,0 +1,31 @@
+[CX] WPAvatar legacy compatibility matrix evidence
+Run ID: legacyfinal20260809
+Date: 2026-08-09 (Asia/Shanghai)
+Source checkout: /home/parallels/Projects/wpavatar-codex-audit
+Source Git HEAD at run start: 3df9bf104ff4066aa2c9f26baf7235af39349b9b
+Tracked source diff SHA-256 at run start: d73a7d8eb9c341bea1345c47dffe3585aa4fee154aa9c728b5c22a5c341dfd05
+Execution command: bash /tmp/cx-wpavatar54-run.sh
+Compose project: cxwpavatar54legacyfinal20260809
+
+Runtime images (immutable local IDs):
+- wordpress:php7.4-apache: sha256:7e46cf3373751b6d62b7a0fc3a7d6686f641a34a2a0eb18947da5375c55fd009
+- wordpress:cli-php7.4: sha256:946a8b7f237f6cf90d8f04aff952544a0332d43374d598925dcf0180e4441c6c
+- mariadb:lts: sha256:759869cb6f003234a95c6384cdee245b4bce7de26913fe607a8110362c0c007d
+
+Result: PASS, process exit 0
+- Single site: WordPress 5.4 / PHP 7.4.33.
+- Multisite: WordPress 5.4 / PHP 7.4.33; second subdirectory site created.
+- Mounted candidate activated on single site and network-activated on multisite.
+- Plugin metadata version and runtime WPAVATAR_VERSION both equal 1.9.6 on both installations.
+- Core avatar routing replaced Gravatar with https://cravatar.com/avatar/... and added cache-key.
+- Single-site cache path remained in uploads/cravatar without site prefix.
+- Multisite cache paths used different site-1 and site-2 directories; independent sentinel contents verified and removed.
+- HTTP bootstrap succeeded: single 28061 bytes; multisite 28131 bytes.
+- single-debug.log and multi-debug.log are empty; no plugin warning, parse error, fatal, or uncaught error.
+- Cleanup: docker compose down -v --remove-orphans exit 0; matching containers=0, matching volumes=0.
+
+Preserved harness evidence (not plugin failures):
+- /tmp/cx-wpavatar54-20260809T195000/run.log: FAIL exit 1, mariadb:11.4 initialization failed under high VM contention; own project cleanup exit 0.
+- /tmp/cx-wpavatar54-20260809T200000/run.log: FAIL exit 127, runner omitted the literal wp executable for wordpress:cli-php7.4; own project cleanup exit 0.
+- /tmp/cx-wpavatar54-20260809T201000/run.log: ABORTED on coordinator request to serialize Docker matrices; manual own-project cleanup exit 0, containers=0, volumes=0.
+- The final run corrected only harness orchestration; no production source was modified by this matrix task.

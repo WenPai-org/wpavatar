@@ -1,0 +1,54 @@
+services:
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+      MARIADB_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 2s
+      timeout: 3s
+      retries: 40
+    volumes:
+      - db_data:/var/lib/mysql
+  wordpress:
+    image: wordpress:php8.3-apache
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DEBUG: "1"
+    ports:
+      - "127.0.0.1:${WPAVATAR_E2E_PORT:-18993}:80"
+    volumes:
+      - wp_data:/var/www/html
+      - "${WPAVATAR_CANDIDATE_DIR}:/var/www/html/wp-content/plugins/wpavatar:ro"
+      - "${WPAVATAR_LEGACY_DIR}:/var/www/html/wp-content/plugins/wpavatar-legacy:ro"
+  cli:
+    image: wordpress:cli-php8.3
+    entrypoint: ["wp"]
+    depends_on:
+      db:
+        condition: service_healthy
+      wordpress:
+        condition: service_started
+    user: "33:33"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wp_data:/var/www/html
+      - "${WPAVATAR_CANDIDATE_DIR}:/var/www/html/wp-content/plugins/wpavatar:ro"
+      - "${WPAVATAR_LEGACY_DIR}:/var/www/html/wp-content/plugins/wpavatar-legacy:ro"
+    working_dir: /var/www/html
+volumes:
+  db_data:
+  wp_data:

@@ -1,0 +1,18 @@
+[CX] WPAvatar 1.9.6 compatibility closeout, 2026-08-11
+
+Candidate implementation commit: PR #2 发布收口最终 HEAD
+Final evidence commit before sanitization: 已由最终发布收口提交取代
+
+PASS samples
+- closeout-legacy2-20260811: process exit 0; actual WordPress 5.4 / PHP 7.4.33; single-site PASS; multisite PASS; plugin version and Requires PHP metadata PASS; Cravatar route/cache path PASS; multisite cache isolation PASS; front HTTP PASS; debug non-empty lines 0; owned containers and volumes removed.
+- rerun-legacy-20260811: MATRIX_EXIT=0; actual WordPress 5.4 / PHP 7.4.33; single-site PASS; multisite PASS; bounded HTTP retry path PASS; owned containers and volumes removed.
+- closeout-current3-20260811: process exit 0; actual WordPress 7.0.3 / PHP 8.3.33; single-site PASS; multisite PASS; plugin version and Requires PHP metadata PASS; Cravatar route/cache path PASS; multisite cache isolation PASS; front HTTP PASS; debug non-empty lines 0; owned containers and volumes removed.
+
+Preserved FAIL samples
+- closeout-legacy-20260811: MATRIX_EXIT=1. Plugin activation/version/debug/multisite checks passed; the single-site test harness incorrectly required a SHA-256 avatar URL on WordPress 5.4, whose core route uses MD5. The harness was corrected to accept the version-appropriate MD5 or SHA-256 route while retaining SHA-256 cache-key assertions.
+- closeout-current-20260811: MATRIX_EXIT=1. The first current harness still required MD5 for the WordPress 7 avatar URL; WordPress 7 emitted SHA-256. The corrected bounded assertion accepts the version-appropriate route.
+- closeout-current2-20260811: MATRIX_EXIT=1. Route/cache/plugin assertions passed; a single front HTTP request timed out after 10 seconds. The final harness adds five bounded retries with a 30-second transfer timeout; closeout-current3 then passed.
+
+Evidence preservation
+- Raw logs remain on the WenPai VM under /tmp/wpavatar-matrix-*-closeout.wrapper.log and in the untracked run artifact directories recorded during execution; they are intentionally excluded from Git because command transcripts contain test-only fixture credentials that trigger Gitleaks.
+- No production credential was used. The first final-HEAD Gitleaks rerun correctly failed after raw test transcripts were committed; this sanitized summary replaces those transcripts and the final Gitleaks rerun reported no leaks with exit 0.

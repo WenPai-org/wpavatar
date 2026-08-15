@@ -1,12 +1,12 @@
 === WPAvatar ===
 Contributors: wpfanyi
-Tags: wpavatar, avatar, wp avatar, 头像, gravatar, cravatar
+Tags: wpavatar, avatar, wp avatar, gravatar, cravatar
 Requires at least: 5.4
-Tested up to: 6.8.1
-Requires PHP: 5.6
-Stable tag: 1.9.5
+Tested up to: 7.0
+Requires PHP: 7.4
+Stable tag: 1.9.6
 License: GPLv2
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Use WPAvatar to speed up your website, switch gravatar to Chinese source, and support automatic acquisition and display of QQ Mail avatar.
 
@@ -39,7 +39,7 @@ We are the first WordPress agency in China, Welcome to China and nice to meet yo
 
 ### Found a bug in this plugin? ###
 
-Please submit issues here: [https://github.com/WenPai-org/wpavatar/issues](https://github.com/WenPai-org/wpavatar/issues), we will fix it in the next version, thank you for your feedback!
+Please submit issues here: [https://feicode.com/WenPai-org/wpavatar/issues](https://feicode.com/WenPai-org/wpavatar/issues), we will fix it in the next version, thank you for your feedback!
 
 == Installation ==
 
@@ -66,6 +66,15 @@ Starting with WPAvatar consists of just two steps: installing and setting up the
 3. WPAvatar Shortcodes
 
 == Changelog ==
+
+### 1.9.6 ###
+
+* Fixed syntax errors that could prevent activation on single-site and multisite installations
+* Hardened avatar cache path validation, remote fetching, and cache cleanup
+* Improved multisite settings safety and added release verification gates
+* Raised the minimum PHP version to 7.4 and aligned plugin/readme metadata
+* Kept all marketing and community-list shortcodes in core for 1.9.6; add-on separation is deferred to the next major version
+* Kept WordPress.org as the only automatic update channel; FeiCode stores reviewed source and release assets
 
 ### 1.9.4 ###
 

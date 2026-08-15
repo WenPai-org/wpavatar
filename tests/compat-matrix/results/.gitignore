@@ -1,0 +1,6 @@
+**/run.log
+**/*-debug.log
+**/compose-ps.txt
+**/compose-used.yml
+**/runner-used.sh
+**/cleanup.txt

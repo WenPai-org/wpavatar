@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<ruleset name="WPAvatar release-risk checks">
+	<description>Security, database, internationalization, and PHP 7.4+ compatibility checks kept separate from the legacy formatting baseline in phpcs.xml.</description>
+
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<config name="testVersion" value="7.4-"/>
+
+	<file>wpavatar.php</file>
+	<file>includes</file>
+
+	<rule ref="WordPress.Security">
+		<!-- Read-only admin tab/page routing does not mutate state. Required nonce checks remain enabled. -->
+		<exclude name="WordPress.Security.NonceVerification.Recommended"/>
+	</rule>
+	<rule ref="WordPress.DB"/>
+	<rule ref="WordPress.WP.I18n"/>
+	<rule ref="PHPCompatibilityWP"/>
+</ruleset>

@@ -1,0 +1,31 @@
+{
+  "name": "wenpai-org/wpavatar",
+  "description": "Development tooling for WPAvatar",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.1",
+    "phpcompatibility/phpcompatibility-wp": "^2.1",
+    "phpstan/phpstan": "^2.1",
+    "phpunit/phpunit": "^10.5",
+    "szepeviktor/phpstan-wordpress": "^2.0",
+    "wp-coding-standards/wpcs": "^3.3"
+  },
+  "scripts": {
+    "test": "phpunit -c phpunit.xml.dist",
+    "analyse": "phpstan analyse --configuration=phpstan.neon.dist --memory-limit=1G --no-progress",
+    "check": [
+      "@test",
+      "@analyse"
+    ]
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "require": {
+    "php": ">=7.4"
+  }
+}

@@ -1,0 +1,35 @@
+--- a/includes/multisite.php
++++ b/includes/multisite.php
+@@ -57 +57 @@
+-			$site_cache_dir = trailingslashit( $cache_path )) . 'site-' . $blog_id;
++			$site_cache_dir = trailingslashit( $cache_path ) . 'site-' . $blog_id;
+@@ -184 +184 @@
+-		$settings_link = '<a href="' . network_admin_url( 'settings.php?page=wpavatar-network' )) . '">' . __( '网络设置', 'wpavatar' )) . '</a>';
++		$settings_link = '<a href="' . network_admin_url( 'settings.php?page=wpavatar-network' ) . '">' . __( '网络设置', 'wpavatar' ) . '</a>';
+@@ -208 +208 @@
+-				__( 'WPAvatar 插件正由网络管理员强制管理。所有设置将使用网络级别配置，任何更改将被忽略。如有疑问请联系网络管理员。', 'wpavatar' )) .
++				__( 'WPAvatar 插件正由网络管理员强制管理。所有设置将使用网络级别配置，任何更改将被忽略。如有疑问请联系网络管理员。', 'wpavatar' ) .
+@@ -241 +241 @@
+-				__( '网络设置已保存。', 'wpavatar' )) .
++				__( '网络设置已保存。', 'wpavatar' ) .
+@@ -402 +402 @@
+-										echo '<h4>' . esc_html( $group_data['title'] )) . '</h4>';
++										echo '<h4>' . esc_html( $group_data['title'] ) . '</h4>';
+@@ -406,3 +406,3 @@
+-											echo '<input type="checkbox" name="wpavatar_network_controlled_options[]" value="' . esc_attr( $option )) . '" ' .
+-												( in_array( $option, $controlled_options ) ? 'checked' : '' )) . '>';
+-											echo '<span class="wpavatar-checkbox-label">' . esc_html( $all_options[ $option ] )) . '</span>';
++											echo '<input type="checkbox" name="wpavatar_network_controlled_options[]" value="' . esc_attr( $option ) . '" ' .
++												( in_array( $option, $controlled_options ) ? 'checked' : '' ) . '>';
++											echo '<span class="wpavatar-checkbox-label">' . esc_html( $all_options[ $option ] ) . '</span>';
+@@ -820,2 +820,2 @@
+-									echo '<option value="' . esc_attr( $site->blog_id )) . '">' .
+-										esc_html( $blog_name )) . ' (' . esc_html( $site->domain . $site->path )) . ')</option>';
++									echo '<option value="' . esc_attr( $site->blog_id ) . '">' .
++										esc_html( $blog_name ) . ' (' . esc_html( $site->domain . $site->path ) . ')</option>';
+@@ -1061 +1061 @@
+-			$cache_path = rtrim( $cache_path, '/\\' )) . '/';
++			$cache_path = rtrim( $cache_path, '/\\' ) . '/';
+@@ -1263 +1263 @@
+-			$site_cache_dir = trailingslashit( $cache_base )) . 'site-' . $site->blog_id;
++			$site_cache_dir = trailingslashit( $cache_base ) . 'site-' . $site->blog_id;
