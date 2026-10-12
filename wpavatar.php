@@ -2,10 +2,10 @@
 /**
  * Plugin Name: WPAvatar
  * Version: 1.9.6
- * Plugin URI: https://wpavatar.com/download
+ * Plugin URI: https://wpcy.com/wpavatar
  * Description: Replace Gravatar with Cravatar, a perfect replacement of Gravatar in China.
  * Author: WPfanyi
- * Author URI: https://wpfanyi.com/
+ * Author URI: https://wpcy.com/
  * Text Domain: wpavatar
  * Domain Path: /languages
  * Network: true
@@ -13,6 +13,7 @@
  * Requires PHP: 7.4
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Update URI: https://updates.wenpai.net
  */
 
 defined( 'ABSPATH' ) || exit;
